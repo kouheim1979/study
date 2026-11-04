@@ -1,1564 +1,2321 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>えいごヒマつぶしクエスト</title>
-  <style>
-    :root {
-      --bg: #fff8e7;
-      --card: #ffffff;
-      --ink: #263238;
-      --muted: #64748b;
-      --main: #ffb703;
-      --main-dark: #fb8500;
-      --sub: #8ecae6;
-      --accent: #90be6d;
-      --danger: #ef476f;
-      --ok: #06d6a0;
-      --line: #e8dcc6;
-      --shadow: 0 8px 24px rgba(38, 50, 56, 0.12);
-      --radius: 22px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      min-height: 100%;
-      background: var(--bg);
-    }
-
-    body {
-      margin: 0;
-      min-height: 100%;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(255, 183, 3, 0.25), transparent 32%),
-        radial-gradient(circle at top right, rgba(142, 202, 230, 0.28), transparent 28%),
-        var(--bg);
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .app {
-      width: min(980px, 100%);
-      margin: 0 auto;
-      padding: 14px 14px 90px;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 8px;
-      background: rgba(255, 248, 231, 0.92);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(232, 220, 198, 0.7);
-    }
-
-    .brand {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      min-width: 0;
-    }
-
-    .logo {
-      width: 44px;
-      height: 44px;
-      display: grid;
-      place-items: center;
-      border-radius: 15px;
-      background: linear-gradient(135deg, var(--main), var(--main-dark));
-      box-shadow: var(--shadow);
-      font-size: 24px;
-    }
-
-    .brand-title {
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      font-size: 18px;
-      line-height: 1.1;
-    }
-
-    .brand-sub {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border-radius: 999px;
-      padding: 8px 11px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid var(--line);
-      font-weight: 800;
-      color: var(--ink);
-      box-shadow: 0 2px 10px rgba(38, 50, 56, 0.06);
-      white-space: nowrap;
-    }
-
-    .grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    .grid.two {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .grid.three {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.94);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-
-    .hero {
-      padding: 22px;
-      border-radius: 28px;
-      background:
-        linear-gradient(135deg, rgba(255, 183, 3, 0.98), rgba(251, 133, 0, 0.92)),
-        var(--main);
-      color: #ffffff;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .hero::after {
-      content: "ABC";
-      position: absolute;
-      right: -12px;
-      bottom: -18px;
-      font-size: 78px;
-      font-weight: 1000;
-      opacity: 0.18;
-      transform: rotate(-10deg);
-    }
-
-    h1,
-    h2,
-    h3 {
-      margin: 0;
-      line-height: 1.22;
-    }
-
-    h1 {
-      font-size: clamp(28px, 8vw, 46px);
-      letter-spacing: 0.03em;
-    }
-
-    h2 {
-      font-size: 24px;
-      margin-bottom: 12px;
-    }
-
-    h3 {
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-
-    p {
-      margin: 8px 0;
-      line-height: 1.65;
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
-    .small {
-      font-size: 13px;
-    }
-
-    .big {
-      font-size: 22px;
-      font-weight: 900;
-    }
-
-    .english-large {
-      font-size: clamp(34px, 12vw, 64px);
-      line-height: 1.05;
-      font-weight: 1000;
-      letter-spacing: 0.02em;
-      word-break: break-word;
-    }
-
-    .question-title {
-      font-size: 18px;
-      font-weight: 900;
-      color: var(--main-dark);
-      margin-bottom: 10px;
-    }
-
-    .question-box {
-      background: #fffdf7;
-      border: 2px dashed rgba(251, 133, 0, 0.35);
-      border-radius: 24px;
-      padding: 18px;
-      text-align: center;
-      margin-bottom: 14px;
-    }
-
-    .btn {
-      width: 100%;
-      min-height: 56px;
-      border: 0;
-      border-radius: 18px;
-      padding: 13px 16px;
-      background: var(--card);
-      color: var(--ink);
-      border: 2px solid var(--line);
-      font-weight: 900;
-      text-align: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(38, 50, 56, 0.08);
-      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
-    }
-
-    .btn:active {
-      transform: translateY(2px) scale(0.99);
-      box-shadow: 0 2px 6px rgba(38, 50, 56, 0.08);
-    }
-
-    .btn.primary {
-      background: linear-gradient(135deg, var(--main), var(--main-dark));
-      color: #ffffff;
-      border-color: rgba(251, 133, 0, 0.25);
-    }
-
-    .btn.secondary {
-      background: #e9f7ff;
-      border-color: #c7e9fa;
-    }
-
-    .btn.good {
-      background: #e8fff7;
-      border-color: #a8f4d8;
-    }
-
-    .btn.danger {
-      background: #fff0f4;
-      border-color: #ffc5d4;
-      color: #b91c45;
-    }
-
-    .btn.ghost {
-      background: rgba(255, 255, 255, 0.66);
-    }
-
-    .btn.choice {
-      text-align: left;
-      min-height: 70px;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .btn.choice.correct {
-      background: #d8fff1;
-      border-color: var(--ok);
-      color: #03624c;
-    }
-
-    .btn.choice.wrong {
-      background: #ffe7ee;
-      border-color: var(--danger);
-      color: #9f1239;
-    }
-
-    .btn.choice.disabled {
-      opacity: 0.72;
-      cursor: default;
-    }
-
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 14px 0;
-    }
-
-    .toolbar .btn {
-      flex: 1 1 140px;
-      width: auto;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .stat {
-      background: #fffdf7;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 12px 8px;
-      text-align: center;
-    }
-
-    .stat .num {
-      font-weight: 1000;
-      font-size: 22px;
-    }
-
-    .stat .label {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .badge-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border-radius: 999px;
-      padding: 8px 11px;
-      background: #fff3c4;
-      border: 1px solid #ffe28a;
-      color: #774600;
-      font-weight: 900;
-      font-size: 13px;
-    }
-
-    .badge.locked {
-      background: #f1f5f9;
-      border-color: #e2e8f0;
-      color: #94a3b8;
-    }
-
-    .feedback {
-      border-radius: 22px;
-      padding: 15px;
-      margin-top: 14px;
-      border: 2px solid transparent;
-      animation: pop 0.22s ease;
-    }
-
-    .feedback.ok {
-      background: #e8fff7;
-      border-color: #a8f4d8;
-    }
-
-    .feedback.ng {
-      background: #fff0f4;
-      border-color: #ffc5d4;
-    }
-
-    .study-card {
-      background: #fffdf7;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 14px;
-      margin-top: 12px;
-    }
-
-    .list-item {
-      display: grid;
-      gap: 8px;
-      padding: 14px;
-      border-radius: 18px;
-      background: #fffdf7;
-      border: 1px solid var(--line);
-    }
-
-    .list-item + .list-item {
-      margin-top: 10px;
-    }
-
-    .tagline {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 12px 0 0;
-    }
-
-    .tag {
-      display: inline-flex;
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      font-weight: 900;
-      font-size: 13px;
-    }
-
-    .notice {
-      background: #fffdf7;
-      border-left: 6px solid var(--sub);
-      border-radius: 16px;
-      padding: 13px;
-      margin: 12px 0;
-      color: var(--ink);
-    }
-
-    .progress {
-      height: 14px;
-      border-radius: 999px;
-      background: #f1e7d5;
-      overflow: hidden;
-      margin: 12px 0;
-    }
-
-    .progress > div {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--ok), var(--accent));
-      border-radius: inherit;
-      transition: width 0.25s ease;
-    }
-
-    .timer {
-      font-size: 34px;
-      font-weight: 1000;
-      color: var(--danger);
-      text-align: center;
-      margin: 4px 0 12px;
-    }
-
-    .mini-result {
-      margin-top: 12px;
-      border-radius: 18px;
-      background: #e9f7ff;
-      border: 1px solid #c7e9fa;
-      padding: 12px;
-      font-weight: 900;
-    }
-
-    .footer-nav {
-      position: fixed;
-      z-index: 25;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      width: min(980px, 100%);
-      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(255, 248, 231, 0.94);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(232, 220, 198, 0.9);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
-    .footer-nav button {
-      min-height: 48px;
-      font-size: 12px;
-      border-radius: 15px;
-      padding: 8px 6px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @keyframes pop {
-      from {
-        transform: scale(0.96);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    @media (max-width: 720px) {
-      .grid.two,
-      .grid.three {
-        grid-template-columns: 1fr;
-      }
-
-      .stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .brand-title {
-        font-size: 16px;
-      }
-
-      .topbar {
-        align-items: flex-start;
-      }
-
-      .topbar .pill {
-        font-size: 12px;
-        padding: 7px 9px;
-      }
-
-      .card {
-        padding: 15px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ターンメソッド - 英語発話トレーニング</title>
+<style>
+/* ========================================
+   ターンメソッド CSS
+   Safari-safe, high-contrast, mobile-first
+   ======================================== */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+--bg: #FDF6EE;
+--bg-card: #FFFFFF;
+--bg-card-alt: #F5EDE4;
+--text: #1A0F05;
+--text-sub: #5C4A3A;
+--accent: #D4511E;
+--accent-hover: #B8431A;
+--accent-bg: #FDEEE6;
+--correct: #1B7F37;
+--correct-bg: #DEF5E5;
+--correct-text: #0E5C23;
+--close-color: #9E7B0A;
+--close-bg: #FFF6D6;
+--close-text: #6B5300;
+--wrong: #C42B2B;
+--wrong-bg: #FDE8E8;
+--wrong-text: #8B1A1A;
+--border: #D9CCBF;
+--shadow: 0 2px 12px rgba(30,15,5,0.07);
+--shadow-lg: 0 8px 28px rgba(30,15,5,0.10);
+--radius: 16px;
+--radius-sm: 10px;
+--font-jp: 'M PLUS Rounded 1c', sans-serif;
+--font-en: 'Outfit', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+font-family: var(--font-jp);
+background: var(--bg);
+color: var(--text);
+min-height: 100vh;
+min-height: 100dvh;
+-webkit-tap-highlight-color: transparent;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+
+.app-container {
+max-width: 480px;
+margin: 0 auto;
+min-height: 100vh;
+min-height: 100dvh;
+position: relative;
+}
+
+.screen {
+display: none;
+padding: 20px 16px;
+-webkit-animation: fadeIn 0.25s ease;
+animation: fadeIn 0.25s ease;
+}
+.screen.active { display: block; }
+
+@-webkit-keyframes fadeIn {
+from { opacity: 0; -webkit-transform: translateY(6px); transform: translateY(6px); }
+to { opacity: 1; -webkit-transform: translateY(0); transform: translateY(0); }
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(6px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.header {
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+gap: 12px;
+padding: 16px 0 20px;
+}
+.header .back-btn {
+width: 42px; height: 42px;
+border: 2px solid var(--border);
+background: var(--bg-card);
+border-radius: 12px;
+font-size: 20px;
+cursor: pointer;
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+-webkit-justify-content: center; justify-content: center;
+color: var(--text);
+-webkit-appearance: none; appearance: none;
+}
+.header .back-btn:active {
+-webkit-transform: scale(0.92); transform: scale(0.92);
+}
+.header h1 {
+font-size: 18px;
+font-weight: 700;
+color: var(--text);
+}
+
+/* Card */
+.card {
+background: var(--bg-card);
+border-radius: var(--radius);
+padding: 20px;
+margin-bottom: 14px;
+box-shadow: var(--shadow);
+border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Buttons */
+.btn {
+display: -webkit-inline-flex; display: inline-flex;
+-webkit-align-items: center; align-items: center;
+-webkit-justify-content: center; justify-content: center;
+gap: 8px;
+padding: 14px 28px;
+border: none;
+border-radius: var(--radius-sm);
+font-family: var(--font-jp);
+font-size: 16px;
+font-weight: 600;
+cursor: pointer;
+-webkit-transition: transform 0.12s; transition: transform 0.12s;
+width: 100%;
+-webkit-appearance: none; appearance: none;
+text-decoration: none;
+line-height: 1.4;
+}
+.btn:active {
+-webkit-transform: scale(0.96); transform: scale(0.96);
+}
+.btn-primary {
+background: var(--accent);
+color: #FFFFFF;
+box-shadow: 0 4px 14px rgba(212,81,30,0.25);
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary {
+background: var(--bg-card);
+color: var(--text);
+border: 2px solid var(--border);
+}
+.btn-sm { padding: 10px 18px; font-size: 14px; }
+.btn + .btn { margin-top: 10px; }
+
+/* Home */
+.home-hero {
+text-align: center;
+padding: 36px 0 20px;
+}
+.home-hero .logo {
+font-size: 48px;
+margin-bottom: 8px;
+display: block;
+}
+.home-hero h1 {
+font-size: 28px;
+font-weight: 800;
+color: var(--accent);
+letter-spacing: 0.02em;
+}
+.home-hero p {
+color: var(--text-sub);
+margin-top: 8px;
+font-size: 14px;
+line-height: 1.7;
+}
+.home-stats {
+display: -webkit-flex; display: flex;
+gap: 10px;
+margin: 20px 0;
+}
+.stat-box {
+-webkit-flex: 1; flex: 1;
+background: var(--bg-card);
+border-radius: var(--radius-sm);
+padding: 14px 8px;
+text-align: center;
+box-shadow: var(--shadow);
+border: 1px solid rgba(0,0,0,0.04);
+}
+.stat-box .num {
+font-family: var(--font-en);
+font-size: 24px;
+font-weight: 700;
+color: var(--accent);
+}
+.stat-box .label {
+font-size: 11px;
+color: var(--text-sub);
+margin-top: 3px;
+font-weight: 500;
+}
+.home-nav { margin-top: 16px; }
+
+/* Lesson List */
+.lesson-item {
+background: var(--bg-card);
+border-radius: var(--radius);
+padding: 16px 18px;
+margin-bottom: 10px;
+box-shadow: var(--shadow);
+border: 1px solid rgba(0,0,0,0.04);
+cursor: pointer;
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+gap: 14px;
+}
+.lesson-item:active {
+-webkit-transform: scale(0.98); transform: scale(0.98);
+}
+.lesson-item .icon {
+width: 46px; height: 46px;
+border-radius: 12px;
+background: var(--accent-bg);
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+-webkit-justify-content: center; justify-content: center;
+font-size: 22px;
+-webkit-flex-shrink: 0; flex-shrink: 0;
+}
+.lesson-item .info { -webkit-flex: 1; flex: 1; }
+.lesson-item .info .title {
+font-weight: 600;
+font-size: 15px;
+color: var(--text);
+}
+.lesson-item .info .meta {
+font-size: 12px;
+color: var(--text-sub);
+margin-top: 3px;
+}
+.lesson-item .progress-badge {
+font-family: var(--font-en);
+font-size: 13px;
+font-weight: 600;
+color: var(--correct-text);
+background: var(--correct-bg);
+padding: 4px 10px;
+border-radius: 20px;
+border: 1px solid rgba(27,127,55,0.15);
+}
+
+/* Lesson Play */
+.lesson-progress {
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+gap: 10px;
+margin-bottom: 20px;
+}
+.progress-bar-bg {
+-webkit-flex: 1; flex: 1;
+height: 8px;
+background: var(--border);
+border-radius: 4px;
+overflow: hidden;
+}
+.progress-bar-fill {
+height: 100%;
+background: var(--accent);
+border-radius: 4px;
+-webkit-transition: width 0.4s ease; transition: width 0.4s ease;
+}
+.progress-text {
+font-family: var(--font-en);
+font-size: 13px;
+font-weight: 600;
+color: var(--text-sub);
+white-space: nowrap;
+}
+
+.turn-card {
+background: var(--bg-card);
+border-radius: var(--radius);
+padding: 28px 20px;
+box-shadow: var(--shadow-lg);
+border: 1px solid rgba(0,0,0,0.04);
+text-align: center;
+min-height: 240px;
+display: -webkit-flex; display: flex;
+-webkit-flex-direction: column; flex-direction: column;
+-webkit-align-items: center; align-items: center;
+-webkit-justify-content: center; justify-content: center;
+}
+
+/* Countdown */
+.countdown-display {
+font-family: var(--font-en);
+font-size: 100px;
+font-weight: 800;
+color: var(--accent);
+line-height: 1;
+-webkit-animation: countPop 0.35s ease;
+animation: countPop 0.35s ease;
+}
+.countdown-label {
+font-size: 15px;
+color: var(--text-sub);
+margin-top: 14px;
+font-weight: 500;
+}
+@-webkit-keyframes countPop {
+0% { -webkit-transform: scale(0.4); transform: scale(0.4); opacity: 0; }
+60% { -webkit-transform: scale(1.12); transform: scale(1.12); }
+100% { -webkit-transform: scale(1); transform: scale(1); opacity: 1; }
+}
+@keyframes countPop {
+0% { transform: scale(0.4); opacity: 0; }
+60% { transform: scale(1.12); }
+100% { transform: scale(1); opacity: 1; }
+}
+
+/* Prompt */
+.turn-prompt {
+font-size: 22px;
+font-weight: 700;
+line-height: 1.5;
+margin-bottom: 8px;
+font-family: var(--font-en);
+color: var(--text);
+}
+.prompt-hidden-text {
+font-size: 36px;
+letter-spacing: 8px;
+color: var(--text-sub);
+margin-bottom: 8px;
+font-family: var(--font-en);
+}
+.prompt-sub {
+font-size: 14px;
+color: var(--text-sub);
+margin-top: 8px;
+}
+.listen-only-badge {
+display: inline-block;
+background: var(--accent-bg);
+color: var(--accent);
+font-size: 11px;
+font-weight: 600;
+padding: 3px 10px;
+border-radius: 12px;
+margin-bottom: 8px;
+border: 1px solid rgba(212,81,30,0.2);
+letter-spacing: 0.05em;
+}
+
+/* Answer */
+.turn-timer {
+font-family: var(--font-en);
+font-size: 42px;
+font-weight: 700;
+color: var(--accent);
+margin: 6px 0 10px;
+}
+.turn-timer.warning {
+color: var(--wrong);
+-webkit-animation: pulse 0.5s infinite;
+animation: pulse 0.5s infinite;
+}
+@-webkit-keyframes pulse {
+0%,100% { opacity: 1; }
+50% { opacity: 0.4; }
+}
+@keyframes pulse {
+0%,100% { opacity: 1; }
+50% { opacity: 0.4; }
+}
+
+.answer-area {
+width: 100%;
+margin-top: 8px;
+}
+.answer-area textarea {
+width: 100%;
+min-height: 56px;
+border: 2px solid var(--border);
+border-radius: var(--radius-sm);
+padding: 12px;
+font-size: 16px;
+font-family: var(--font-en);
+color: var(--text);
+background: var(--bg-card);
+resize: none;
+outline: none;
+-webkit-transition: border-color 0.2s; transition: border-color 0.2s;
+-webkit-appearance: none; appearance: none;
+}
+.answer-area textarea:focus {
+border-color: var(--accent);
+}
+
+.mic-btn {
+width: 72px; height: 72px;
+border-radius: 50%;
+border: none;
+background: var(--accent);
+color: #FFFFFF;
+font-size: 28px;
+cursor: pointer;
+box-shadow: 0 4px 18px rgba(212,81,30,0.30);
+margin: 8px auto;
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+-webkit-justify-content: center; justify-content: center;
+-webkit-appearance: none; appearance: none;
+}
+.mic-btn:active {
+-webkit-transform: scale(0.9); transform: scale(0.9);
+}
+.mic-btn.recording {
+background: var(--wrong);
+-webkit-animation: pulse-mic 1s infinite;
+animation: pulse-mic 1s infinite;
+}
+@-webkit-keyframes pulse-mic {
+0%,100% { box-shadow: 0 0 0 0 rgba(196,43,43,0.35); }
+50% { box-shadow: 0 0 0 14px rgba(196,43,43,0); }
+}
+@keyframes pulse-mic {
+0%,100% { box-shadow: 0 0 0 0 rgba(196,43,43,0.35); }
+50% { box-shadow: 0 0 0 14px rgba(196,43,43,0); }
+}
+
+.recognized-text {
+font-family: var(--font-en);
+font-size: 17px;
+color: var(--text);
+background: var(--bg-card-alt);
+padding: 12px;
+border-radius: var(--radius-sm);
+margin: 8px 0;
+min-height: 40px;
+text-align: left;
+border: 1px solid var(--border);
+}
+
+/* Result */
+.result-badge {
+display: inline-block;
+padding: 8px 28px;
+border-radius: 30px;
+font-weight: 700;
+font-size: 18px;
+margin: 8px 0;
+}
+.result-badge.correct {
+background: var(--correct-bg);
+color: var(--correct-text);
+border: 2px solid rgba(27,127,55,0.2);
+}
+.result-badge.close {
+background: var(--close-bg);
+color: var(--close-text);
+border: 2px solid rgba(158,123,10,0.2);
+}
+.result-badge.wrong {
+background: var(--wrong-bg);
+color: var(--wrong-text);
+border: 2px solid rgba(196,43,43,0.2);
+}
+
+.correct-answer {
+font-family: var(--font-en);
+font-size: 16px;
+color: var(--correct-text);
+background: var(--correct-bg);
+padding: 12px;
+border-radius: var(--radius-sm);
+margin: 6px 0;
+border: 1px solid rgba(27,127,55,0.15);
+text-align: left;
+}
+
+.hint-text {
+font-size: 13px;
+color: var(--text-sub);
+background: var(--bg-card-alt);
+padding: 8px 12px;
+border-radius: var(--radius-sm);
+margin: 6px 0;
+text-align: left;
+}
+
+.phase-label {
+font-size: 12px;
+color: var(--text-sub);
+margin-bottom: 4px;
+font-weight: 500;
+}
+
+.action-row {
+display: -webkit-flex; display: flex;
+gap: 10px;
+margin-top: 14px;
+width: 100%;
+}
+.action-row .btn { -webkit-flex: 1; flex: 1; }
+
+.mic-status {
+font-size: 12px;
+color: var(--text-sub);
+text-align: center;
+margin-top: 4px;
+}
+
+/* Summary Result */
+.result-summary {
+text-align: center;
+padding: 20px 0;
+}
+.result-circle {
+width: 140px; height: 140px;
+border-radius: 50%;
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+-webkit-justify-content: center; justify-content: center;
+margin: 0 auto 16px;
+position: relative;
+background: var(--border);
+}
+.result-circle-inner {
+width: 110px; height: 110px;
+border-radius: 50%;
+background: var(--bg-card);
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+-webkit-justify-content: center; justify-content: center;
+-webkit-flex-direction: column; flex-direction: column;
+}
+.result-circle-inner .big {
+font-family: var(--font-en);
+font-size: 36px;
+font-weight: 800;
+color: var(--correct);
+}
+.result-circle-inner .lbl {
+font-size: 12px;
+color: var(--text-sub);
+font-weight: 500;
+}
+.result-detail-list { margin: 16px 0; }
+.result-detail-item {
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+gap: 10px;
+padding: 10px 14px;
+background: var(--bg-card);
+border-radius: var(--radius-sm);
+margin-bottom: 8px;
+box-shadow: var(--shadow);
+font-size: 14px;
+border: 1px solid rgba(0,0,0,0.04);
+}
+.result-detail-item .badge {
+padding: 3px 10px;
+border-radius: 20px;
+font-size: 12px;
+font-weight: 600;
+-webkit-flex-shrink: 0; flex-shrink: 0;
+}
+.result-detail-item .badge.c { background: var(--correct-bg); color: var(--correct-text); }
+.result-detail-item .badge.cl { background: var(--close-bg); color: var(--close-text); }
+.result-detail-item .badge.w { background: var(--wrong-bg); color: var(--wrong-text); }
+.result-detail-item .q {
+-webkit-flex: 1; flex: 1;
+font-family: var(--font-en);
+color: var(--text);
+}
+
+/* Review */
+.review-item {
+background: var(--bg-card);
+border-radius: var(--radius);
+padding: 14px 16px;
+margin-bottom: 10px;
+box-shadow: var(--shadow);
+border: 1px solid rgba(0,0,0,0.04);
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+gap: 12px;
+}
+.review-item .q-text {
+-webkit-flex: 1; flex: 1;
+font-family: var(--font-en);
+font-size: 14px;
+color: var(--text);
+}
+.review-item .remove-btn {
+background: none;
+border: none;
+color: var(--text-sub);
+font-size: 18px;
+cursor: pointer;
+padding: 4px 8px;
+-webkit-appearance: none; appearance: none;
+}
+.empty-state {
+text-align: center;
+padding: 40px 20px;
+color: var(--text-sub);
+}
+.empty-state .es-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+
+/* Settings */
+.section-header {
+font-size: 12px;
+font-weight: 700;
+color: var(--accent);
+letter-spacing: 0.05em;
+margin: 10px 4px 8px;
+text-transform: uppercase;
+}
+
+.setting-row {
+display: -webkit-flex; display: flex;
+-webkit-align-items: center; align-items: center;
+-webkit-justify-content: space-between; justify-content: space-between;
+padding: 14px 0;
+border-bottom: 1px solid var(--border);
+gap: 12px;
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-row .setting-label {
+-webkit-flex: 1; flex: 1;
+min-width: 0;
+}
+.setting-row .label {
+font-size: 15px;
+color: var(--text);
+}
+.setting-row .sub {
+font-size: 12px;
+color: var(--text-sub);
+margin-top: 2px;
+}
+.setting-row select,
+.setting-row input[type="range"] {
+font-family: var(--font-jp);
+font-size: 14px;
+padding: 6px 10px;
+border: 1px solid var(--border);
+border-radius: 8px;
+background: var(--bg);
+color: var(--text);
+-webkit-appearance: none; appearance: none;
+}
+.setting-row select {
+padding-right: 24px;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%235C4A3A' stroke-width='2'/%3E%3C/svg%3E");
+background-repeat: no-repeat;
+background-position: right 8px center;
+max-width: 140px;
+}
+.setting-row input[type="range"] {
+width: 120px;
+height: 6px;
+background: var(--border);
+border-radius: 3px;
+border: none;
+padding: 0;
+}
+.setting-row input[type="range"]::-webkit-slider-thumb {
+-webkit-appearance: none;
+width: 22px; height: 22px;
+border-radius: 50%;
+background: var(--accent);
+cursor: pointer;
+}
+.toggle {
+width: 52px; height: 28px;
+border-radius: 14px;
+background: var(--border);
+border: none;
+position: relative;
+cursor: pointer;
+-webkit-transition: background 0.2s; transition: background 0.2s;
+-webkit-appearance: none; appearance: none;
+-webkit-flex-shrink: 0; flex-shrink: 0;
+}
+.toggle.on { background: var(--correct); }
+.toggle::after {
+content: '';
+width: 22px; height: 22px;
+border-radius: 50%;
+background: #FFFFFF;
+position: absolute;
+top: 3px; left: 3px;
+-webkit-transition: -webkit-transform 0.2s; transition: transform 0.2s;
+box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.toggle.on::after {
+-webkit-transform: translateX(24px); transform: translateX(24px);
+}
+
+.tts-status-badge {
+display: inline-block;
+padding: 3px 10px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
+margin-left: 6px;
+}
+.tts-status-badge.ok { background: var(--correct-bg); color: var(--correct-text); }
+.tts-status-badge.ng { background: var(--wrong-bg); color: var(--wrong-text); }
+.tts-status-badge.unknown { background: var(--bg-card-alt); color: var(--text-sub); }
+
+/* Toast */
+.toast {
+position: fixed;
+bottom: 80px;
+left: 50%;
+-webkit-transform: translateX(-50%); transform: translateX(-50%);
+background: var(--text);
+color: #FFFFFF;
+padding: 10px 24px;
+border-radius: 30px;
+font-size: 14px;
+z-index: 100;
+opacity: 0;
+-webkit-transition: opacity 0.3s; transition: opacity 0.3s;
+pointer-events: none;
+max-width: 90%;
+text-align: center;
+}
+.toast.show { opacity: 1; }
+
+.bottom-spacer { height: 40px; }
+.hidden { display: none !important; }
+</style>
+
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo">🎒</div>
-        <div>
-          <div class="brand-title">えいごヒマつぶしクエスト</div>
-          <div class="brand-sub">すきま時間で英語レベルアップ</div>
-        </div>
-      </div>
-      <div class="pill" id="topLevel">Lv.1</div>
-    </header>
 
-    <main id="appRoot"></main>
+<div class="app-container" id="app">
+
+  <!-- ホーム画面 -->
+
+  <div class="screen active" id="screen-home">
+    <div class="home-hero">
+      <span class="logo">&#x1F5E3;&#xFE0F;</span>
+      <h1>ターンメソッド</h1>
+      <p>英語の質問を聞いて、すぐ答える。<br>瞬発力を鍛える発話トレーニング</p>
+    </div>
+    <div class="home-stats">
+      <div class="stat-box"><div class="num" id="stat-total">0</div><div class="label">総回答数</div></div>
+      <div class="stat-box"><div class="num" id="stat-correct">0%</div><div class="label">正答率</div></div>
+      <div class="stat-box"><div class="num" id="stat-streak">0</div><div class="label">連続日数</div></div>
+    </div>
+    <div class="home-nav">
+      <button class="btn btn-primary" onclick="onStartLessonsClick()">&#x1F4DA; レッスンを始める</button>
+      <button class="btn btn-secondary" onclick="showScreen('screen-review')">&#x1F504; 復習する <span id="review-count-badge"></span></button>
+      <button class="btn btn-secondary" onclick="showScreen('screen-settings')">&#x2699;&#xFE0F; 設定</button>
+    </div>
   </div>
 
-  <nav class="footer-nav">
-    <button class="btn ghost" onclick="goHome()">🏠<br>ホーム</button>
-    <button class="btn ghost" onclick="showModes()">🎮<br>ゲーム</button>
-    <button class="btn ghost" onclick="showWeak()">📝<br>復習</button>
-    <button class="btn ghost" onclick="showList()">📚<br>一覧</button>
-  </nav>
-
-  <script>
-    "use strict";
-
-    const STORAGE_KEY = "eigo_himatsubushi_quest_v1";
-
-    const MODES = {
-      vocab: {
-        label: "英単語クイズ",
-        icon: "🔤",
-        description: "日本語を見て、正しい英語を選ぼう。"
-      },
-      ja2en: {
-        label: "日本語から英語",
-        icon: "🇯🇵→🇬🇧",
-        description: "日本語の意味に合う英語を選ぼう。"
-      },
-      en2ja: {
-        label: "英語から日本語",
-        icon: "🇬🇧→🇯🇵",
-        description: "英語に合う日本語を選ぼう。"
-      },
-      fill: {
-        label: "例文穴埋め",
-        icon: "✏️",
-        description: "例文の空欄に入る英語を選ぼう。"
-      },
-      speed: {
-        label: "早押しチャレンジ",
-        icon: "⚡",
-        description: "12秒以内に正解を選ぼう。"
-      }
-    };
-
-    const GENRES = [
-      "あいさつ",
-      "食べ物",
-      "動物",
-      "学校",
-      "家族",
-      "乗り物",
-      "日常会話",
-      "旅行",
-      "感情",
-      "よく使う動詞"
-    ];
-
-    const BADGES = {
-      first_correct: { icon: "🌟", name: "はじめての正解" },
-      streak5: { icon: "🔥", name: "5問連続正解" },
-      streak10: { icon: "🚀", name: "10問連続正解" },
-      challenge50: { icon: "🏅", name: "50問チャレンジ" },
-      challenge100: { icon: "👑", name: "100問チャレンジ" }
-    };
-
-    const PRAISES = [
-      "Great!",
-      "Nice!",
-      "Excellent!",
-      "You got it!",
-      "Good job!",
-      "Perfect!",
-      "すごい！",
-      "その調子！"
-    ];
-
-    const QUESTIONS = [
-      { id: "greet_001", genre: "あいさつ", english: "Hello", japanese: "こんにちは", kana: "ハロー", example: "Hello, my name is Rin.", exampleJa: "こんにちは、私の名前はリンです。", difficulty: "かんたん" },
-      { id: "greet_002", genre: "あいさつ", english: "Good morning", japanese: "おはよう", kana: "グッド モーニング", example: "Good morning, Dad.", exampleJa: "おはよう、お父さん。", difficulty: "かんたん" },
-      { id: "greet_003", genre: "あいさつ", english: "Good night", japanese: "おやすみ", kana: "グッド ナイト", example: "Good night, see you tomorrow.", exampleJa: "おやすみ、また明日ね。", difficulty: "かんたん" },
-      { id: "greet_004", genre: "あいさつ", english: "Thank you", japanese: "ありがとう", kana: "サンキュー", example: "Thank you for helping me.", exampleJa: "手伝ってくれてありがとう。", difficulty: "かんたん" },
-      { id: "greet_005", genre: "あいさつ", english: "You're welcome", japanese: "どういたしまして", kana: "ユア ウェルカム", example: "You're welcome, Miku.", exampleJa: "どういたしまして、ミク。", difficulty: "ふつう" },
-      { id: "greet_006", genre: "あいさつ", english: "Sorry", japanese: "ごめんなさい", kana: "ソーリー", example: "Sorry, I am late.", exampleJa: "ごめんなさい、遅れました。", difficulty: "かんたん" },
-      { id: "greet_007", genre: "あいさつ", english: "Excuse me", japanese: "すみません", kana: "エクスキューズ ミー", example: "Excuse me, where is the station?", exampleJa: "すみません、駅はどこですか。", difficulty: "ふつう" },
-      { id: "greet_008", genre: "あいさつ", english: "See you", japanese: "またね", kana: "シー ユー", example: "See you after school.", exampleJa: "放課後にまたね。", difficulty: "かんたん" },
-      { id: "greet_009", genre: "あいさつ", english: "Nice to meet you", japanese: "はじめまして", kana: "ナイス トゥ ミート ユー", example: "Nice to meet you, Ken.", exampleJa: "はじめまして、ケン。", difficulty: "ふつう" },
-      { id: "greet_010", genre: "あいさつ", english: "How are you?", japanese: "元気ですか", kana: "ハウ アー ユー", example: "How are you today?", exampleJa: "今日は元気ですか。", difficulty: "ふつう" },
-
-      { id: "food_001", genre: "食べ物", english: "Apple", japanese: "りんご", kana: "アップル", example: "Apple is my favorite fruit.", exampleJa: "りんごは私の好きな果物です。", difficulty: "かんたん" },
-      { id: "food_002", genre: "食べ物", english: "Banana", japanese: "バナナ", kana: "バナナ", example: "Banana is yellow.", exampleJa: "バナナは黄色です。", difficulty: "かんたん" },
-      { id: "food_003", genre: "食べ物", english: "Rice", japanese: "ごはん", kana: "ライス", example: "Rice is popular in Japan.", exampleJa: "ごはんは日本で人気です。", difficulty: "かんたん" },
-      { id: "food_004", genre: "食べ物", english: "Bread", japanese: "パン", kana: "ブレッド", example: "Bread smells good.", exampleJa: "パンはいいにおいがします。", difficulty: "かんたん" },
-      { id: "food_005", genre: "食べ物", english: "Milk", japanese: "牛乳", kana: "ミルク", example: "Milk is in the glass.", exampleJa: "牛乳がコップに入っています。", difficulty: "かんたん" },
-      { id: "food_006", genre: "食べ物", english: "Water", japanese: "水", kana: "ウォーター", example: "Water is important for us.", exampleJa: "水は私たちにとって大切です。", difficulty: "かんたん" },
-      { id: "food_007", genre: "食べ物", english: "Chicken", japanese: "鶏肉", kana: "チキン", example: "Chicken is on the plate.", exampleJa: "鶏肉がお皿にあります。", difficulty: "ふつう" },
-      { id: "food_008", genre: "食べ物", english: "Egg", japanese: "卵", kana: "エッグ", example: "Egg is good for breakfast.", exampleJa: "卵は朝食によいです。", difficulty: "かんたん" },
-      { id: "food_009", genre: "食べ物", english: "Vegetable", japanese: "野菜", kana: "ベジタブル", example: "Vegetable soup is healthy.", exampleJa: "野菜スープは健康的です。", difficulty: "ふつう" },
-      { id: "food_010", genre: "食べ物", english: "Strawberry", japanese: "いちご", kana: "ストロベリー", example: "Strawberry cake is sweet.", exampleJa: "いちごケーキは甘いです。", difficulty: "ふつう" },
-
-      { id: "animal_001", genre: "動物", english: "Dog", japanese: "犬", kana: "ドッグ", example: "Dog runs in the park.", exampleJa: "犬が公園で走ります。", difficulty: "かんたん" },
-      { id: "animal_002", genre: "動物", english: "Cat", japanese: "猫", kana: "キャット", example: "Cat sleeps on the sofa.", exampleJa: "猫がソファで寝ます。", difficulty: "かんたん" },
-      { id: "animal_003", genre: "動物", english: "Bird", japanese: "鳥", kana: "バード", example: "Bird sings in the tree.", exampleJa: "鳥が木で歌います。", difficulty: "かんたん" },
-      { id: "animal_004", genre: "動物", english: "Fish", japanese: "魚", kana: "フィッシュ", example: "Fish swims in the river.", exampleJa: "魚が川で泳ぎます。", difficulty: "かんたん" },
-      { id: "animal_005", genre: "動物", english: "Rabbit", japanese: "うさぎ", kana: "ラビット", example: "Rabbit has long ears.", exampleJa: "うさぎは長い耳を持っています。", difficulty: "ふつう" },
-      { id: "animal_006", genre: "動物", english: "Lion", japanese: "ライオン", kana: "ライオン", example: "Lion is very strong.", exampleJa: "ライオンはとても強いです。", difficulty: "かんたん" },
-      { id: "animal_007", genre: "動物", english: "Elephant", japanese: "象", kana: "エレファント", example: "Elephant has a long nose.", exampleJa: "象は長い鼻を持っています。", difficulty: "ふつう" },
-      { id: "animal_008", genre: "動物", english: "Monkey", japanese: "猿", kana: "モンキー", example: "Monkey likes bananas.", exampleJa: "猿はバナナが好きです。", difficulty: "かんたん" },
-      { id: "animal_009", genre: "動物", english: "Dolphin", japanese: "イルカ", kana: "ドルフィン", example: "Dolphin jumps high.", exampleJa: "イルカが高くジャンプします。", difficulty: "ふつう" },
-      { id: "animal_010", genre: "動物", english: "Butterfly", japanese: "ちょう", kana: "バタフライ", example: "Butterfly is beautiful.", exampleJa: "ちょうは美しいです。", difficulty: "チャレンジ" },
-
-      { id: "school_001", genre: "学校", english: "School", japanese: "学校", kana: "スクール", example: "School starts at eight.", exampleJa: "学校は8時に始まります。", difficulty: "かんたん" },
-      { id: "school_002", genre: "学校", english: "Teacher", japanese: "先生", kana: "ティーチャー", example: "Teacher writes on the board.", exampleJa: "先生が黒板に書きます。", difficulty: "かんたん" },
-      { id: "school_003", genre: "学校", english: "Student", japanese: "生徒", kana: "スチューデント", example: "Student reads a book.", exampleJa: "生徒が本を読みます。", difficulty: "ふつう" },
-      { id: "school_004", genre: "学校", english: "Book", japanese: "本", kana: "ブック", example: "Book is on the desk.", exampleJa: "本が机の上にあります。", difficulty: "かんたん" },
-      { id: "school_005", genre: "学校", english: "Pencil", japanese: "えんぴつ", kana: "ペンシル", example: "Pencil is in my bag.", exampleJa: "えんぴつは私のかばんの中にあります。", difficulty: "かんたん" },
-      { id: "school_006", genre: "学校", english: "Notebook", japanese: "ノート", kana: "ノートブック", example: "Notebook is open.", exampleJa: "ノートが開いています。", difficulty: "ふつう" },
-      { id: "school_007", genre: "学校", english: "Desk", japanese: "机", kana: "デスク", example: "Desk is clean.", exampleJa: "机はきれいです。", difficulty: "かんたん" },
-      { id: "school_008", genre: "学校", english: "Classroom", japanese: "教室", kana: "クラスルーム", example: "Classroom is quiet.", exampleJa: "教室は静かです。", difficulty: "ふつう" },
-      { id: "school_009", genre: "学校", english: "Homework", japanese: "宿題", kana: "ホームワーク", example: "Homework is difficult today.", exampleJa: "今日の宿題は難しいです。", difficulty: "ふつう" },
-      { id: "school_010", genre: "学校", english: "Test", japanese: "テスト", kana: "テスト", example: "Test begins now.", exampleJa: "テストが今始まります。", difficulty: "かんたん" },
-
-      { id: "family_001", genre: "家族", english: "Family", japanese: "家族", kana: "ファミリー", example: "Family eats dinner together.", exampleJa: "家族が一緒に夕食を食べます。", difficulty: "かんたん" },
-      { id: "family_002", genre: "家族", english: "Mother", japanese: "母", kana: "マザー", example: "Mother cooks lunch.", exampleJa: "母が昼食を作ります。", difficulty: "かんたん" },
-      { id: "family_003", genre: "家族", english: "Father", japanese: "父", kana: "ファーザー", example: "Father drives a car.", exampleJa: "父が車を運転します。", difficulty: "かんたん" },
-      { id: "family_004", genre: "家族", english: "Sister", japanese: "姉妹", kana: "シスター", example: "Sister likes music.", exampleJa: "姉妹は音楽が好きです。", difficulty: "かんたん" },
-      { id: "family_005", genre: "家族", english: "Brother", japanese: "兄弟", kana: "ブラザー", example: "Brother plays soccer.", exampleJa: "兄弟がサッカーをします。", difficulty: "かんたん" },
-      { id: "family_006", genre: "家族", english: "Grandmother", japanese: "祖母", kana: "グランドマザー", example: "Grandmother makes tea.", exampleJa: "祖母がお茶を入れます。", difficulty: "ふつう" },
-      { id: "family_007", genre: "家族", english: "Grandfather", japanese: "祖父", kana: "グランドファーザー", example: "Grandfather walks slowly.", exampleJa: "祖父がゆっくり歩きます。", difficulty: "ふつう" },
-      { id: "family_008", genre: "家族", english: "Baby", japanese: "赤ちゃん", kana: "ベイビー", example: "Baby smiles at me.", exampleJa: "赤ちゃんが私に笑いかけます。", difficulty: "かんたん" },
-      { id: "family_009", genre: "家族", english: "Cousin", japanese: "いとこ", kana: "カズン", example: "Cousin visits our house.", exampleJa: "いとこが私たちの家に来ます。", difficulty: "チャレンジ" },
-      { id: "family_010", genre: "家族", english: "Parents", japanese: "両親", kana: "ペアレンツ", example: "Parents are kind.", exampleJa: "両親は親切です。", difficulty: "ふつう" },
-
-      { id: "vehicle_001", genre: "乗り物", english: "Car", japanese: "車", kana: "カー", example: "Car is fast.", exampleJa: "車は速いです。", difficulty: "かんたん" },
-      { id: "vehicle_002", genre: "乗り物", english: "Bus", japanese: "バス", kana: "バス", example: "Bus stops here.", exampleJa: "バスはここで止まります。", difficulty: "かんたん" },
-      { id: "vehicle_003", genre: "乗り物", english: "Train", japanese: "電車", kana: "トレイン", example: "Train arrives soon.", exampleJa: "電車はもうすぐ到着します。", difficulty: "かんたん" },
-      { id: "vehicle_004", genre: "乗り物", english: "Airplane", japanese: "飛行機", kana: "エアプレイン", example: "Airplane flies in the sky.", exampleJa: "飛行機が空を飛びます。", difficulty: "ふつう" },
-      { id: "vehicle_005", genre: "乗り物", english: "Bicycle", japanese: "自転車", kana: "バイシクル", example: "Bicycle is near the park.", exampleJa: "自転車は公園の近くにあります。", difficulty: "ふつう" },
-      { id: "vehicle_006", genre: "乗り物", english: "Ship", japanese: "船", kana: "シップ", example: "Ship moves on the sea.", exampleJa: "船が海の上を進みます。", difficulty: "ふつう" },
-      { id: "vehicle_007", genre: "乗り物", english: "Taxi", japanese: "タクシー", kana: "タクシー", example: "Taxi is in front of the station.", exampleJa: "タクシーが駅前にあります。", difficulty: "かんたん" },
-      { id: "vehicle_008", genre: "乗り物", english: "Subway", japanese: "地下鉄", kana: "サブウェイ", example: "Subway is useful in the city.", exampleJa: "地下鉄は街で便利です。", difficulty: "チャレンジ" },
-      { id: "vehicle_009", genre: "乗り物", english: "Motorcycle", japanese: "オートバイ", kana: "モーターサイクル", example: "Motorcycle is loud.", exampleJa: "オートバイは音が大きいです。", difficulty: "チャレンジ" },
-      { id: "vehicle_010", genre: "乗り物", english: "Helicopter", japanese: "ヘリコプター", kana: "ヘリコプター", example: "Helicopter flies over the town.", exampleJa: "ヘリコプターが町の上を飛びます。", difficulty: "チャレンジ" },
-
-      { id: "daily_001", genre: "日常会話", english: "I like it", japanese: "私はそれが好きです", kana: "アイ ライク イット", example: "I like it very much.", exampleJa: "私はそれがとても好きです。", difficulty: "ふつう" },
-      { id: "daily_002", genre: "日常会話", english: "I don't know", japanese: "わかりません", kana: "アイ ドント ノウ", example: "I don't know the answer.", exampleJa: "私は答えがわかりません。", difficulty: "ふつう" },
-      { id: "daily_003", genre: "日常会話", english: "Let's go", japanese: "行こう", kana: "レッツ ゴー", example: "Let's go to the park.", exampleJa: "公園へ行こう。", difficulty: "かんたん" },
-      { id: "daily_004", genre: "日常会話", english: "Wait a minute", japanese: "ちょっと待って", kana: "ウェイト ア ミニット", example: "Wait a minute, please.", exampleJa: "ちょっと待ってください。", difficulty: "ふつう" },
-      { id: "daily_005", genre: "日常会話", english: "I'm hungry", japanese: "お腹がすいた", kana: "アイム ハングリー", example: "I'm hungry after school.", exampleJa: "放課後、お腹がすきました。", difficulty: "ふつう" },
-      { id: "daily_006", genre: "日常会話", english: "I'm tired", japanese: "疲れました", kana: "アイム タイアード", example: "I'm tired today.", exampleJa: "今日は疲れました。", difficulty: "ふつう" },
-      { id: "daily_007", genre: "日常会話", english: "What is this?", japanese: "これは何ですか", kana: "ワット イズ ディス", example: "What is this in English?", exampleJa: "これは英語で何ですか。", difficulty: "ふつう" },
-      { id: "daily_008", genre: "日常会話", english: "Can I try?", japanese: "やってみてもいいですか", kana: "キャン アイ トライ", example: "Can I try this game?", exampleJa: "このゲームをやってみてもいいですか。", difficulty: "チャレンジ" },
-      { id: "daily_009", genre: "日常会話", english: "Good idea", japanese: "いい考えです", kana: "グッド アイディア", example: "Good idea, let's do it.", exampleJa: "いい考えです、やってみましょう。", difficulty: "ふつう" },
-      { id: "daily_010", genre: "日常会話", english: "No problem", japanese: "問題ありません", kana: "ノー プロブレム", example: "No problem, I can help you.", exampleJa: "問題ありません、手伝えます。", difficulty: "ふつう" },
-
-      { id: "travel_001", genre: "旅行", english: "Station", japanese: "駅", kana: "ステーション", example: "Station is near here.", exampleJa: "駅はこの近くです。", difficulty: "かんたん" },
-      { id: "travel_002", genre: "旅行", english: "Hotel", japanese: "ホテル", kana: "ホテル", example: "Hotel is next to the shop.", exampleJa: "ホテルは店の隣です。", difficulty: "かんたん" },
-      { id: "travel_003", genre: "旅行", english: "Ticket", japanese: "切符", kana: "チケット", example: "Ticket is in my pocket.", exampleJa: "切符は私のポケットにあります。", difficulty: "ふつう" },
-      { id: "travel_004", genre: "旅行", english: "Map", japanese: "地図", kana: "マップ", example: "Map helps us find the museum.", exampleJa: "地図は博物館を探すのに役立ちます。", difficulty: "かんたん" },
-      { id: "travel_005", genre: "旅行", english: "Passport", japanese: "パスポート", kana: "パスポート", example: "Passport is very important.", exampleJa: "パスポートはとても大切です。", difficulty: "ふつう" },
-      { id: "travel_006", genre: "旅行", english: "Airport", japanese: "空港", kana: "エアポート", example: "Airport is busy today.", exampleJa: "空港は今日混んでいます。", difficulty: "ふつう" },
-      { id: "travel_007", genre: "旅行", english: "Museum", japanese: "博物館", kana: "ミュージアム", example: "Museum opens at ten.", exampleJa: "博物館は10時に開きます。", difficulty: "チャレンジ" },
-      { id: "travel_008", genre: "旅行", english: "Beach", japanese: "浜辺", kana: "ビーチ", example: "Beach is beautiful in summer.", exampleJa: "浜辺は夏に美しいです。", difficulty: "ふつう" },
-      { id: "travel_009", genre: "旅行", english: "Souvenir", japanese: "おみやげ", kana: "スーベニア", example: "Souvenir is for my family.", exampleJa: "おみやげは家族のためです。", difficulty: "チャレンジ" },
-      { id: "travel_010", genre: "旅行", english: "Reservation", japanese: "予約", kana: "レザベーション", example: "Reservation is under my name.", exampleJa: "予約は私の名前でされています。", difficulty: "チャレンジ" },
-
-      { id: "feeling_001", genre: "感情", english: "Happy", japanese: "うれしい", kana: "ハッピー", example: "Happy children are smiling.", exampleJa: "うれしい子どもたちが笑っています。", difficulty: "かんたん" },
-      { id: "feeling_002", genre: "感情", english: "Sad", japanese: "悲しい", kana: "サッド", example: "Sad music makes me quiet.", exampleJa: "悲しい音楽は私を静かにします。", difficulty: "かんたん" },
-      { id: "feeling_003", genre: "感情", english: "Angry", japanese: "怒っている", kana: "アングリー", example: "Angry voice is scary.", exampleJa: "怒った声はこわいです。", difficulty: "ふつう" },
-      { id: "feeling_004", genre: "感情", english: "Sleepy", japanese: "眠い", kana: "スリーピー", example: "Sleepy cat closes its eyes.", exampleJa: "眠い猫が目を閉じます。", difficulty: "ふつう" },
-      { id: "feeling_005", genre: "感情", english: "Excited", japanese: "わくわくしている", kana: "エキサイテッド", example: "Excited students are talking.", exampleJa: "わくわくした生徒たちが話しています。", difficulty: "チャレンジ" },
-      { id: "feeling_006", genre: "感情", english: "Scared", japanese: "こわがっている", kana: "スケアード", example: "Scared boy hides behind his dad.", exampleJa: "こわがっている男の子がお父さんの後ろに隠れます。", difficulty: "チャレンジ" },
-      { id: "feeling_007", genre: "感情", english: "Surprised", japanese: "驚いた", kana: "サプライズド", example: "Surprised girl opens her eyes.", exampleJa: "驚いた女の子が目を開きます。", difficulty: "チャレンジ" },
-      { id: "feeling_008", genre: "感情", english: "Proud", japanese: "誇らしい", kana: "プラウド", example: "Proud mother smiles.", exampleJa: "誇らしい母が笑います。", difficulty: "チャレンジ" },
-      { id: "feeling_009", genre: "感情", english: "Bored", japanese: "退屈している", kana: "ボアード", example: "Bored kids need a game.", exampleJa: "退屈している子どもたちはゲームが必要です。", difficulty: "チャレンジ" },
-      { id: "feeling_010", genre: "感情", english: "Nervous", japanese: "緊張している", kana: "ナーバス", example: "Nervous student takes a test.", exampleJa: "緊張している生徒がテストを受けます。", difficulty: "チャレンジ" },
-
-      { id: "verb_001", genre: "よく使う動詞", english: "Go", japanese: "行く", kana: "ゴー", example: "Go to school safely.", exampleJa: "安全に学校へ行きなさい。", difficulty: "かんたん" },
-      { id: "verb_002", genre: "よく使う動詞", english: "Come", japanese: "来る", kana: "カム", example: "Come here, please.", exampleJa: "こちらへ来てください。", difficulty: "かんたん" },
-      { id: "verb_003", genre: "よく使う動詞", english: "Eat", japanese: "食べる", kana: "イート", example: "Eat breakfast every morning.", exampleJa: "毎朝朝食を食べましょう。", difficulty: "かんたん" },
-      { id: "verb_004", genre: "よく使う動詞", english: "Drink", japanese: "飲む", kana: "ドリンク", example: "Drink water after running.", exampleJa: "走ったあとに水を飲みましょう。", difficulty: "かんたん" },
-      { id: "verb_005", genre: "よく使う動詞", english: "Read", japanese: "読む", kana: "リード", example: "Read this book aloud.", exampleJa: "この本を声に出して読みなさい。", difficulty: "かんたん" },
-      { id: "verb_006", genre: "よく使う動詞", english: "Write", japanese: "書く", kana: "ライト", example: "Write your name here.", exampleJa: "ここに名前を書きなさい。", difficulty: "ふつう" },
-      { id: "verb_007", genre: "よく使う動詞", english: "Listen", japanese: "聞く", kana: "リッスン", example: "Listen to the teacher.", exampleJa: "先生の話を聞きなさい。", difficulty: "ふつう" },
-      { id: "verb_008", genre: "よく使う動詞", english: "Speak", japanese: "話す", kana: "スピーク", example: "Speak English slowly.", exampleJa: "英語をゆっくり話しなさい。", difficulty: "ふつう" },
-      { id: "verb_009", genre: "よく使う動詞", english: "Play", japanese: "遊ぶ", kana: "プレイ", example: "Play soccer with friends.", exampleJa: "友だちとサッカーをしなさい。", difficulty: "かんたん" },
-      { id: "verb_010", genre: "よく使う動詞", english: "Make", japanese: "作る", kana: "メイク", example: "Make a paper airplane.", exampleJa: "紙飛行機を作りなさい。", difficulty: "ふつう" }
-    ];
-
-    const appRoot = document.getElementById("appRoot");
-    const topLevel = document.getElementById("topLevel");
-
-    let storageOk = true;
-    let timerId = null;
-    let secondsLeft = 0;
-
-    const state = {
-      screen: "home",
-      mode: "vocab",
-      genre: "すべて",
-      queue: [],
-      currentIndex: 0,
-      currentQuestion: null,
-      choices: [],
-      correctValue: "",
-      answered: false,
-      selectedValue: "",
-      feedbackOk: false,
-      sessionCorrect: 0,
-      sessionWrong: 0,
-      sessionTotal: 0,
-      sessionStreak: 0,
-      miniMessage: "",
-      lastLevel: 1,
-      sourceIds: null
-    };
-
-    function todayKey() {
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return y + "-" + m + "-" + day;
-    }
-
-    function defaultSave() {
-      return {
-        totalAnswered: 0,
-        totalCorrect: 0,
-        totalWrong: 0,
-        bestStreak: 0,
-        currentStreak: 0,
-        todayDate: todayKey(),
-        todayCount: 0,
-        badges: {},
-        weakMap: {},
-        favorites: {},
-        history: []
-      };
-    }
-
-    let saveData = loadSave();
-
-    function loadSave() {
-      const base = defaultSave();
-      try {
-        const testKey = "__eigo_storage_test__";
-        localStorage.setItem(testKey, "1");
-        localStorage.removeItem(testKey);
-
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return base;
-
-        const parsed = JSON.parse(raw);
-        const merged = Object.assign(base, parsed || {});
-        merged.badges = merged.badges || {};
-        merged.weakMap = merged.weakMap || {};
-        merged.favorites = merged.favorites || {};
-        merged.history = Array.isArray(merged.history) ? merged.history : [];
-
-        if (merged.todayDate !== todayKey()) {
-          merged.todayDate = todayKey();
-          merged.todayCount = 0;
-        }
-
-        return merged;
-      } catch (error) {
-        storageOk = false;
-        return base;
-      }
-    }
-
-    function save() {
-      if (saveData.todayDate !== todayKey()) {
-        saveData.todayDate = todayKey();
-        saveData.todayCount = 0;
-      }
-
-      if (!storageOk) return;
-
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
-      } catch (error) {
-        storageOk = false;
-      }
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function shuffle(array) {
-      const copied = array.slice();
-      for (let i = copied.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = copied[i];
-        copied[i] = copied[j];
-        copied[j] = temp;
-      }
-      return copied;
-    }
-
-    function sample(array, count) {
-      return shuffle(array).slice(0, count);
-    }
-
-    function getLevel() {
-      return Math.max(1, Math.floor(saveData.totalCorrect / 10) + 1);
-    }
-
-    function getAccuracy(correct, total) {
-      if (!total) return 0;
-      return Math.round((correct / total) * 100);
-    }
-
-    function setScreen(screen) {
-      stopTimer();
-      state.screen = screen;
-      render();
-    }
-
-    function goHome() {
-      resetSession(false);
-      setScreen("home");
-    }
-
-    function showModes() {
-      resetSession(false);
-      setScreen("modes");
-    }
-
-    function showGenres(mode) {
-      if (mode) state.mode = mode;
-      resetSession(false);
-      setScreen("genres");
-    }
-
-    function showWeak() {
-      resetSession(false);
-      setScreen("weak");
-    }
-
-    function showList() {
-      resetSession(false);
-      setScreen("list");
-    }
-
-    function resetSession(keepSource) {
-      state.queue = [];
-      state.currentIndex = 0;
-      state.currentQuestion = null;
-      state.choices = [];
-      state.correctValue = "";
-      state.answered = false;
-      state.selectedValue = "";
-      state.feedbackOk = false;
-      state.sessionCorrect = 0;
-      state.sessionWrong = 0;
-      state.sessionTotal = 0;
-      state.sessionStreak = 0;
-      state.miniMessage = "";
-      state.lastLevel = getLevel();
-      if (!keepSource) state.sourceIds = null;
-      stopTimer();
-    }
-
-    function filteredQuestions(genre, sourceIds) {
-      let base = QUESTIONS.slice();
-
-      if (Array.isArray(sourceIds)) {
-        const set = new Set(sourceIds);
-        base = base.filter(q => set.has(q.id));
-      }
-
-      if (genre && genre !== "すべて") {
-        base = base.filter(q => q.genre === genre);
-      }
-
-      return base;
-    }
-
-    function startGame(mode, genre, sourceIds) {
-      state.mode = mode || state.mode || "vocab";
-      state.genre = genre || "すべて";
-      state.sourceIds = Array.isArray(sourceIds) ? sourceIds.slice() : null;
-
-      const questions = filteredQuestions(state.genre, state.sourceIds);
-
-      resetSession(true);
-
-      if (!questions.length) {
-        state.queue = [];
-        state.screen = "quiz";
-        render();
-        return;
-      }
-
-      state.queue = shuffle(questions.map(q => q.id));
-      state.currentIndex = 0;
-      state.screen = "quiz";
-      prepareQuestion();
-      render();
-    }
-
-    function getQuestionById(id) {
-      return QUESTIONS.find(q => q.id === id) || null;
-    }
-
-    function prepareQuestion() {
-      stopTimer();
-
-      if (!state.queue.length) {
-        state.currentQuestion = null;
-        return;
-      }
-
-      if (state.currentIndex >= state.queue.length) {
-        state.screen = "result";
-        return;
-      }
-
-      const q = getQuestionById(state.queue[state.currentIndex]);
-      if (!q) {
-        state.currentIndex++;
-        prepareQuestion();
-        return;
-      }
-
-      state.currentQuestion = q;
-      state.answered = false;
-      state.selectedValue = "";
-      state.feedbackOk = false;
-      state.miniMessage = "";
-
-      const choiceProp = getChoiceProp(state.mode);
-      state.correctValue = q[choiceProp];
-
-      const wrongPool = QUESTIONS
-        .filter(item => item.id !== q.id)
-        .map(item => item[choiceProp])
-        .filter(Boolean)
-        .filter(value => value !== state.correctValue);
-
-      state.choices = shuffle([state.correctValue].concat(sample(unique(wrongPool), 3)));
-
-      if (state.mode === "speed") {
-        startTimer();
-      }
-    }
-
-    function unique(array) {
-      return Array.from(new Set(array));
-    }
-
-    function getChoiceProp(mode) {
-      if (mode === "en2ja" || mode === "speed") return "japanese";
-      return "english";
-    }
-
-    function getQuestionTitle(mode) {
-      if (mode === "vocab") return "この日本語に合う英語はどれ？";
-      if (mode === "ja2en") return "日本語から英語を選ぼう";
-      if (mode === "en2ja") return "英語から日本語を選ぼう";
-      if (mode === "fill") return "例文の空欄に入る英語はどれ？";
-      if (mode === "speed") return "早押し！英語に合う日本語はどれ？";
-      return "正しい答えを選ぼう";
-    }
-
-    function getQuestionMain(q, mode) {
-      if (!q) return "";
-      if (mode === "en2ja" || mode === "speed") return q.english;
-      if (mode === "fill") return makeBlankSentence(q);
-      return q.japanese;
-    }
-
-    function getQuestionSub(q, mode) {
-      if (!q) return "";
-      if (mode === "en2ja" || mode === "speed") return "読み方：" + q.kana;
-      if (mode === "fill") return q.exampleJa;
-      return "ヒント：ジャンル「" + q.genre + "」 / 難易度「" + q.difficulty + "」";
-    }
-
-    function makeBlankSentence(q) {
-      const escapedEnglish = q.english.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const pattern = new RegExp(escapedEnglish, "i");
-
-      if (pattern.test(q.example)) {
-        return q.example.replace(pattern, "______");
-      }
-
-      return "______ / " + q.example;
-    }
-
-    function startTimer() {
-      secondsLeft = 12;
-      timerId = setInterval(() => {
-        secondsLeft--;
-        const timerEl = document.getElementById("timer");
-        if (timerEl) timerEl.textContent = String(secondsLeft);
-
-        if (secondsLeft <= 0) {
-          stopTimer();
-          if (!state.answered) {
-            answerQuestion("__TIME_UP__");
-          }
-        }
-      }, 1000);
-    }
-
-    function stopTimer() {
-      if (timerId) {
-        clearInterval(timerId);
-        timerId = null;
-      }
-    }
-
-    function answerQuestion(value) {
-      if (state.answered) return;
-
-      stopTimer();
-
-      const q = state.currentQuestion;
-      if (!q) return;
-
-      state.answered = true;
-      state.selectedValue = value;
-
-      const ok = value === state.correctValue;
-      state.feedbackOk = ok;
-
-      state.sessionTotal++;
-      saveData.totalAnswered++;
-      saveData.todayCount++;
-
-      if (ok) {
-        state.sessionCorrect++;
-        state.sessionStreak++;
-        saveData.totalCorrect++;
-        saveData.currentStreak++;
-        saveData.bestStreak = Math.max(saveData.bestStreak, saveData.currentStreak);
-        removeWeakPoint(q.id);
-        unlockBadge("first_correct");
-      } else {
-        state.sessionWrong++;
-        state.sessionStreak = 0;
-        saveData.totalWrong++;
-        saveData.currentStreak = 0;
-        addWeakPoint(q.id);
-      }
-
-      if (state.sessionStreak >= 5) unlockBadge("streak5");
-      if (state.sessionStreak >= 10) unlockBadge("streak10");
-      if (saveData.totalAnswered >= 50) unlockBadge("challenge50");
-      if (saveData.totalAnswered >= 100) unlockBadge("challenge100");
-
-      const newLevel = getLevel();
-      if (newLevel > state.lastLevel) {
-        state.miniMessage = "🎉 レベルアップ！ Lv." + state.lastLevel + " → Lv." + newLevel;
-        state.lastLevel = newLevel;
-      } else if (state.sessionTotal % 5 === 0) {
-        const acc = getAccuracy(state.sessionCorrect, state.sessionTotal);
-        state.miniMessage = "📊 ここまで " + state.sessionTotal + "問 / 正答率 " + acc + "% / 連続 " + state.sessionStreak + "問";
-      }
-
-      saveData.history.unshift({
-        id: q.id,
-        ok: ok,
-        mode: state.mode,
-        at: new Date().toISOString()
-      });
-      saveData.history = saveData.history.slice(0, 100);
-
-      save();
-      render();
-    }
-
-    function addWeakPoint(id) {
-      saveData.weakMap[id] = (saveData.weakMap[id] || 0) + 1;
-    }
-
-    function removeWeakPoint(id) {
-      if (!saveData.weakMap[id]) return;
-
-      saveData.weakMap[id]--;
-
-      if (saveData.weakMap[id] <= 0) {
-        delete saveData.weakMap[id];
-      }
-    }
-
-    function toggleFavorite(id) {
-      if (!id) return;
-
-      if (saveData.favorites[id]) {
-        delete saveData.favorites[id];
-      } else {
-        saveData.favorites[id] = true;
-      }
-
-      save();
-      render();
-    }
-
-    function unlockBadge(key) {
-      if (BADGES[key]) {
-        saveData.badges[key] = true;
-      }
-    }
-
-    function nextQuestion() {
-      if (!state.answered) return;
-      state.currentIndex++;
-      prepareQuestion();
-      render();
-    }
-
-    function resetAllData() {
-      const ok = confirm("学習記録、苦手問題、お気に入り、バッジをすべてリセットします。よろしいですか？");
-      if (!ok) return;
-
-      saveData = defaultSave();
-      save();
-      resetSession(false);
-      setScreen("home");
-    }
-
-    function render() {
-      topLevel.textContent = "Lv." + getLevel();
-      stopTimer();
-
-      if (state.screen === "home") renderHome();
-      else if (state.screen === "modes") renderModes();
-      else if (state.screen === "genres") renderGenres();
-      else if (state.screen === "quiz") renderQuiz();
-      else if (state.screen === "result") renderResult();
-      else if (state.screen === "weak") renderWeak();
-      else if (state.screen === "list") renderList();
-      else renderHome();
-    }
-
-    function renderHome() {
-      const total = saveData.totalAnswered;
-      const acc = getAccuracy(saveData.totalCorrect, total);
-
-      appRoot.innerHTML = `
-        <section class="hero">
-          <h1>英語であそぼう！</h1>
-          <p>車内・待ち時間・すきま時間に、4択クイズで英語を覚えるゲームです。</p>
-          <div class="tagline">
-            <span class="tag">100問入り</span>
-            <span class="tag">スマホ対応</span>
-            <span class="tag">復習つき</span>
-            <span class="tag">保存つき</span>
-          </div>
-        </section>
-
-        ${storageOk ? "" : `
-          <div class="notice">
-            localStorageが使えない環境です。ゲームはできますが、ブラウザを閉じると記録が残らない場合があります。
-          </div>
-        `}
-
-        <section class="card" style="margin-top:14px;">
-          <h2>今日のようす</h2>
-          <div class="stats">
-            <div class="stat"><div class="num">${saveData.todayCount}</div><div class="label">今日の学習</div></div>
-            <div class="stat"><div class="num">${saveData.totalCorrect}</div><div class="label">累計正解</div></div>
-            <div class="stat"><div class="num">${acc}%</div><div class="label">累計正答率</div></div>
-            <div class="stat"><div class="num">${saveData.bestStreak}</div><div class="label">最高連続</div></div>
-          </div>
-
-          <div class="progress">
-            <div style="width:${Math.min(100, (saveData.totalCorrect % 10) * 10)}%"></div>
-          </div>
-          <p class="muted small">次のレベルまであと ${10 - (saveData.totalCorrect % 10 || 10)} 正解。ただし10問ごとにレベルアップします。</p>
-
-          <div class="toolbar">
-            <button class="btn primary" onclick="showModes()">🎮 ゲームをはじめる</button>
-            <button class="btn secondary" onclick="showWeak()">📝 苦手を復習</button>
-          </div>
-        </section>
-
-        <section class="card">
-          <h2>バッジ</h2>
-          ${renderBadges()}
-        </section>
-
-        <section class="card">
-          <h2>メニュー</h2>
-          <div class="grid two">
-            <button class="btn" onclick="showList()">📚 データ一覧を見る</button>
-            <button class="btn" onclick="startFavoriteGame()">⭐ お気に入りだけ練習</button>
-            <button class="btn danger" onclick="resetAllData()">🧹 記録をリセット</button>
-            <button class="btn good" onclick="startGame('vocab','すべて')">🚀 すぐ始める</button>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderBadges() {
-      return `
-        <div class="badge-row">
-          ${Object.keys(BADGES).map(key => {
-            const badge = BADGES[key];
-            const unlocked = !!saveData.badges[key];
-            return `<span class="badge ${unlocked ? "" : "locked"}">${badge.icon} ${escapeHtml(badge.name)}${unlocked ? "" : " 🔒"}</span>`;
-          }).join("")}
+  <!-- レッスン一覧画面 -->
+
+  <div class="screen" id="screen-lessons">
+    <div class="header">
+      <button class="back-btn" onclick="showScreen('screen-home')">&#x2190;</button>
+      <h1>レッスン一覧</h1>
+    </div>
+    <div id="lesson-list"></div>
+    <div class="bottom-spacer"></div>
+  </div>
+
+  <!-- レッスン実行画面 -->
+
+  <div class="screen" id="screen-play">
+    <div class="header">
+      <button class="back-btn" onclick="confirmExit()">&#x2190;</button>
+      <h1 id="play-title">レッスン</h1>
+    </div>
+    <div class="lesson-progress">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="play-progress-bar"></div></div>
+      <span class="progress-text" id="play-progress-text">1/10</span>
+    </div>
+
+<!-- フェーズ: カウントダウン -->
+<div id="phase-countdown" class="turn-card">
+  <div class="countdown-display" id="countdown-num">3</div>
+  <div class="countdown-label">準備してください...</div>
+</div>
+
+<!-- フェーズ: 問題読み上げ中 -->
+<div id="phase-prompt" class="turn-card hidden">
+  <div class="listen-only-badge hidden" id="listen-only-badge">&#x1F3A7; LISTEN ONLY</div>
+  <div class="turn-prompt" id="prompt-text"></div>
+  <div class="prompt-hidden-text hidden" id="prompt-hidden-mask">&#x2022; &#x2022; &#x2022;</div>
+  <div class="prompt-sub">&#x1F50A; 読み上げ中...</div>
+</div>
+
+<!-- フェーズ: 回答 -->
+<div id="phase-answer" class="turn-card hidden">
+  <div class="turn-prompt" id="answer-prompt-text" style="font-size:16px;color:var(--text-sub)"></div>
+  <div class="turn-timer" id="answer-timer">--</div>
+  <div class="answer-area">
+    <div id="voice-input-area">
+      <button class="mic-btn" id="mic-btn" onclick="toggleRecording()">&#x1F3A4;</button>
+      <p class="mic-status" id="mic-status">タップして話す</p>
+    </div>
+    <div id="text-input-area" class="hidden">
+      <textarea id="text-answer" placeholder="英語で入力..." rows="2"></textarea>
+    </div>
+    <button class="btn btn-sm btn-secondary" onclick="toggleInputMode()" id="input-mode-btn">&#x2328;&#xFE0F; テキストで入力</button>
+    <div class="recognized-text hidden" id="recognized-text"></div>
+    <button class="btn btn-primary hidden" id="submit-btn" onclick="submitAnswer()" style="margin-top:10px">&#x2705; 回答を送信</button>
+  </div>
+</div>
+
+<!-- フェーズ: 判定結果 -->
+<div id="phase-result" class="turn-card hidden">
+  <div class="result-badge" id="result-badge"></div>
+  <p class="phase-label">あなたの回答</p>
+  <div class="recognized-text" id="result-user-answer" style="display:block"></div>
+  <p class="phase-label" style="margin-top:10px">正答例</p>
+  <div class="correct-answer" id="result-correct-answer"></div>
+  <div class="hint-text hidden" id="result-hint"></div>
+  <button class="btn btn-sm btn-secondary" onclick="speakCorrectAnswer()" style="margin-top:8px">&#x1F50A; 正答を聞く</button>
+  <div class="action-row">
+    <button class="btn btn-secondary" onclick="retryTurn()">&#x1F504; もう一度</button>
+    <button class="btn btn-primary" onclick="nextTurn()">次へ &#x2192;</button>
+  </div>
+</div>
+
+  </div>
+
+  <!-- 結果画面 -->
+
+  <div class="screen" id="screen-result">
+    <div class="header">
+      <button class="back-btn" onclick="showScreen('screen-home')">&#x2190;</button>
+      <h1>レッスン結果</h1>
+    </div>
+    <div class="result-summary">
+      <div class="result-circle" id="result-circle">
+        <div class="result-circle-inner">
+          <div class="big" id="result-pct">0%</div>
+          <div class="lbl">正答率</div>
         </div>
-      `;
-    }
+      </div>
+      <p style="font-size:14px;color:var(--text-sub)" id="result-summary-text"></p>
+    </div>
+    <div class="result-detail-list" id="result-detail-list"></div>
+    <button class="btn btn-primary" onclick="showScreen('screen-home')">&#x1F3E0; ホームに戻る</button>
+    <button class="btn btn-secondary" onclick="replayLesson()">&#x1F504; もう一度挑戦</button>
+    <div class="bottom-spacer"></div>
+  </div>
 
-    function renderModes() {
-      appRoot.innerHTML = `
-        <section class="card">
-          <h2>ゲームモードを選んでね</h2>
-          <p class="muted">まずは「英単語クイズ」がおすすめです。</p>
-          <div class="grid two">
-            ${Object.keys(MODES).map(key => {
-              const mode = MODES[key];
-              return `
-                <button class="btn choice" onclick="showGenres('${key}')">
-                  <span>
-                    <strong>${mode.icon} ${escapeHtml(mode.label)}</strong><br>
-                    <span class="small muted">${escapeHtml(mode.description)}</span>
-                  </span>
-                  <span>▶</span>
-                </button>
-              `;
-            }).join("")}
-          </div>
-        </section>
-      `;
-    }
+  <!-- 復習一覧画面 -->
 
-    function renderGenres() {
-      appRoot.innerHTML = `
-        <section class="card">
-          <h2>ジャンルを選ぼう</h2>
-          <p class="muted">モード：${escapeHtml(MODES[state.mode].label)}</p>
+  <div class="screen" id="screen-review">
+    <div class="header">
+      <button class="back-btn" onclick="showScreen('screen-home')">&#x2190;</button>
+      <h1>復習リスト</h1>
+    </div>
+    <div id="review-list"></div>
+    <div id="review-empty" class="empty-state hidden">
+      <span class="es-icon">&#x2728;</span>
+      <p>復習する問題はありません！<br>素晴らしい！</p>
+    </div>
+    <button class="btn btn-primary hidden" id="review-start-btn" onclick="onStartReviewClick()">&#x1F504; 復習を開始する</button>
+    <div class="bottom-spacer"></div>
+  </div>
 
-          <div class="grid two">
-            <button class="btn primary" onclick="startGame('${state.mode}', 'すべて')">
-              🌈 すべてから出題
-            </button>
-            ${GENRES.map(genre => {
-              const count = QUESTIONS.filter(q => q.genre === genre).length;
-              return `
-                <button class="btn" onclick="startGame('${state.mode}', '${escapeHtml(genre)}')">
-                  ${escapeHtml(genre)}<br>
-                  <span class="small muted">${count}問</span>
-                </button>
-              `;
-            }).join("")}
-          </div>
-        </section>
-      `;
-    }
+  <!-- 設定画面 -->
 
-    function renderQuiz() {
-      const q = state.currentQuestion;
+  <div class="screen" id="screen-settings">
+    <div class="header">
+      <button class="back-btn" onclick="showScreen('screen-home')">&#x2190;</button>
+      <h1>設定</h1>
+    </div>
 
-      if (!QUESTIONS.length) {
-        appRoot.innerHTML = `
-          <section class="card">
-            <h2>問題データがありません</h2>
-            <p>QUESTIONS配列に問題を追加してください。</p>
-            <button class="btn primary" onclick="goHome()">ホームへ</button>
-          </section>
-        `;
-        return;
+<div class="section-header">レッスン進行</div>
+<div class="card">
+  <div class="setting-row">
+    <div class="setting-label">
+      <div class="label">カウントダウン</div>
+      <div class="sub">問題前の3-2-1-Go!表示</div>
+    </div>
+    <button class="toggle on" id="set-countdown" onclick="toggleSetting(this, 'countdownEnabled')"></button>
+  </div>
+  <div class="setting-row">
+    <div class="setting-label">
+      <div class="label">読み上げ文を画面に表示</div>
+      <div class="sub">OFFでリスニング訓練モード</div>
+    </div>
+    <button class="toggle on" id="set-show-prompt" onclick="toggleSetting(this, 'showPromptText')"></button>
+  </div>
+  <div class="setting-row">
+    <div class="setting-label">
+      <div class="label">制限時間</div>
+      <div class="sub">回答の制限時間を有効化</div>
+    </div>
+    <button class="toggle on" id="set-timer" onclick="toggleSetting(this, 'timerEnabled')"></button>
+  </div>
+</div>
+
+<div class="section-header">
+  音声<span class="tts-status-badge unknown" id="tts-status">状態不明</span>
+</div>
+<div class="card">
+  <div class="setting-row">
+    <div class="setting-label">
+      <div class="label">自動読み上げ</div>
+      <div class="sub">問題文を自動で読み上げる</div>
+    </div>
+    <button class="toggle on" id="set-auto-tts" onclick="toggleSetting(this, 'autoTTS')"></button>
+  </div>
+  <div class="setting-row">
+    <div class="setting-label">
+      <div class="label">読み上げ速度</div>
+      <div class="sub">TTS速度を調整</div>
+    </div>
+    <input type="range" min="0.5" max="1.5" step="0.1" value="0.9" id="set-tts-speed" onchange="saveSetting('ttsSpeed', this.value)">
+  </div>
+  <div class="setting-row">
+    <div class="setting-label">
+      <div class="label">TTS音声</div>
+      <div class="sub">読み上げの声を選択</div>
+    </div>
+    <select id="set-voice" onchange="saveSetting('voiceName', this.value)">
+      <option value="">デフォルト</option>
+    </select>
+  </div>
+  <div class="setting-row" style="padding-top:8px">
+    <div class="setting-label">
+      <div class="label">音声テスト</div>
+      <div class="sub">タップして音が出るか確認</div>
+    </div>
+    <button class="btn btn-sm btn-primary" style="width:auto" onclick="testTTS()">&#x1F50A; テスト</button>
+  </div>
+</div>
+
+<div class="section-header">入力</div>
+<div class="card">
+  <div class="setting-row">
+    <div class="setting-label">
+      <div class="label">テキスト入力モード</div>
+      <div class="sub">常にテキスト入力を使う</div>
+    </div>
+    <button class="toggle" id="set-text-mode" onclick="toggleSetting(this, 'textMode')"></button>
+  </div>
+</div>
+
+<div class="card" style="margin-top:14px">
+  <div class="setting-row">
+    <div class="setting-label">
+      <div class="label">学習データをリセット</div>
+      <div class="sub">すべての履歴・進捗を削除</div>
+    </div>
+    <button class="btn btn-sm" style="background:var(--wrong-bg);color:var(--wrong-text);width:auto;border:1px solid rgba(196,43,43,0.2)" onclick="resetAllData()">リセット</button>
+  </div>
+</div>
+<div class="bottom-spacer"></div>
+
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========================================
+   ターンメソッド メインJS
+   カウントダウン式テンポ + Safari/iOS TTS対策
+   ======================================== */
+
+// ============================================================
+// サンプルレッスンJSON（埋め込み版）
+// 将来構成: fetch('/lessons/lesson-001.json') で外部読み込み
+// ============================================================
+var EMBEDDED_LESSONS = [
+  {
+    lessonId: "lesson-001",
+    title: "基本あいさつ・自己紹介",
+    version: "1.0.0",
+    language: "en",
+    icon: "\uD83D\uDC4B",
+    settings: { defaultTimeLimitSec: 10 },
+    turns: [
+      {
+        id: "t001", type: "qa",
+        promptText: "What is your name?",
+        ttsText: "What is your name?",
+        expectedAnswerDisplay: "My name is [your name].",
+        acceptedVariants: ["my name is *", "i'm *", "i am *", "call me *"],
+        hint: "My name is ... と答えましょう",
+        timeLimitSec: 10,
+        next: { correct: "t002", close: "t002", wrong: "t001" }
+      },
+      {
+        id: "t002", type: "qa",
+        promptText: "How are you?",
+        ttsText: "How are you?",
+        expectedAnswerDisplay: "I'm fine, thank you.",
+        acceptedVariants: [
+          "i'm fine thank you", "i'm fine thanks", "i'm good thank you",
+          "i'm good thanks", "i'm doing well", "i'm great",
+          "good thanks", "fine thank you", "i am fine thank you", "pretty good"
+        ],
+        hint: "I'm fine, thank you. が定番です",
+        timeLimitSec: 10,
+        next: { correct: "t003", close: "t003", wrong: "t002" }
+      },
+      {
+        id: "t003", type: "qa",
+        promptText: "Nice to meet you.",
+        ttsText: "Nice to meet you.",
+        expectedAnswerDisplay: "Nice to meet you too.",
+        acceptedVariants: [
+          "nice to meet you too", "nice to meet you as well",
+          "pleased to meet you too", "pleased to meet you",
+          "it's nice to meet you too"
+        ],
+        hint: "Nice to meet you too. と返しましょう",
+        timeLimitSec: 10,
+        next: { correct: "t004", close: "t004", wrong: "t003" }
+      },
+      {
+        id: "t004", type: "qa",
+        promptText: "Where are you from?",
+        ttsText: "Where are you from?",
+        expectedAnswerDisplay: "I'm from Japan.",
+        acceptedVariants: ["i'm from *", "i am from *", "i come from *"],
+        hint: "I'm from ... と答えましょう",
+        timeLimitSec: 10,
+        next: { correct: "t005", close: "t005", wrong: "t004" }
+      },
+      {
+        id: "t005", type: "qa",
+        promptText: "What do you do?",
+        ttsText: "What do you do?",
+        expectedAnswerDisplay: "I'm an engineer. / I'm a student.",
+        acceptedVariants: [
+          "i'm a *", "i'm an *", "i am a *", "i am an *",
+          "i work as *", "i work at *"
+        ],
+        hint: "I'm a/an ... で職業を答えましょう",
+        timeLimitSec: 12,
+        next: { correct: "t006", close: "t006", wrong: "t005" }
+      },
+      {
+        id: "t006", type: "qa",
+        promptText: "How old are you?",
+        ttsText: "How old are you?",
+        expectedAnswerDisplay: "I'm [number] years old.",
+        acceptedVariants: ["i'm * years old", "i am * years old"],
+        hint: "I'm XX years old. と答えましょう",
+        timeLimitSec: 10,
+        next: { correct: "t007", close: "t007", wrong: "t006" }
+      },
+      {
+        id: "t007", type: "qa",
+        promptText: "What's your hobby?",
+        ttsText: "What's your hobby?",
+        expectedAnswerDisplay: "I like [hobby]. / My hobby is [hobby].",
+        acceptedVariants: ["i like *", "my hobby is *", "i enjoy *", "i love *"],
+        hint: "I like ... / My hobby is ... と答えましょう",
+        timeLimitSec: 12,
+        next: { correct: "t008", close: "t008", wrong: "t007" }
+      },
+      {
+        id: "t008", type: "qa",
+        promptText: "Do you like coffee?",
+        ttsText: "Do you like coffee?",
+        expectedAnswerDisplay: "Yes, I do. / No, I don't.",
+        acceptedVariants: [
+          "yes i do", "no i don't", "no i do not",
+          "yes i like coffee", "no i don't like coffee",
+          "yes i love coffee", "i prefer tea"
+        ],
+        hint: "Yes, I do. / No, I don't. で答えましょう",
+        timeLimitSec: 8,
+        next: { correct: "t009", close: "t009", wrong: "t008" }
+      },
+      {
+        id: "t009", type: "qa",
+        promptText: "Can you speak English?",
+        ttsText: "Can you speak English?",
+        expectedAnswerDisplay: "Yes, a little. / I'm learning English.",
+        acceptedVariants: [
+          "yes a little", "yes i can", "a little",
+          "i'm learning english", "i am learning english",
+          "just a little", "not very well"
+        ],
+        hint: "Yes, a little. がよく使われます",
+        timeLimitSec: 10,
+        next: { correct: "t010", close: "t010", wrong: "t009" }
+      },
+      {
+        id: "t010", type: "qa",
+        promptText: "Thank you very much!",
+        ttsText: "Thank you very much!",
+        expectedAnswerDisplay: "You're welcome!",
+        acceptedVariants: [
+          "you're welcome", "you are welcome", "no problem",
+          "my pleasure", "don't mention it", "anytime"
+        ],
+        hint: "You're welcome! と返しましょう",
+        timeLimitSec: 8,
+        next: { correct: null, close: null, wrong: "t010" }
       }
-
-      if (!q) {
-        appRoot.innerHTML = `
-          <section class="card">
-            <h2>出題できる問題がありません</h2>
-            <p class="muted">ジャンル、苦手問題、またはお気に入りの条件に合う問題がありません。</p>
-            <button class="btn primary" onclick="showModes()">ゲーム選択へ</button>
-          </section>
-        `;
-        return;
+    ]
+  },
+  {
+    lessonId: "lesson-002",
+    title: "日常会話・予定を話す",
+    version: "1.0.0",
+    language: "en",
+    icon: "\uD83D\uDCC5",
+    settings: { defaultTimeLimitSec: 12 },
+    turns: [
+      {
+        id: "u001", type: "qa",
+        promptText: "What did you do yesterday?",
+        ttsText: "What did you do yesterday?",
+        expectedAnswerDisplay: "I went to [place]. / I stayed home.",
+        acceptedVariants: [
+          "i went to *", "i stayed home", "i stayed at home",
+          "i watched *", "i played *", "i studied *",
+          "i worked *", "i cooked *", "i read *"
+        ],
+        hint: "過去形で答えましょう: I went to ... / I stayed home.",
+        timeLimitSec: 12,
+        next: { correct: "u002", close: "u002", wrong: "u001" }
+      },
+      {
+        id: "u002", type: "qa",
+        promptText: "What are you going to do this weekend?",
+        ttsText: "What are you going to do this weekend?",
+        expectedAnswerDisplay: "I'm going to [activity].",
+        acceptedVariants: [
+          "i'm going to *", "i am going to *", "i will *",
+          "i'll *", "i plan to *"
+        ],
+        hint: "I'm going to ... で予定を伝えましょう",
+        timeLimitSec: 12,
+        next: { correct: "u003", close: "u003", wrong: "u002" }
+      },
+      {
+        id: "u003", type: "qa",
+        promptText: "What time do you usually wake up?",
+        ttsText: "What time do you usually wake up?",
+        expectedAnswerDisplay: "I usually wake up at [time].",
+        acceptedVariants: [
+          "i usually wake up at *", "i wake up at *",
+          "i get up at *", "around *", "at * o'clock", "about *"
+        ],
+        hint: "I usually wake up at XXX と答えましょう",
+        timeLimitSec: 12,
+        next: { correct: "u004", close: "u004", wrong: "u003" }
+      },
+      {
+        id: "u004", type: "qa",
+        promptText: "What's the weather like today?",
+        ttsText: "What's the weather like today?",
+        expectedAnswerDisplay: "It's sunny. / It's cloudy. / It's rainy.",
+        acceptedVariants: [
+          "it's sunny", "it's cloudy", "it's rainy",
+          "it is sunny", "it is cloudy", "it is rainy",
+          "it's hot", "it's cold", "it's warm", "it's nice"
+        ],
+        hint: "It's sunny/cloudy/rainy. など天気を答えましょう",
+        timeLimitSec: 10,
+        next: { correct: "u005", close: "u005", wrong: "u004" }
+      },
+      {
+        id: "u005", type: "qa",
+        promptText: "How do you get to work?",
+        ttsText: "How do you get to work?",
+        expectedAnswerDisplay: "I take the train. / I drive.",
+        acceptedVariants: [
+          "i take the train", "i drive", "i walk",
+          "i ride my bike", "i take the bus",
+          "by train", "by car", "by bus", "on foot", "i cycle"
+        ],
+        hint: "交通手段を答えましょう: I take the train. / I drive.",
+        timeLimitSec: 10,
+        next: { correct: null, close: null, wrong: "u005" }
       }
+    ]
+  }
+];
 
-      const progress = Math.round(((state.currentIndex + 1) / state.queue.length) * 100);
-      const isFav = !!saveData.favorites[q.id];
+// ============================================================
+// ストレージ管理
+// ============================================================
+var STORAGE_KEYS = {
+  settings: 'tm_settings',
+  history: 'tm_history',
+  review: 'tm_review',
+  progress: 'tm_progress',
+  streak: 'tm_streak'
+};
 
-      appRoot.innerHTML = `
-        <section class="card">
-          <div class="toolbar" style="margin-top:0;">
-            <span class="pill">🎮 ${escapeHtml(MODES[state.mode].label)}</span>
-            <span class="pill">📘 ${escapeHtml(q.genre)}</span>
-            <span class="pill">${state.currentIndex + 1}/${state.queue.length}</span>
-          </div>
+function loadData(key, defaultVal) {
+  try {
+    var raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : defaultVal;
+  } catch (e) {
+    console.warn('Storage read error:', key, e);
+    return defaultVal;
+  }
+}
 
-          <div class="progress">
-            <div style="width:${progress}%"></div>
-          </div>
+function saveData(key, val) {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (e) {
+    console.warn('Storage write error:', key, e);
+  }
+}
 
-          ${state.mode === "speed" && !state.answered ? `<div class="timer">⏱ <span id="timer">${secondsLeft || 12}</span></div>` : ""}
+// ============================================================
+// 設定管理
+// ============================================================
+var DEFAULT_SETTINGS = {
+  ttsSpeed: 0.9,
+  autoTTS: true,
+  textMode: false,
+  timerEnabled: true,
+  voiceName: '',
+  countdownEnabled: true,
+  showPromptText: true  // NEW: 読み上げ文を画面に表示するか
+};
 
-          <div class="question-box">
-            <div class="question-title">${escapeHtml(getQuestionTitle(state.mode))}</div>
-            <div class="${state.mode === "fill" ? "big" : "english-large"}">${escapeHtml(getQuestionMain(q, state.mode))}</div>
-            <p class="muted">${escapeHtml(getQuestionSub(q, state.mode))}</p>
-          </div>
+var appSettings = {};
+(function() {
+  var saved = loadData(STORAGE_KEYS.settings, {});
+  for (var k in DEFAULT_SETTINGS) {
+    if (DEFAULT_SETTINGS.hasOwnProperty(k)) {
+      appSettings[k] = saved.hasOwnProperty(k) ? saved[k] : DEFAULT_SETTINGS[k];
+    }
+  }
+})();
 
-          <div class="grid">
-            ${state.choices.map(choice => renderChoiceButton(choice)).join("")}
-          </div>
+function saveSetting(key, value) {
+  if (value === 'true') value = true;
+  if (value === 'false') value = false;
+  if (typeof value === 'string' && value !== '' && !isNaN(value)) value = parseFloat(value);
+  appSettings[key] = value;
+  saveData(STORAGE_KEYS.settings, appSettings);
+}
 
-          <div class="toolbar">
-            <button class="btn ${isFav ? "good" : "secondary"}" onclick="toggleFavorite('${q.id}')">
-              ${isFav ? "⭐ お気に入り解除" : "☆ お気に入り"}
-            </button>
-            <button class="btn ghost" onclick="showModes()">モード変更</button>
-          </div>
+function toggleSetting(btn, key) {
+  var isOn = btn.classList.toggle('on');
+  saveSetting(key, isOn);
+}
 
-          ${state.answered ? renderFeedback(q) : ""}
-        </section>
-      `;
+function loadSettingsUI() {
+  document.getElementById('set-tts-speed').value = appSettings.ttsSpeed;
+  setToggleState('set-auto-tts', appSettings.autoTTS);
+  setToggleState('set-text-mode', appSettings.textMode);
+  setToggleState('set-timer', appSettings.timerEnabled);
+  setToggleState('set-countdown', appSettings.countdownEnabled);
+  setToggleState('set-show-prompt', appSettings.showPromptText);
+  populateVoices();
+  updateTtsStatusBadge();
+}
 
-      if (state.mode === "speed" && !state.answered) {
-        startTimer();
+function setToggleState(id, on) {
+  var el = document.getElementById(id);
+  if (el) { on ? el.classList.add('on') : el.classList.remove('on'); }
+}
+
+function populateVoices() {
+  if (typeof speechSynthesis === 'undefined') return;
+  var select = document.getElementById('set-voice');
+  if (!select) return;
+  var voices = speechSynthesis.getVoices();
+  var enVoices = voices.filter(function(v) { return v.lang.indexOf('en') === 0; });
+  select.innerHTML = '<option value="">デフォルト</option>';
+  enVoices.forEach(function(v) {
+    var opt = document.createElement('option');
+    opt.value = v.name;
+    opt.textContent = v.name + ' (' + v.lang + ')';
+    if (v.name === appSettings.voiceName) opt.selected = true;
+    select.appendChild(opt);
+  });
+}
+if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = populateVoices;
+}
+
+// ============================================================
+// 画面遷移
+// ============================================================
+function showScreen(id) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) {
+    screens[i].classList.remove('active');
+  }
+  var target = document.getElementById(id);
+  if (target) target.classList.add('active');
+
+  if (id === 'screen-home') refreshHomeStats();
+  if (id === 'screen-lessons') renderLessonList();
+  if (id === 'screen-review') renderReviewList();
+  if (id === 'screen-settings') loadSettingsUI();
+
+  window.scrollTo(0, 0);
+}
+
+// ============================================================
+// レッスンデータ読み込み
+// ============================================================
+var lessonData = [];
+
+function loadLessons() {
+  lessonData = EMBEDDED_LESSONS;
+}
+
+function findLesson(lessonId) {
+  for (var i = 0; i < lessonData.length; i++) {
+    if (lessonData[i].lessonId === lessonId) return lessonData[i];
+  }
+  return null;
+}
+
+// ============================================================
+// ホーム画面統計
+// ============================================================
+function refreshHomeStats() {
+  var history = loadData(STORAGE_KEYS.history, []);
+  var review = loadData(STORAGE_KEYS.review, []);
+
+  var total = 0, correctCount = 0;
+  for (var i = 0; i < history.length; i++) {
+    var results = history[i].results || [];
+    total += results.length;
+    for (var j = 0; j < results.length; j++) {
+      if (results[j].judgment === 'correct') correctCount++;
+    }
+  }
+  var pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-correct').textContent = pct + '%';
+  document.getElementById('stat-streak').textContent = calcStreak();
+
+  var badge = document.getElementById('review-count-badge');
+  badge.textContent = review.length > 0 ? '(' + review.length + ')' : '';
+}
+
+function calcStreak() {
+  var data = loadData(STORAGE_KEYS.streak, { lastDate: null, count: 0 });
+  var today = new Date().toISOString().slice(0, 10);
+  if (data.lastDate === today) return data.count;
+  var yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (data.lastDate === yesterday) return data.count;
+  return 0;
+}
+
+function updateStreak() {
+  var data = loadData(STORAGE_KEYS.streak, { lastDate: null, count: 0 });
+  var today = new Date().toISOString().slice(0, 10);
+  if (data.lastDate === today) return;
+  var yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  data.count = (data.lastDate === yesterday) ? data.count + 1 : 1;
+  data.lastDate = today;
+  saveData(STORAGE_KEYS.streak, data);
+}
+
+// ============================================================
+// レッスン一覧描画
+// ============================================================
+function renderLessonList() {
+  var container = document.getElementById('lesson-list');
+  var progress = loadData(STORAGE_KEYS.progress, {});
+  container.innerHTML = '';
+
+  for (var i = 0; i < lessonData.length; i++) {
+    var lesson = lessonData[i];
+    var prog = progress[lesson.lessonId];
+    var pctText = prog ? (prog.correctCount + '/' + prog.totalCount) : '未挑戦';
+
+    var div = document.createElement('div');
+    div.className = 'lesson-item';
+    (function(lid) {
+      div.onclick = function() { onLessonItemClick(lid); };
+    })(lesson.lessonId);
+    div.innerHTML =
+      '<div class="icon">' + (lesson.icon || '\uD83D\uDCD6') + '</div>' +
+      '<div class="info">' +
+        '<div class="title">' + lesson.title + '</div>' +
+        '<div class="meta">' + lesson.turns.length + '問 ・ v' + lesson.version + '</div>' +
+      '</div>' +
+      '<div class="progress-badge">' + pctText + '</div>';
+    container.appendChild(div);
+  }
+}
+
+// ============================================================
+// ターンメソッド レッスンランナー
+// フェーズ: countdown -> prompt -> answer -> result
+// ============================================================
+var currentLesson = null;
+var currentTurnIndex = 0;
+var currentTurn = null;
+var sessionResults = [];
+var timerInterval = null;
+var timerValue = 0;
+var isRecording = false;
+var recognition = null;
+var recognizedText = '';
+var isReviewMode = false;
+var isTextInputMode = false;
+var countdownInterval = null;
+
+// TTS状態管理
+var ttsUnlocked = false;       // ユーザー操作でTTSが解禁されたか
+var ttsWorking = null;         // null=未検証, true=動作確認済, false=鳴らない
+var lastTtsStartTime = 0;      // 直近のTTS開始時刻（ヘルスチェック用）
+
+/** ホームの「レッスンを始める」クリック時 */
+function onStartLessonsClick() {
+  // iOS Safariの制約: ユーザー操作直後にTTSをアンロック
+  unlockTts();
+  showScreen('screen-lessons');
+}
+
+/** レッスン一覧のアイテムクリック時 */
+function onLessonItemClick(lessonId) {
+  // ダブルアンロック（リスト→開始までの間にロックが戻らないように）
+  unlockTts();
+  startLesson(lessonId);
+}
+
+/** 復習開始クリック時 */
+function onStartReviewClick() {
+  unlockTts();
+  startReview();
+}
+
+// ============================================================
+// TTS アンロック（iOS Safari対策）
+// ユーザー操作直後に空のutteranceを投げて音声エンジンを起こす
+// ============================================================
+function unlockTts() {
+  if (typeof speechSynthesis === 'undefined') return;
+  if (ttsUnlocked) return;
+
+  try {
+    // 再開（iOSでpause状態になっていることがある）
+    if (speechSynthesis.paused) speechSynthesis.resume();
+
+    // 非常に短い無音テキストで音声エンジンを初期化
+    var warmup = new SpeechSynthesisUtterance(' ');
+    warmup.volume = 0;
+    warmup.rate = 1;
+    warmup.lang = 'en-US';
+    speechSynthesis.speak(warmup);
+
+    ttsUnlocked = true;
+    console.log('[TTS] Unlocked');
+  } catch (e) {
+    console.warn('[TTS] Unlock failed:', e);
+  }
+}
+
+function startLesson(lessonId) {
+  currentLesson = findLesson(lessonId);
+  if (!currentLesson) {
+    showToast('レッスンが見つかりません');
+    return;
+  }
+  currentTurnIndex = 0;
+  sessionResults = [];
+  isReviewMode = false;
+  document.getElementById('play-title').textContent = currentLesson.title;
+  showScreen('screen-play');
+  beginTurn(0);
+}
+
+function startReview() {
+  var review = loadData(STORAGE_KEYS.review, []);
+  if (review.length === 0) {
+    showToast('復習する問題がありません');
+    return;
+  }
+  isReviewMode = true;
+  var turns = [];
+  for (var i = 0; i < review.length; i++) turns.push(review[i].turn);
+  currentLesson = {
+    lessonId: 'review-session',
+    title: '復習セッション',
+    turns: turns
+  };
+  currentTurnIndex = 0;
+  sessionResults = [];
+  document.getElementById('play-title').textContent = '復習セッション';
+  showScreen('screen-play');
+  beginTurn(0);
+}
+
+function beginTurn(index) {
+  if (!currentLesson) return;
+  if (index >= currentLesson.turns.length) {
+    finishLesson();
+    return;
+  }
+
+  currentTurnIndex = index;
+  currentTurn = currentLesson.turns[index];
+  recognizedText = '';
+  isTextInputMode = false;
+
+  updateProgress();
+
+  if (appSettings.countdownEnabled) {
+    showCountdown(function() {
+      showPromptPhase();
+    });
+  } else {
+    // カウントダウンOFFでも少しの溜めを入れる
+    setTimeout(function() {
+      showPromptPhase();
+    }, 200);
+  }
+}
+
+function updateProgress() {
+  var total = currentLesson.turns.length;
+  var current = currentTurnIndex + 1;
+  var pct = Math.round((currentTurnIndex / total) * 100);
+  document.getElementById('play-progress-bar').style.width = pct + '%';
+  document.getElementById('play-progress-text').textContent = current + '/' + total;
+}
+
+function setPhase(phaseName) {
+  var phases = ['countdown', 'prompt', 'answer', 'result'];
+  for (var i = 0; i < phases.length; i++) {
+    var el = document.getElementById('phase-' + phases[i]);
+    if (phases[i] === phaseName) {
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
+    }
+  }
+}
+
+// ============================================================
+// フェーズ1: カウントダウン (3 -> 2 -> 1 -> Go!)
+// ============================================================
+function showCountdown(onComplete) {
+  setPhase('countdown');
+  var countEl = document.getElementById('countdown-num');
+  var count = 3;
+  countEl.textContent = count;
+  reanimateEl(countEl);
+
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(function() {
+    count--;
+    if (count > 0) {
+      countEl.textContent = count;
+      reanimateEl(countEl);
+    } else if (count === 0) {
+      countEl.textContent = 'Go!';
+      reanimateEl(countEl);
+    } else {
+      clearInterval(countdownInterval);
+      if (onComplete) onComplete();
+    }
+  }, 700);
+}
+
+// Safari対応: アニメーション再トリガー
+function reanimateEl(el) {
+  el.style.webkitAnimation = 'none';
+  el.style.animation = 'none';
+  void el.offsetHeight;
+  el.style.webkitAnimation = '';
+  el.style.animation = '';
+}
+
+// ============================================================
+// フェーズ2: 問題提示（自動読み上げ -> 自動で回答フェーズへ）
+// ============================================================
+function showPromptPhase() {
+  setPhase('prompt');
+
+  // 読み上げ文の表示/非表示を設定に応じて切り替え
+  var promptTextEl = document.getElementById('prompt-text');
+  var promptHiddenEl = document.getElementById('prompt-hidden-mask');
+  var listenOnlyBadge = document.getElementById('listen-only-badge');
+
+  if (appSettings.showPromptText) {
+    promptTextEl.textContent = currentTurn.promptText;
+    promptTextEl.classList.remove('hidden');
+    promptHiddenEl.classList.add('hidden');
+    listenOnlyBadge.classList.add('hidden');
+  } else {
+    promptTextEl.classList.add('hidden');
+    promptHiddenEl.classList.remove('hidden');
+    listenOnlyBadge.classList.remove('hidden');
+  }
+
+  if (appSettings.autoTTS) {
+    speak(currentTurn.ttsText || currentTurn.promptText, function() {
+      setTimeout(function() {
+        enterAnswerPhase();
+      }, 300);
+    });
+  } else {
+    // TTS OFF の場合: 2秒表示してから回答フェーズへ
+    setTimeout(function() {
+      enterAnswerPhase();
+    }, 2000);
+  }
+}
+
+// ============================================================
+// フェーズ3: 回答（即開始、ボタン不要）
+// ============================================================
+function enterAnswerPhase() {
+  setPhase('answer');
+  recognizedText = '';
+  // 答え合わせ用に回答中も質問文を表示（薄く）
+  if (appSettings.showPromptText) {
+    document.getElementById('answer-prompt-text').textContent = currentTurn.promptText;
+  } else {
+    document.getElementById('answer-prompt-text').textContent = '';
+  }
+  document.getElementById('recognized-text').textContent = '';
+  document.getElementById('recognized-text').classList.add('hidden');
+  document.getElementById('submit-btn').classList.add('hidden');
+  document.getElementById('text-answer').value = '';
+  document.getElementById('mic-status').textContent = 'タップして話す';
+
+  var forceText = appSettings.textMode || !isSpeechRecognitionSupported();
+
+  if (forceText) {
+    document.getElementById('voice-input-area').classList.add('hidden');
+    document.getElementById('text-input-area').classList.remove('hidden');
+    document.getElementById('input-mode-btn').classList.add('hidden');
+    document.getElementById('submit-btn').classList.remove('hidden');
+    isTextInputMode = true;
+    setTimeout(function() {
+      document.getElementById('text-answer').focus();
+    }, 100);
+  } else {
+    document.getElementById('voice-input-area').classList.remove('hidden');
+    document.getElementById('text-input-area').classList.add('hidden');
+    document.getElementById('input-mode-btn').classList.remove('hidden');
+    document.getElementById('input-mode-btn').innerHTML = '&#x2328;&#xFE0F; テキストで入力';
+    isTextInputMode = false;
+    setTimeout(function() {
+      startRecording();
+    }, 200);
+  }
+
+  if (appSettings.timerEnabled) {
+    startTimer(currentTurn.timeLimitSec || 10);
+  } else {
+    document.getElementById('answer-timer').textContent = '--';
+  }
+}
+
+function toggleInputMode() {
+  isTextInputMode = !isTextInputMode;
+  if (isTextInputMode) {
+    document.getElementById('voice-input-area').classList.add('hidden');
+    document.getElementById('text-input-area').classList.remove('hidden');
+    document.getElementById('input-mode-btn').innerHTML = '&#x1F3A4; 音声で入力';
+    document.getElementById('submit-btn').classList.remove('hidden');
+    stopRecordingIfActive();
+    setTimeout(function() {
+      document.getElementById('text-answer').focus();
+    }, 100);
+  } else {
+    document.getElementById('voice-input-area').classList.remove('hidden');
+    document.getElementById('text-input-area').classList.add('hidden');
+    document.getElementById('input-mode-btn').innerHTML = '&#x2328;&#xFE0F; テキストで入力';
+    if (!recognizedText) document.getElementById('submit-btn').classList.add('hidden');
+    startRecording();
+  }
+}
+
+// ============================================================
+// タイマー
+// ============================================================
+function startTimer(seconds) {
+  clearInterval(timerInterval);
+  timerValue = seconds;
+  var el = document.getElementById('answer-timer');
+  el.textContent = timerValue;
+  el.classList.remove('warning');
+
+  timerInterval = setInterval(function() {
+    timerValue--;
+    el.textContent = timerValue;
+    if (timerValue <= 3) el.classList.add('warning');
+    if (timerValue <= 0) {
+      clearInterval(timerInterval);
+      stopRecordingIfActive();
+      submitAnswer();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ============================================================
+// 音声認識（Web Speech API）
+// ============================================================
+function isSpeechRecognitionSupported() {
+  return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
+
+function toggleRecording() {
+  if (isRecording) {
+    stopRecordingIfActive();
+  } else {
+    startRecording();
+  }
+}
+
+function startRecording() {
+  if (!isSpeechRecognitionSupported()) {
+    showToast('音声認識非対応です。テキスト入力を使ってください。');
+    isTextInputMode = true;
+    document.getElementById('voice-input-area').classList.add('hidden');
+    document.getElementById('text-input-area').classList.remove('hidden');
+    document.getElementById('input-mode-btn').classList.add('hidden');
+    document.getElementById('submit-btn').classList.remove('hidden');
+    return;
+  }
+
+  if (isRecording) return;
+
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.continuous = false;
+
+  recognition.onstart = function() {
+    isRecording = true;
+    document.getElementById('mic-btn').classList.add('recording');
+    document.getElementById('mic-status').textContent = '聞いています...';
+  };
+
+  recognition.onresult = function(event) {
+    var interim = '';
+    var final = '';
+    for (var i = 0; i < event.results.length; i++) {
+      if (event.results[i].isFinal) {
+        final += event.results[i][0].transcript;
+      } else {
+        interim += event.results[i][0].transcript;
       }
     }
+    recognizedText = final || interim;
+    document.getElementById('recognized-text').textContent = recognizedText;
+    document.getElementById('recognized-text').classList.remove('hidden');
+    if (final) {
+      document.getElementById('submit-btn').classList.remove('hidden');
+    }
+  };
 
-    function renderChoiceButton(choice) {
-      let className = "btn choice";
+  recognition.onerror = function(event) {
+    console.warn('音声認識エラー:', event.error);
+    if (event.error === 'not-allowed') {
+      showToast('マイクの使用が許可されていません');
+    }
+    stopRecordingIfActive();
+  };
 
-      if (state.answered) {
-        if (choice === state.correctValue) className += " correct";
-        else if (choice === state.selectedValue) className += " wrong";
-        else className += " disabled";
+  recognition.onend = function() {
+    isRecording = false;
+    var micBtn = document.getElementById('mic-btn');
+    if (micBtn) micBtn.classList.remove('recording');
+    document.getElementById('mic-status').textContent = 'タップして話す';
+    if (recognizedText) {
+      document.getElementById('submit-btn').classList.remove('hidden');
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch (e) {
+    console.warn('音声認識開始エラー:', e);
+  }
+}
+
+function stopRecordingIfActive() {
+  if (recognition && isRecording) {
+    try { recognition.stop(); } catch (e) { /* noop */ }
+  }
+  isRecording = false;
+  var micBtn = document.getElementById('mic-btn');
+  if (micBtn) micBtn.classList.remove('recording');
+}
+
+// ============================================================
+// 音声読み上げ（TTS）
+// 修正ポイント:
+//   - speechSynthesis.cancel() の常時呼び出しを廃止
+//     （iOS Safariで次の発話をブロックする原因になるため）
+//   - 既に発話中の場合は短い待機後に再試行
+//   - onerrorで動作不能を検知
+//   - onstartでTTS動作確認フラグを立てる
+// ============================================================
+function speak(text, onEnd) {
+  if (typeof speechSynthesis === 'undefined') {
+    console.warn('[TTS] speechSynthesis not available');
+    if (onEnd) onEnd();
+    return;
+  }
+
+  if (!text || text.trim() === '') {
+    if (onEnd) onEnd();
+    return;
+  }
+
+  // iOS対策: paused状態ならresume
+  if (speechSynthesis.paused) {
+    speechSynthesis.resume();
+  }
+
+  // 既に他の発話中なら、キャンセルせず少し待つ
+  if (speechSynthesis.speaking || speechSynthesis.pending) {
+    // 直近の発話が終わるのを短く待って再試行
+    setTimeout(function() {
+      speakInternal(text, onEnd);
+    }, 100);
+    return;
+  }
+
+  speakInternal(text, onEnd);
+}
+
+function speakInternal(text, onEnd) {
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = parseFloat(appSettings.ttsSpeed) || 0.9;
+  utter.volume = 1.0;
+  utter.pitch = 1.0;
+
+  if (appSettings.voiceName) {
+    var voices = speechSynthesis.getVoices();
+    for (var i = 0; i < voices.length; i++) {
+      if (voices[i].name === appSettings.voiceName) {
+        utter.voice = voices[i];
+        break;
       }
-
-      const mark = state.answered && choice === state.correctValue
-        ? "⭕"
-        : state.answered && choice === state.selectedValue
-          ? "❌"
-          : "👉";
-
-      return `
-        <button class="${className}" onclick="answerQuestion('${escapeJsArg(choice)}')" ${state.answered ? "disabled" : ""}>
-          <span>${escapeHtml(choice)}</span>
-          <span>${mark}</span>
-        </button>
-      `;
     }
+  }
 
-    function escapeJsArg(value) {
-      return String(value)
-        .replaceAll("\\", "\\\\")
-        .replaceAll("'", "\\'")
-        .replaceAll("\n", "\\n")
-        .replaceAll("\r", "");
+  // コールバック管理
+  var callbackFired = false;
+  var fallbackTimer = null;
+
+  var safeCallback = function() {
+    if (callbackFired) return;
+    callbackFired = true;
+    if (fallbackTimer) clearTimeout(fallbackTimer);
+    if (onEnd) onEnd();
+  };
+
+  utter.onstart = function() {
+    lastTtsStartTime = Date.now();
+    ttsWorking = true;
+    updateTtsStatusBadge();
+    console.log('[TTS] speaking:', text);
+  };
+
+  utter.onend = function() {
+    safeCallback();
+  };
+
+  utter.onerror = function(event) {
+    console.warn('[TTS] error:', event.error);
+    // canceled は正常系（ユーザー操作等）なので状態を変えない
+    if (event.error !== 'canceled' && event.error !== 'interrupted') {
+      ttsWorking = false;
+      updateTtsStatusBadge();
     }
+    safeCallback();
+  };
 
-    function renderFeedback(q) {
-      const ok = state.feedbackOk;
-      const praise = PRAISES[Math.floor(Math.random() * PRAISES.length)];
-      const correctText = state.correctValue;
-      const selectedText = state.selectedValue === "__TIME_UP__" ? "時間切れ" : state.selectedValue;
-
-      return `
-        <div class="feedback ${ok ? "ok" : "ng"}">
-          <h3>${ok ? "🎉 正解！ " + praise : "💡 おしい！"}</h3>
-          ${ok ? `
-            <p>よくできました。連続正解：<strong>${state.sessionStreak}</strong>問</p>
-          ` : `
-            <p>あなたの答え：<strong>${escapeHtml(selectedText)}</strong></p>
-            <p>正解：<strong>${escapeHtml(correctText)}</strong></p>
-            <p class="muted">まちがえた問題は「苦手問題」に入り、あとで復習できます。</p>
-          `}
-
-          <div class="study-card">
-            <h3>もう一度見る</h3>
-            <p><strong>英語：</strong>${escapeHtml(q.english)}</p>
-            <p><strong>日本語：</strong>${escapeHtml(q.japanese)}</p>
-            <p><strong>読み方：</strong>${escapeHtml(q.kana)}</p>
-            <p><strong>例文：</strong>${escapeHtml(q.example)}</p>
-            <p><strong>例文の意味：</strong>${escapeHtml(q.exampleJa)}</p>
-            <p><strong>難易度：</strong>${escapeHtml(q.difficulty)}</p>
-          </div>
-
-          ${state.miniMessage ? `<div class="mini-result">${escapeHtml(state.miniMessage)}</div>` : ""}
-
-          <div class="toolbar">
-            <button class="btn primary" onclick="nextQuestion()">次の問題へ</button>
-            <button class="btn secondary" onclick="state.screen='result'; render()">結果を見る</button>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderResult() {
-      const total = state.sessionTotal;
-      const acc = getAccuracy(state.sessionCorrect, total);
-
-      appRoot.innerHTML = `
-        <section class="card">
-          <h2>結果発表</h2>
-          <div class="stats">
-            <div class="stat"><div class="num">${total}</div><div class="label">挑戦数</div></div>
-            <div class="stat"><div class="num">${state.sessionCorrect}</div><div class="label">正解</div></div>
-            <div class="stat"><div class="num">${state.sessionWrong}</div><div class="label">不正解</div></div>
-            <div class="stat"><div class="num">${acc}%</div><div class="label">正答率</div></div>
-          </div>
-
-          <div class="notice">
-            ${resultMessage(acc, total)}
-          </div>
-
-          <h3>現在のバッジ</h3>
-          ${renderBadges()}
-
-          <div class="toolbar">
-            <button class="btn primary" onclick="startGame('${state.mode}', '${escapeJsArg(state.genre)}', ${state.sourceIds ? JSON.stringify(state.sourceIds).replaceAll('"', "&quot;") : "null"})">もう一回</button>
-            <button class="btn secondary" onclick="showModes()">モード選択へ</button>
-            <button class="btn good" onclick="showWeak()">苦手を復習</button>
-          </div>
-        </section>
-      `;
-    }
-
-    function resultMessage(acc, total) {
-      if (!total) return "まだ問題を解いていません。まずは1問チャレンジしてみましょう。";
-      if (acc >= 90) return "すばらしい！かなり覚えています。次は早押しチャレンジもおすすめです。";
-      if (acc >= 70) return "いい感じです！間違えた問題を復習すると、もっと強くなれます。";
-      if (acc >= 50) return "ここから伸びます。例文と読み方を見ながら、もう一回やってみましょう。";
-      return "最初はまちがえてOKです。苦手問題だけ復習すると覚えやすいです。";
-    }
-
-    function renderWeak() {
-      const weakIds = Object.keys(saveData.weakMap).filter(id => saveData.weakMap[id] > 0);
-      const weakQuestions = weakIds
-        .map(id => getQuestionById(id))
-        .filter(Boolean)
-        .sort((a, b) => (saveData.weakMap[b.id] || 0) - (saveData.weakMap[a.id] || 0));
-
-      appRoot.innerHTML = `
-        <section class="card">
-          <h2>苦手問題リスト</h2>
-          <p class="muted">間違えた問題がここに入ります。正解すると少しずつ減ります。</p>
-
-          ${weakQuestions.length ? `
-            <div class="toolbar">
-              <button class="btn primary" onclick='startGame("vocab", "すべて", ${JSON.stringify(weakQuestions.map(q => q.id))})'>
-                📝 苦手だけ復習する
-              </button>
-            </div>
-
-            ${weakQuestions.map(q => `
-              <div class="list-item">
-                <div><strong>${escapeHtml(q.english)}</strong> / ${escapeHtml(q.japanese)}</div>
-                <div class="small muted">読み方：${escapeHtml(q.kana)} / 苦手度：${saveData.weakMap[q.id]}</div>
-                <div class="small">${escapeHtml(q.example)}</div>
-              </div>
-            `).join("")}
-          ` : `
-            <div class="notice">
-              まだ苦手問題はありません。すごい！ゲームで間違えると、ここに自動で追加されます。
-            </div>
-            <button class="btn primary" onclick="showModes()">ゲームを始める</button>
-          `}
-        </section>
-      `;
-    }
-
-    function renderList() {
-      const favoriteIds = Object.keys(saveData.favorites);
-      const favCount = favoriteIds.length;
-
-      appRoot.innerHTML = `
-        <section class="card">
-          <h2>データ一覧</h2>
-          <p class="muted">内蔵データは ${QUESTIONS.length} 問です。お気に入りは ${favCount} 問です。</p>
-
-          <div class="toolbar">
-            <button class="btn primary" onclick="startGame('vocab', 'すべて')">全部から練習</button>
-            <button class="btn secondary" onclick="startFavoriteGame()">お気に入り練習</button>
-          </div>
-
-          ${GENRES.map(genre => {
-            const items = QUESTIONS.filter(q => q.genre === genre);
-            return `
-              <div class="card" style="box-shadow:none; margin-top:12px;">
-                <h3>${escapeHtml(genre)}：${items.length}問</h3>
-                ${items.map(q => `
-                  <div class="list-item">
-                    <div>
-                      <strong>${escapeHtml(q.english)}</strong>
-                      <span class="muted"> / ${escapeHtml(q.japanese)}</span>
-                    </div>
-                    <div class="small muted">読み方：${escapeHtml(q.kana)} / 難易度：${escapeHtml(q.difficulty)}</div>
-                    <div class="small">${escapeHtml(q.example)}<br>${escapeHtml(q.exampleJa)}</div>
-                    <button class="btn ${saveData.favorites[q.id] ? "good" : "ghost"}" onclick="toggleFavorite('${q.id}')">
-                      ${saveData.favorites[q.id] ? "⭐ お気に入り解除" : "☆ お気に入り"}
-                    </button>
-                  </div>
-                `).join("")}
-              </div>
-            `;
-          }).join("")}
-        </section>
-      `;
-    }
-
-    function startFavoriteGame() {
-      const ids = Object.keys(saveData.favorites);
-      if (!ids.length) {
-        alert("お気に入りがまだありません。データ一覧やクイズ画面で☆を押して登録してください。");
-        return;
+  // フォールバック: テキスト長ベースの推定待機
+  // rateが遅いほど長く待つ
+  var estimatedMs = Math.max(2500, (text.length * 100) / (utter.rate || 1));
+  fallbackTimer = setTimeout(function() {
+    // まだ発話中なら少し延長を待つ
+    if (speechSynthesis.speaking) {
+      setTimeout(safeCallback, 1500);
+    } else {
+      // 指定時間経っても onstart が来なかった場合、TTS不動判定
+      if (ttsWorking === null && Date.now() - lastTtsStartTime > estimatedMs) {
+        console.warn('[TTS] Possibly silent - onstart never fired');
+        ttsWorking = false;
+        updateTtsStatusBadge();
       }
-      startGame("vocab", "すべて", ids);
+      safeCallback();
     }
+  }, estimatedMs + 500);
 
-    render();
-  </script>
+  try {
+    speechSynthesis.speak(utter);
+  } catch (e) {
+    console.warn('[TTS] speak() threw:', e);
+    ttsWorking = false;
+    updateTtsStatusBadge();
+    safeCallback();
+  }
+}
+
+function speakCorrectAnswer() {
+  if (currentTurn) {
+    var cleanText = currentTurn.expectedAnswerDisplay
+      .replace(/\[.*?\]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    speak(cleanText || currentTurn.ttsText);
+  }
+}
+
+/** 設定画面の「音声テスト」ボタン */
+function testTTS() {
+  unlockTts();
+  ttsWorking = null; // 再検証
+  updateTtsStatusBadge();
+  speak('Hello. This is a test of text to speech.', function() {
+    if (ttsWorking === true) {
+      showToast('音声テスト完了');
+    } else if (ttsWorking === false) {
+      showToast('音声が再生されませんでした。デバイスの音量とミュート設定を確認してください。');
+    }
+  });
+}
+
+function updateTtsStatusBadge() {
+  var badge = document.getElementById('tts-status');
+  if (!badge) return;
+  if (ttsWorking === true) {
+    badge.className = 'tts-status-badge ok';
+    badge.textContent = 'OK';
+  } else if (ttsWorking === false) {
+    badge.className = 'tts-status-badge ng';
+    badge.textContent = '無音の可能性';
+  } else {
+    badge.className = 'tts-status-badge unknown';
+    badge.textContent = '未検証';
+  }
+}
+
+// ============================================================
+// 回答判定ロジック
+// ============================================================
+function normalize(text) {
+  return text
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[.,!?;:\u201C\u201D\"()]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function matchPattern(pattern, input) {
+  var normP = normalize(pattern);
+  var normI = normalize(input);
+
+  if (normP.indexOf('*') === -1) {
+    return normP === normI;
+  }
+
+  var parts = normP.split('*');
+  var regexStr = '^';
+  for (var i = 0; i < parts.length; i++) {
+    regexStr += parts[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (i < parts.length - 1) regexStr += '.+';
+  }
+  regexStr += '$';
+
+  try {
+    return new RegExp(regexStr).test(normI);
+  } catch (e) {
+    return false;
+  }
+}
+
+function editDistance(a, b) {
+  var m = a.length, n = b.length;
+  var dp = [];
+  var i, j;
+  for (i = 0; i <= m; i++) {
+    dp[i] = [];
+    for (j = 0; j <= n; j++) dp[i][j] = 0;
+  }
+  for (i = 0; i <= m; i++) dp[i][0] = i;
+  for (j = 0; j <= n; j++) dp[0][j] = j;
+  for (i = 1; i <= m; i++) {
+    for (j = 1; j <= n; j++) {
+      var cost = (a[i - 1] === b[j - 1]) ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return dp[m][n];
+}
+
+function judgeAnswer(userAnswer, turn) {
+  if (!userAnswer || userAnswer.trim() === '') return 'wrong';
+
+  var variants = turn.acceptedVariants || [];
+
+  for (var i = 0; i < variants.length; i++) {
+    if (matchPattern(variants[i], userAnswer)) return 'correct';
+  }
+
+  var normUser = normalize(userAnswer);
+  for (var j = 0; j < variants.length; j++) {
+    if (variants[j].indexOf('*') !== -1) continue;
+    var normV = normalize(variants[j]);
+    var dist = editDistance(normUser, normV);
+    var threshold = Math.max(2, Math.floor(normV.length * 0.25));
+    if (dist <= threshold) return 'close';
+  }
+
+  return 'wrong';
+}
+
+// ============================================================
+// 回答送信・判定表示
+// ============================================================
+function submitAnswer() {
+  stopTimer();
+  stopRecordingIfActive();
+
+  var textArea = document.getElementById('text-answer');
+  var userAnswer = recognizedText || textArea.value.trim();
+
+  var judgment = judgeAnswer(userAnswer, currentTurn);
+
+  sessionResults.push({
+    turnId: currentTurn.id,
+    promptText: currentTurn.promptText,
+    userAnswer: userAnswer || '(未回答)',
+    expectedAnswer: currentTurn.expectedAnswerDisplay,
+    judgment: judgment,
+    timestamp: Date.now()
+  });
+
+  if (judgment !== 'correct') {
+    addToReviewQueue(currentTurn, currentLesson.lessonId);
+  } else {
+    removeFromReviewQueue(currentTurn.id);
+  }
+
+  setPhase('result');
+  var badge = document.getElementById('result-badge');
+  badge.className = 'result-badge ' + judgment;
+  if (judgment === 'correct') {
+    badge.textContent = '\uD83C\uDF89 正解！';
+  } else if (judgment === 'close') {
+    badge.textContent = '\uD83E\uDD14 惜しい！';
+  } else {
+    badge.textContent = '\u274C 不正解';
+  }
+
+  document.getElementById('result-user-answer').textContent = userAnswer || '(未回答)';
+  document.getElementById('result-correct-answer').textContent = currentTurn.expectedAnswerDisplay;
+
+  var hintEl = document.getElementById('result-hint');
+  if (judgment !== 'correct' && currentTurn.hint) {
+    hintEl.textContent = '\uD83D\uDCA1 ' + currentTurn.hint;
+    hintEl.classList.remove('hidden');
+  } else {
+    hintEl.classList.add('hidden');
+  }
+}
+
+function retryTurn() {
+  sessionResults.pop();
+  beginTurn(currentTurnIndex);
+}
+
+function nextTurn() {
+  var lastResult = sessionResults[sessionResults.length - 1];
+  var judgment = lastResult ? lastResult.judgment : 'wrong';
+
+  if (currentTurn.next) {
+    var nextId = currentTurn.next[judgment] || currentTurn.next.correct;
+    if (nextId) {
+      for (var i = 0; i < currentLesson.turns.length; i++) {
+        if (currentLesson.turns[i].id === nextId) {
+          beginTurn(i);
+          return;
+        }
+      }
+    }
+  }
+
+  beginTurn(currentTurnIndex + 1);
+}
+
+// ============================================================
+// レッスン完了
+// ============================================================
+function finishLesson() {
+  stopTimer();
+  clearInterval(countdownInterval);
+  updateStreak();
+
+  var history = loadData(STORAGE_KEYS.history, []);
+  history.push({
+    lessonId: currentLesson.lessonId,
+    title: currentLesson.title,
+    date: new Date().toISOString(),
+    results: sessionResults
+  });
+  saveData(STORAGE_KEYS.history, history);
+
+  if (!isReviewMode) {
+    var progress = loadData(STORAGE_KEYS.progress, {});
+    var correctCount = 0;
+    for (var i = 0; i < sessionResults.length; i++) {
+      if (sessionResults[i].judgment === 'correct') correctCount++;
+    }
+    progress[currentLesson.lessonId] = {
+      correctCount: correctCount,
+      totalCount: sessionResults.length,
+      lastDate: new Date().toISOString()
+    };
+    saveData(STORAGE_KEYS.progress, progress);
+  }
+
+  renderResultScreen();
+  showScreen('screen-result');
+}
+
+function renderResultScreen() {
+  var total = sessionResults.length;
+  var correct = 0;
+  for (var i = 0; i < sessionResults.length; i++) {
+    if (sessionResults[i].judgment === 'correct') correct++;
+  }
+  var pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  document.getElementById('result-pct').textContent = pct + '%';
+
+  var circleEl = document.getElementById('result-circle');
+  try {
+    circleEl.style.background = 'conic-gradient(#1B7F37 ' + pct + '%, #D9CCBF ' + pct + '%)';
+  } catch (e) {
+    circleEl.style.background = '#D9CCBF';
+  }
+
+  document.getElementById('result-summary-text').textContent =
+    total + '問中 ' + correct + '問正解';
+
+  var list = document.getElementById('result-detail-list');
+  list.innerHTML = '';
+  for (var j = 0; j < sessionResults.length; j++) {
+    var r = sessionResults[j];
+    var cls = r.judgment === 'correct' ? 'c' : r.judgment === 'close' ? 'cl' : 'w';
+    var label = r.judgment === 'correct' ? '正解' : r.judgment === 'close' ? '惜しい' : '不正解';
+    var div = document.createElement('div');
+    div.className = 'result-detail-item';
+    div.innerHTML =
+      '<span class="badge ' + cls + '">' + label + '</span>' +
+      '<span class="q">' + r.promptText + '</span>';
+    list.appendChild(div);
+  }
+}
+
+function replayLesson() {
+  unlockTts();
+  if (currentLesson && currentLesson.lessonId !== 'review-session') {
+    startLesson(currentLesson.lessonId);
+  } else {
+    startReview();
+  }
+}
+
+function confirmExit() {
+  stopTimer();
+  clearInterval(countdownInterval);
+  stopRecordingIfActive();
+  if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
+
+  if (sessionResults.length > 0) {
+    if (confirm('レッスンを中断しますか？\n進捗は保存されません。')) {
+      showScreen('screen-home');
+    }
+  } else {
+    showScreen('screen-home');
+  }
+}
+
+// ============================================================
+// 復習キュー
+// ============================================================
+function addToReviewQueue(turn, lessonId) {
+  var review = loadData(STORAGE_KEYS.review, []);
+  for (var i = 0; i < review.length; i++) {
+    if (review[i].turnId === turn.id) return;
+  }
+  review.push({
+    turnId: turn.id,
+    lessonId: lessonId,
+    turn: turn,
+    addedDate: new Date().toISOString()
+  });
+  saveData(STORAGE_KEYS.review, review);
+}
+
+function removeFromReviewQueue(turnId) {
+  var review = loadData(STORAGE_KEYS.review, []);
+  var filtered = [];
+  for (var i = 0; i < review.length; i++) {
+    if (review[i].turnId !== turnId) filtered.push(review[i]);
+  }
+  saveData(STORAGE_KEYS.review, filtered);
+}
+
+function renderReviewList() {
+  var review = loadData(STORAGE_KEYS.review, []);
+  var container = document.getElementById('review-list');
+  var emptyEl = document.getElementById('review-empty');
+  var startBtn = document.getElementById('review-start-btn');
+
+  container.innerHTML = '';
+
+  if (review.length === 0) {
+    emptyEl.classList.remove('hidden');
+    startBtn.classList.add('hidden');
+    return;
+  }
+
+  emptyEl.classList.add('hidden');
+  startBtn.classList.remove('hidden');
+
+  for (var i = 0; i < review.length; i++) {
+    var item = review[i];
+    var div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML =
+      '<div class="q-text">' + item.turn.promptText + '</div>' +
+      '<button class="remove-btn" onclick="removeReviewItem(\'' + item.turnId + '\')" title="削除">\u2715</button>';
+    container.appendChild(div);
+  }
+}
+
+function removeReviewItem(turnId) {
+  removeFromReviewQueue(turnId);
+  renderReviewList();
+  showToast('復習リストから削除しました');
+}
+
+// ============================================================
+// データリセット
+// ============================================================
+function resetAllData() {
+  if (!confirm('すべての学習データを削除しますか？\nこの操作は取り消せません。')) return;
+  for (var k in STORAGE_KEYS) {
+    if (STORAGE_KEYS.hasOwnProperty(k)) {
+      localStorage.removeItem(STORAGE_KEYS[k]);
+    }
+  }
+  var newSettings = {};
+  for (var key in DEFAULT_SETTINGS) {
+    if (DEFAULT_SETTINGS.hasOwnProperty(key)) {
+      newSettings[key] = DEFAULT_SETTINGS[key];
+    }
+  }
+  appSettings = newSettings;
+  showToast('データをリセットしました');
+  showScreen('screen-home');
+}
+
+// ============================================================
+// トースト通知
+// ============================================================
+function showToast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2500);
+}
+
+// ============================================================
+// 初期化
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  loadLessons();
+  loadSettingsUI();
+  refreshHomeStats();
+
+  // 最初の任意のユーザー操作でTTSを解禁（iOS Safari対策の保険）
+  var unlockOnFirstTouch = function() {
+    unlockTts();
+    document.removeEventListener('touchstart', unlockOnFirstTouch);
+    document.removeEventListener('click', unlockOnFirstTouch);
+  };
+  document.addEventListener('touchstart', unlockOnFirstTouch, { once: true });
+  document.addEventListener('click', unlockOnFirstTouch, { once: true });
+});
+</script>
+
 </body>
 </html>
