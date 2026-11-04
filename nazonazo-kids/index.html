@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小4なぞなぞ探偵団</title>
+<style>
+:root{
+  --ink:#1f1833;
+  --muted:#625b78;
+  --line:#2a2040;
+  --paper:#fffdf5;
+  --bg:#fff4c7;
+  --yellow:#ffd84d;
+  --orange:#ff9f43;
+  --pink:#ff5c8a;
+  --blue:#4d8dff;
+  --green:#47c978;
+  --purple:#8b5cf6;
+  --red:#ef4444;
+  --shadow:5px 5px 0 rgba(31,24,51,.95);
+  --softShadow:0 12px 30px rgba(31,24,51,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;color:var(--ink);background:var(--bg)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(circle at center,rgba(31,24,51,.16) 1.4px,transparent 1.5px);background-size:26px 26px;opacity:.65}
+button,input{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.app{position:relative;z-index:1;width:min(1080px,100%);margin:0 auto;padding:14px 14px 36px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;position:sticky;top:0;z-index:20;background:linear-gradient(180deg,var(--bg) 75%,rgba(255,244,199,0));padding:8px 0 14px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:1000;letter-spacing:.02em}
+.logo{width:48px;height:48px;border:3px solid var(--line);border-radius:16px;background:var(--yellow);box-shadow:var(--shadow);display:grid;place-items:center;font-size:27px;transform:rotate(-4deg)}
+.brandText{line-height:1.1}.brandText small{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-top:3px}.miniStats{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.chip{display:inline-flex;align-items:center;gap:5px;border:2px solid var(--line);border-radius:999px;background:#fff;padding:7px 10px;font-weight:900;box-shadow:2px 2px 0 var(--line);font-size:13px;white-space:nowrap}
+.screen{display:none}.screen.active{display:block;animation:popIn .18s ease-out}@keyframes popIn{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+.card{background:var(--paper);border:4px solid var(--line);border-radius:26px;padding:18px;box-shadow:var(--shadow);margin:12px 0}.hero{display:grid;grid-template-columns:1fr;gap:14px;overflow:hidden;position:relative}.hero:after{content:"?";position:absolute;right:12px;bottom:-40px;font-size:160px;font-weight:1000;color:rgba(31,24,51,.08);transform:rotate(10deg)}
+h1{font-size:clamp(30px,8vw,58px);line-height:1.05;margin:0;font-weight:1000;letter-spacing:-.04em}h2{font-size:clamp(24px,6vw,36px);margin:0 0 10px;font-weight:1000;letter-spacing:-.03em}h3{font-size:22px;margin:0 0 8px}.lead{font-size:18px;line-height:1.75;margin:12px 0 0;color:var(--muted);font-weight:800}.mascot{display:grid;place-items:center;font-size:96px;filter:drop-shadow(5px 5px 0 rgba(31,24,51,.2));animation:float 2.5s ease-in-out infinite}@keyframes float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-8px) rotate(4deg)}}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.grid{display:grid;gap:12px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.btn{min-height:56px;border:3px solid var(--line);border-radius:18px;padding:12px 16px;font-weight:1000;background:#fff;color:var(--ink);box-shadow:4px 4px 0 var(--line);transition:.08s transform,.08s box-shadow;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center;text-decoration:none}.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--line)}.btn.primary{background:var(--pink);color:#fff}.btn.blue{background:var(--blue);color:#fff}.btn.green{background:var(--green);color:#fff}.btn.yellow{background:var(--yellow)}.btn.orange{background:var(--orange);color:#fff}.btn.purple{background:var(--purple);color:#fff}.btn.ghost{background:#fff}.btn.danger{background:#fff0f0;color:#991b1b}.btn.full{width:100%}.btn.small{min-height:42px;padding:8px 12px;border-radius:14px;font-size:14px;box-shadow:3px 3px 0 var(--line)}.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none;box-shadow:3px 3px 0 var(--line)}
+.genreCard{border:3px solid var(--line);border-radius:22px;background:#fff;padding:16px;box-shadow:4px 4px 0 var(--line);text-align:left;min-height:132px;display:flex;flex-direction:column;justify-content:space-between;gap:10px}.genreCard .icon{font-size:32px}.genreTitle{font-size:22px;font-weight:1000}.genreMeta{font-size:13px;color:var(--muted);font-weight:900}.medal{display:inline-flex;border:2px solid var(--line);background:var(--yellow);border-radius:999px;padding:4px 8px;font-weight:1000;font-size:12px;box-shadow:2px 2px 0 var(--line)}
+.statusLine{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.progressWrap{height:18px;border:3px solid var(--line);border-radius:999px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 var(--line);margin:10px 0 14px}.progressBar{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--yellow),var(--orange));transition:.2s width}.questionBox{background:#fff;border:3px solid var(--line);border-radius:22px;padding:18px;box-shadow:inset 0 0 0 4px rgba(255,216,77,.35);margin:12px 0}.questionText{font-size:clamp(22px,5.5vw,34px);line-height:1.55;font-weight:1000;white-space:pre-wrap}.subInfo{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.tag{border:2px solid var(--line);border-radius:999px;background:#f2f0ff;padding:5px 10px;font-weight:1000;font-size:13px}.tag.easy{background:#e8fff0}.tag.normal{background:#eef5ff}.tag.hard{background:#fff0d6}.tag.challenge{background:#ffe6ef}
+.answerInput{width:100%;min-height:62px;border:3px solid var(--line);border-radius:18px;background:#fff;padding:12px 14px;font-size:22px;font-weight:900;box-shadow:3px 3px 0 var(--line)}.answerInput:focus{outline:none;box-shadow:0 0 0 4px rgba(77,141,255,.28),3px 3px 0 var(--line)}.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.choiceBtn{min-height:66px;background:#fff;text-align:center}.choiceBtn.selected{background:var(--blue);color:#fff;transform:translate(2px,2px);box-shadow:2px 2px 0 var(--line)}.hintArea{display:grid;gap:8px;margin:12px 0}.hintBox{border:3px dashed var(--line);border-radius:18px;padding:12px 14px;background:#fff8d9;font-weight:900;line-height:1.6}.notice{padding:12px 14px;border:3px solid var(--line);border-radius:18px;background:#fff;box-shadow:3px 3px 0 var(--line);font-weight:900;line-height:1.6}.notice.ok{background:#eafff1}.notice.ng{background:#fff0f3}.notice.warn{background:#fff8d9}.resultTitle{font-size:clamp(30px,8vw,52px);font-weight:1000;line-height:1.1}.answerReveal{font-size:26px;font-weight:1000;background:#fff;border:3px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:3px 3px 0 var(--line);margin:10px 0}.explain{font-size:17px;line-height:1.75;font-weight:800;color:var(--muted)}.learning{background:#eef5ff;border:3px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:3px 3px 0 var(--line);line-height:1.7;font-weight:900}.scoreBig{font-size:54px;font-weight:1000;line-height:1;color:var(--pink);text-shadow:3px 3px 0 var(--line);-webkit-text-stroke:1.5px var(--line)}
+.statGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.statBox{border:3px solid var(--line);border-radius:20px;background:#fff;padding:12px;text-align:center;box-shadow:3px 3px 0 var(--line)}.statNum{font-size:28px;font-weight:1000}.statLabel{font-size:12px;color:var(--muted);font-weight:1000}.wrongList{display:grid;gap:8px}.wrongItem{border:2px solid var(--line);border-radius:16px;background:#fff;padding:10px;font-weight:900}.confetti{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden}.piece{position:absolute;top:-20px;width:12px;height:18px;background:var(--pink);border:2px solid var(--line);animation:fall 900ms ease-in forwards}.piece:nth-child(2n){background:var(--yellow)}.piece:nth-child(3n){background:var(--blue)}.piece:nth-child(4n){background:var(--green)}@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.2}}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(120px);z-index:200;background:var(--ink);color:#fff;border:3px solid #fff;border-radius:999px;padding:12px 18px;font-weight:1000;box-shadow:var(--softShadow);transition:.2s transform;max-width:calc(100% - 24px);text-align:center}.toast.show{transform:translateX(-50%) translateY(0)}
+@media (min-width:760px){.hero{grid-template-columns:1.35fr .65fr;align-items:center}.app{padding:22px 20px 44px}.card{padding:24px}.genreGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:680px){.topbar{align-items:flex-start}.miniStats{font-size:12px}.grid.two,.grid.three,.choices,.statGrid{grid-template-columns:1fr}.brandText small{display:none}.chip{font-size:12px;padding:6px 8px}.mascot{font-size:74px}.card{border-radius:22px;padding:15px;box-shadow:4px 4px 0 var(--line)}.btn{min-height:54px}.questionText{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand" role="button" tabindex="0" onclick="goHome()" onkeydown="if(event.key==='Enter')goHome()">
+      <div class="logo" aria-hidden="true">🕵️</div>
+      <div class="brandText">小4なぞなぞ探偵団<small>ひらめきで勉強しよう</small></div>
+    </div>
+    <div class="miniStats" id="miniStats"></div>
+  </header>
+
+  <main>
+    <section id="screenHome" class="screen active">
+      <div class="card hero">
+        <div>
+          <h1>なぞなぞを解いて、<br>名探偵になろう！</h1>
+          <p class="lead">国語・算数・理科・社会の知識を、なぞなぞで楽しく復習できます。答えたあとは、学校の勉強につながる解説も出ます。</p>
+          <div class="row" style="margin-top:18px">
+            <button class="btn primary" onclick="showGenreScreen()">🚀 スタート</button>
+            <button class="btn yellow" onclick="startTodayQuestion()">📅 今日の一問</button>
+            <button class="btn blue" onclick="showStatsScreen()">📊 成績を見る</button>
+          </div>
+        </div>
+        <div class="mascot" aria-hidden="true">🔎</div>
+      </div>
+      <div class="card">
+        <h2>このアプリでできること</h2>
+        <div class="grid three">
+          <div class="notice">🧠 なぞなぞで<br>ひらめきを育てる</div>
+          <div class="notice">📚 解説で<br>小4の学習につなげる</div>
+          <div class="notice">🏅 メダルとランクで<br>やる気アップ</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="screenGenre" class="screen">
+      <div class="card">
+        <div class="statusLine">
+          <h2>ジャンルを選ぼう</h2>
+          <button class="btn small ghost" onclick="goHome()">← タイトルへ</button>
+        </div>
+        <div id="genreGrid" class="grid genreGrid"></div>
+      </div>
+    </section>
+
+    <section id="screenQuiz" class="screen">
+      <div class="card">
+        <div class="statusLine">
+          <div class="row">
+            <span class="chip" id="quizGenre">ジャンル</span>
+            <span class="chip" id="quizCount">1 / 8</span>
+            <span class="chip" id="quizScore">0点</span>
+            <span class="chip" id="quizStreak">連続0問</span>
+          </div>
+          <button class="btn small ghost" onclick="showGenreScreen()">ジャンルへ</button>
+        </div>
+        <div class="progressWrap" aria-label="進み具合"><div class="progressBar" id="progressBar"></div></div>
+        <div class="questionBox">
+          <div class="questionText" id="questionText"></div>
+          <div class="subInfo" id="questionTags"></div>
+        </div>
+        <div id="choiceArea" class="choices"></div>
+        <div id="inputArea" style="margin-top:12px">
+          <input id="answerInput" class="answerInput" type="text" placeholder="答えを入力してね" autocomplete="off" enterkeyhint="done">
+        </div>
+        <div class="hintArea" id="hintArea"></div>
+        <div class="row" style="margin-top:14px">
+          <button class="btn yellow" onclick="showHint()">💡 ヒント</button>
+          <button class="btn primary" onclick="submitAnswer()">✅ 答える</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screenFeedback" class="screen">
+      <div class="card">
+        <div id="feedbackMain"></div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn primary" onclick="nextQuestion()" id="nextBtn">次の問題へ →</button>
+          <button class="btn ghost" onclick="showGenreScreen()">ジャンルへ戻る</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screenResult" class="screen">
+      <div class="card">
+        <div class="statusLine">
+          <h2>捜査完了！</h2>
+          <span class="chip" id="resultRank">ランク</span>
+        </div>
+        <div class="grid two">
+          <div class="notice ok">
+            <div class="statLabel">今回の得点</div>
+            <div class="scoreBig" id="resultScore">0</div>
+          </div>
+          <div class="notice">
+            <div class="statLabel">今回の正解数</div>
+            <div class="scoreBig" id="resultCorrect">0/0</div>
+          </div>
+        </div>
+        <div id="resultMessage" class="notice" style="margin-top:12px"></div>
+        <div id="medalMessage" style="margin-top:12px"></div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn primary" onclick="repeatCurrentMode()">もう一度</button>
+          <button class="btn blue" onclick="showGenreScreen()">ジャンル選択</button>
+          <button class="btn yellow" onclick="showStatsScreen()">成績を見る</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screenStats" class="screen">
+      <div class="card">
+        <div class="statusLine">
+          <h2>成績ノート</h2>
+          <button class="btn small ghost" onclick="goHome()">← タイトルへ</button>
+        </div>
+        <div class="statGrid" id="statsGrid"></div>
+      </div>
+      <div class="card">
+        <h2>ジャンル別の正解数</h2>
+        <div id="genreStats" class="grid two"></div>
+      </div>
+      <div class="card">
+        <h2>まちがいノート</h2>
+        <p class="lead" style="margin-top:0">間違えた問題は、復習モードで出題されます。正解するとノートから消えます。</p>
+        <div id="wrongList" class="wrongList"></div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn purple" onclick="startGenre('復習')">復習する</button>
+          <button class="btn danger" onclick="resetStats()">成績をリセット</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+const STORAGE_KEY = "sho4_nazonazo_tanteidan_v1";
+const ROUND_SIZE = 8;
+const GENRES = ["国語", "算数", "理科", "社会", "生活・雑学"];
+const GENRE_ICONS = {"国語":"📖","算数":"🔢","理科":"🔬","社会":"🗾","生活・雑学":"🌈","ミックス":"🎲","復習":"📝"};
+
+let QUESTIONS = [];
+
+
+function normalizeQuestionForDuplicateCheck(text){
+  return String(text || "")
+    .trim()
+    .replace(/　/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/[？]/g, "?")
+    .replace(/[、。,.，．!！・･]/g, "")
+    .toLowerCase();
+}
+
+
+function warnQuestionDataIssues(){
+  const groups = new Map();
+  QUESTIONS.forEach((q, index) => {
+    const key = normalizeQuestionForDuplicateCheck(q.question);
+    if(!groups.has(key)) groups.set(key, []);
+    groups.get(key).push({q, index});
+
+    if(!String(q.question || "").trim()) console.warn("[DataCheck] question が空です", q.id);
+    if(!String(q.answer || "").trim()) console.warn("[DataCheck] answer が空です", q.id);
+
+    const normalizedAnswer = normalizeText(q.answer);
+    const aliases = (q.aliases || []).map(normalizeText);
+    if(aliases.length && !aliases.includes(normalizedAnswer)){
+      console.warn("[DataCheck] aliases が answer を含んでいない可能性", q.id, q.answer, q.aliases);
+    }
+  });
+
+  groups.forEach(items => {
+    if(items.length < 2) return;
+    const byAnswer = new Map();
+    items.forEach(({q}) => {
+      const key = normalizeText(q.answer);
+      if(!byAnswer.has(key)) byAnswer.set(key, []);
+      byAnswer.get(key).push(q.id);
+    });
+    if(byAnswer.size > 1){
+      console.warn("[DataCheck] 同一問題文なのに答えが異なる", items[0].q.question, [...byAnswer.entries()]);
+    }
+  });
+}
+
+
+let stats = loadStats();
+let state = {
+  mode:"",
+  selectedGenre:"",
+  pool:[],
+  index:0,
+  score:0,
+  correct:0,
+  streak:0,
+  maxStreak:0,
+  usedHints:0,
+  selectedChoice:null,
+  sessionResults:[]
+};
+
+function defaultStats(){
+  const genreCorrect = {};
+  GENRES.forEach(g => genreCorrect[g] = 0);
+  return {totalCorrect:0,totalAnswered:0,totalPoints:0,genreCorrect,wrongIds:[],medals:[],lastPlayed:""};
+}
+
+function loadStats(){
+  const base = defaultStats();
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return base;
+    const saved = JSON.parse(raw);
+    const merged = Object.assign(base, saved);
+    merged.genreCorrect = Object.assign(base.genreCorrect, saved.genreCorrect || {});
+    merged.wrongIds = Array.isArray(saved.wrongIds) ? saved.wrongIds : [];
+    merged.medals = Array.isArray(saved.medals) ? saved.medals : [];
+    return merged;
+  }catch(e){
+    return base;
+  }
+}
+
+function saveStats(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+    return true;
+  }catch(e){
+    showToast("成績保存は使えませんが、ゲームは遊べます");
+    return false;
+  }
+}
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  renderMiniStats();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function goHome(){showScreen("screenHome")}
+function showGenreScreen(){renderGenreCards();showScreen("screenGenre")}
+function showStatsScreen(){renderStatsScreen();showScreen("screenStats")}
+
+function renderMiniStats(){
+  document.getElementById("miniStats").innerHTML = `
+    <span class="chip">⭐ ${stats.totalPoints}点</span>
+    <span class="chip">✅ ${stats.totalCorrect}問</span>
+    <span class="chip">🎖️ ${getRank(stats.totalCorrect)}</span>
+  `;
+}
+
+function getRank(correct){
+  if(correct >= 60) return "伝説の探偵";
+  if(correct >= 30) return "名探偵";
+  if(correct >= 10) return "ひらめき探偵";
+  return "見習い探偵";
+}
+
+function getDifficultyClass(difficulty){
+  if(difficulty === "やさしい") return "easy";
+  if(difficulty === "ふつう") return "normal";
+  if(difficulty === "むずかしい") return "hard";
+  return "challenge";
+}
+
+function isValidQuestion(q){
+  if(!q || !q.id || !q.genre || !q.question || !q.answer) return false;
+  if(q.type === "choice") return Array.isArray(q.choices) && q.choices.length >= 4;
+  if(q.type === "input") return true;
+  return false;
+}
+
+function renderGenreCards(){
+  const grid = document.getElementById("genreGrid");
+  const cards = [];
+  [...GENRES, "ミックス", "復習"].forEach(genre => {
+    let count = 0;
+    let meta = "";
+    if(genre === "ミックス"){
+      count = QUESTIONS.filter(isValidQuestion).length;
+      meta = "全ジャンルからランダム出題";
+    }else if(genre === "復習"){
+      count = stats.wrongIds.length;
+      meta = count ? "まちがえた問題だけ出題" : "まちがい問題はまだありません";
+    }else{
+      count = QUESTIONS.filter(q => q.genre === genre && isValidQuestion(q)).length;
+      meta = `${count}問 / 累計正解 ${stats.genreCorrect[genre] || 0}問`;
+    }
+    const medal = stats.medals.includes(`${genre}メダル`) ? `<span class="medal">🏅 メダル</span>` : "";
+    cards.push(`
+      <button class="genreCard" onclick="startGenre('${escapeAttr(genre)}')">
+        <div>
+          <div class="icon">${GENRE_ICONS[genre] || "✨"}</div>
+          <div class="genreTitle">${genre}</div>
+          <div class="genreMeta">${meta}</div>
+        </div>
+        <div class="row"><span class="chip">${count}問</span>${medal}</div>
+      </button>
+    `);
+  });
+  grid.innerHTML = cards.join("");
+}
+
+function startGenre(genre){
+  let pool = [];
+  if(genre === "ミックス"){
+    pool = QUESTIONS.filter(isValidQuestion);
+  }else if(genre === "復習"){
+    const wrongSet = new Set(stats.wrongIds);
+    pool = QUESTIONS.filter(q => wrongSet.has(q.id) && isValidQuestion(q));
+    if(pool.length === 0){
+      showToast("復習する問題はまだありません");
+      showStatsScreen();
+      return;
+    }
+  }else{
+    pool = QUESTIONS.filter(q => q.genre === genre && isValidQuestion(q));
+  }
+  if(pool.length === 0){
+    showToast("このジャンルの問題はまだありません");
+    return;
+  }
+  pool = shuffle(pool).slice(0, Math.min(ROUND_SIZE, pool.length));
+  beginSession(genre, pool);
+}
+
+function startTodayQuestion(){
+  const today = new Date();
+  const seed = Math.floor(new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() / 86400000);
+  const list = QUESTIONS.filter(isValidQuestion);
+  const q = list[seed % list.length];
+  beginSession("今日の一問", [q]);
+}
+
+function beginSession(mode, pool){
+  state = {mode, selectedGenre:mode, pool, index:0, score:0, correct:0, streak:0, maxStreak:0, usedHints:0, selectedChoice:null, sessionResults:[]};
+  renderQuiz();
+  showScreen("screenQuiz");
+}
+
+function renderQuiz(){
+  const q = state.pool[state.index];
+  state.usedHints = 0;
+  state.selectedChoice = null;
+  document.getElementById("quizGenre").textContent = `${GENRE_ICONS[q.genre] || "✨"} ${state.mode}`;
+  document.getElementById("quizCount").textContent = `${state.index + 1} / ${state.pool.length}`;
+  document.getElementById("quizScore").textContent = `${state.score}点`;
+  document.getElementById("quizStreak").textContent = `連続${state.streak}問`;
+  document.getElementById("progressBar").style.width = `${(state.index / state.pool.length) * 100}%`;
+  document.getElementById("questionText").textContent = q.question;
+  document.getElementById("questionTags").innerHTML = `
+    <span class="tag">${q.genre}</span>
+    <span class="tag">${q.subject}</span>
+    <span class="tag ${getDifficultyClass(q.difficulty)}">${q.difficulty}</span>
+    <span class="tag">${q.type === "choice" ? "4択" : "入力"}</span>
+  `;
+  document.getElementById("hintArea").innerHTML = "";
+  const inputArea = document.getElementById("inputArea");
+  const choiceArea = document.getElementById("choiceArea");
+  const answerInput = document.getElementById("answerInput");
+  answerInput.value = "";
+  if(q.type === "choice"){
+    inputArea.style.display = "none";
+    choiceArea.style.display = "grid";
+    choiceArea.innerHTML = shuffle(q.choices).map(choice => `<button class="btn choiceBtn" onclick="selectChoice(this,'${escapeAttr(choice)}')">${escapeHtml(choice)}</button>`).join("");
+  }else{
+    inputArea.style.display = "block";
+    choiceArea.style.display = "none";
+    choiceArea.innerHTML = "";
+    setTimeout(() => answerInput.focus(), 100);
+  }
+}
+
+function selectChoice(button, value){
+  state.selectedChoice = value;
+  document.querySelectorAll(".choiceBtn").forEach(btn => btn.classList.remove("selected"));
+  button.classList.add("selected");
+}
+
+function showHint(){
+  const q = state.pool[state.index];
+  if(state.usedHints >= 2){showToast("ヒントは2つまでです");return;}
+  state.usedHints++;
+  const text = state.usedHints === 1 ? q.hint1 : q.hint2;
+  const hintArea = document.getElementById("hintArea");
+  const div = document.createElement("div");
+  div.className = "hintBox";
+  div.textContent = `ヒント${state.usedHints}：${text || "よく考えてみよう！"}`;
+  hintArea.appendChild(div);
+}
+
+function submitAnswer(){
+  const q = state.pool[state.index];
+  let userAnswer = "";
+  if(q.type === "choice"){
+    if(!state.selectedChoice){showToast("答えを選んでね");return;}
+    userAnswer = state.selectedChoice;
+  }else{
+    userAnswer = document.getElementById("answerInput").value;
+    if(!userAnswer.trim()){showToast("答えを入れてね");return;}
+  }
+  const correct = isCorrect(userAnswer, q);
+  let points = 0;
+  let bonus = 0;
+  if(correct){
+    points = state.usedHints === 0 ? 10 : state.usedHints === 1 ? 7 : 5;
+    state.correct++;
+    state.streak++;
+    state.maxStreak = Math.max(state.maxStreak, state.streak);
+    if(state.streak === 3) bonus = 5;
+    if(state.streak === 5) bonus = 10;
+    if(state.streak === 10) bonus = 30;
+    points += bonus;
+    fireConfetti();
+  }else{
+    state.streak = 0;
+  }
+  state.score += points;
+  state.sessionResults.push({id:q.id, correct, points, bonus, userAnswer, usedHints:state.usedHints});
+  updateStats(q, correct, points);
+  renderFeedback(q, correct, points, bonus, userAnswer);
+  showScreen("screenFeedback");
+}
+
+function renderFeedback(q, correct, points, bonus, userAnswer){
+  const main = document.getElementById("feedbackMain");
+  const icon = correct ? "🎉" : "🧐";
+  const title = correct ? "正解！すごい！" : "おしい！次で取り返そう！";
+  const cls = correct ? "ok" : "ng";
+  const bonusText = bonus ? `<div class="notice ok">🔥 連続正解ボーナス +${bonus}点！</div>` : "";
+  main.innerHTML = `
+    <div class="resultTitle">${icon} ${title}</div>
+    <div class="notice ${cls}" style="margin-top:12px">あなたの答え：<strong>${escapeHtml(userAnswer)}</strong><br>今回の得点：<strong>${points}点</strong></div>
+    ${bonusText}
+    <div class="answerReveal">答え：${escapeHtml(q.answer)}</div>
+    <div class="learning">📚 学習ポイント<br>${escapeHtml(q.learningPoint)}</div>
+    <p class="explain">${escapeHtml(q.explanation)}</p>
+  `;
+  document.getElementById("nextBtn").textContent = state.index + 1 >= state.pool.length ? "結果を見る →" : "次の問題へ →";
+}
+
+function nextQuestion(){
+  if(state.index + 1 >= state.pool.length){
+    renderResult();
+    showScreen("screenResult");
+    return;
+  }
+  state.index++;
+  renderQuiz();
+  showScreen("screenQuiz");
+}
+
+function renderResult(){
+  const rank = getRank(stats.totalCorrect);
+  document.getElementById("resultRank").textContent = `現在：${rank}`;
+  document.getElementById("resultScore").textContent = state.score;
+  document.getElementById("resultCorrect").textContent = `${state.correct}/${state.pool.length}`;
+  const rate = state.correct / state.pool.length;
+  let msg = "よくがんばりました。解説を読んだ分だけ、次はもっと強くなれます。";
+  if(rate === 1) msg = "全問正解！完全クリアです。今日から名探偵を名乗れます。";
+  else if(rate >= .75) msg = "かなり優秀です。あと少しで全問正解をねらえます。";
+  else if(rate >= .5) msg = "半分以上正解です。まちがいノートで復習すると一気に伸びます。";
+  document.getElementById("resultMessage").textContent = msg;
+  const newMedals = stats.medals.map(m => `<span class="medal">${escapeHtml(m)}</span>`).join(" ");
+  document.getElementById("medalMessage").innerHTML = newMedals ? `<div class="notice ok">持っているメダル：<br>${newMedals}</div>` : `<div class="notice warn">メダルはジャンルごとに累計8問正解でゲットできます。</div>`;
+  document.getElementById("progressBar").style.width = "100%";
+}
+
+function repeatCurrentMode(){
+  if(state.mode === "今日の一問") startTodayQuestion();
+  else startGenre(state.mode);
+}
+
+function updateStats(q, correct, points){
+  stats.totalAnswered++;
+  stats.totalPoints += points;
+  stats.lastPlayed = new Date().toISOString().slice(0,10);
+  if(correct){
+    stats.totalCorrect++;
+    stats.genreCorrect[q.genre] = (stats.genreCorrect[q.genre] || 0) + 1;
+    stats.wrongIds = stats.wrongIds.filter(id => id !== q.id);
+  }else{
+    if(!stats.wrongIds.includes(q.id)) stats.wrongIds.push(q.id);
+  }
+  stats.medals = calcMedals(stats);
+  saveStats();
+  renderMiniStats();
+}
+
+function calcMedals(s){
+  const medals = [];
+  GENRES.forEach(g => {
+    if((s.genreCorrect[g] || 0) >= 8) medals.push(`${g}メダル`);
+  });
+  if(["国語","算数","理科","社会"].every(g => (s.genreCorrect[g] || 0) >= 8)) medals.push("全ジャンルメダル");
+  return medals;
+}
+
+function renderStatsScreen(){
+  stats.medals = calcMedals(stats);
+  saveStats();
+  const rate = stats.totalAnswered ? Math.round(stats.totalCorrect / stats.totalAnswered * 100) : 0;
+  document.getElementById("statsGrid").innerHTML = `
+    <div class="statBox"><div class="statNum">${stats.totalPoints}</div><div class="statLabel">合計点</div></div>
+    <div class="statBox"><div class="statNum">${stats.totalCorrect}</div><div class="statLabel">正解数</div></div>
+    <div class="statBox"><div class="statNum">${rate}%</div><div class="statLabel">正解率</div></div>
+    <div class="statBox"><div class="statNum">${stats.medals.length}</div><div class="statLabel">メダル</div></div>
+  `;
+  document.getElementById("genreStats").innerHTML = GENRES.map(g => {
+    const count = stats.genreCorrect[g] || 0;
+    const medal = stats.medals.includes(`${g}メダル`) ? "🏅" : "";
+    return `<div class="notice"><strong>${GENRE_ICONS[g]} ${g} ${medal}</strong><br>累計正解：${count}問<br>メダルまで：${Math.max(0,8-count)}問</div>`;
+  }).join("");
+  const wrongQuestions = stats.wrongIds.map(id => QUESTIONS.find(q => q.id === id)).filter(Boolean);
+  document.getElementById("wrongList").innerHTML = wrongQuestions.length ? wrongQuestions.map(q => `
+    <div class="wrongItem">${GENRE_ICONS[q.genre]} ${escapeHtml(q.genre)}｜${escapeHtml(q.subject)}<br>${escapeHtml(q.question)}</div>
+  `).join("") : `<div class="notice ok">まちがいノートは空です。すばらしい！</div>`;
+}
+
+function resetStats(){
+  if(!confirm("成績をすべてリセットします。よろしいですか？")) return;
+  stats = defaultStats();
+  saveStats();
+  renderMiniStats();
+  renderStatsScreen();
+  showToast("成績をリセットしました");
+}
+
+function normalizeText(value){
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .replace(/[ァ-ン]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60))
+    .replace(/[\s　]/g, "")
+    .replace(/[、。,.，．!！?？・･ー－―〜~～\/]/g, "");
+}
+
+function isCorrect(userAnswer, q){
+  const user = normalizeText(userAnswer);
+  const acceptable = [q.answer].concat(q.aliases || []).map(normalizeText);
+  return acceptable.includes(user);
+}
+
+function shuffle(array){
+  const a = array.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function escapeHtml(value){
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function escapeAttr(value){
+  return escapeHtml(value).replace(/`/g,"&#096;");
+}
+
+let toastTimer = null;
+function showToast(message){
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+}
+
+function fireConfetti(){
+  const wrap = document.getElementById("confetti");
+  wrap.innerHTML = "";
+  for(let i=0;i<28;i++){
+    const piece = document.createElement("div");
+    piece.className = "piece";
+    piece.style.left = `${Math.random()*100}%`;
+    piece.style.animationDelay = `${Math.random()*180}ms`;
+    piece.style.transform = `rotate(${Math.random()*180}deg)`;
+    wrap.appendChild(piece);
+  }
+  setTimeout(() => wrap.innerHTML = "", 1200);
+}
+
+document.getElementById("answerInput").addEventListener("keydown", event => {
+  if(event.key === "Enter") submitAnswer();
+});
+
+async function loadQuestions(){
+  try{
+    const response = await fetch("./data/questions.json", {cache:"no-store"});
+    if(!response.ok){
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    if(!Array.isArray(data)){
+      throw new Error("questions.json の形式が配列ではありません");
+    }
+    QUESTIONS = data;
+    validateQuestionsForRuntime(QUESTIONS);
+    return true;
+  }catch(error){
+    console.error("[LoadQuestionsError]", error);
+    showFatalError("問題データの読み込みに失敗しました。GitHub Pages やローカルサーバーで開いてください。");
+    return false;
+  }
+}
+
+function validateQuestionsForRuntime(questions){
+  if(!Array.isArray(questions) || questions.length === 0){
+    throw new Error("問題データが空です");
+  }
+
+  questions.forEach((q, index) => {
+    if(!q || typeof q !== "object"){
+      throw new Error(`問題データ ${index} が object ではありません`);
+    }
+    if(!String(q.id || "").trim()){
+      throw new Error(`問題データ ${index} の id が空です`);
+    }
+    if(!String(q.question || "").trim()){
+      throw new Error(`${q.id} の question が空です`);
+    }
+    if(!String(q.answer || "").trim()){
+      throw new Error(`${q.id} の answer が空です`);
+    }
+    if(q.type === "choice"){
+      if(!Array.isArray(q.choices) || q.choices.length < 2){
+        throw new Error(`${q.id} の choices が不足しています`);
+      }
+      const normalizedAnswer = normalizeText(q.answer);
+      const normalizedChoices = q.choices.map(normalizeText);
+      if(!normalizedChoices.includes(normalizedAnswer)){
+        throw new Error(`${q.id} の choices に answer が含まれていません`);
+      }
+    }
+  });
+}
+
+function showFatalError(message){
+  const app = document.querySelector("main") || document.body;
+  app.innerHTML = `
+    <section class="card">
+      <h1>読み込みエラー</h1>
+      <p class="lead">${message}</p>
+      <p class="muted">iPhoneでファイルを直接開いている場合は、GitHub Pagesなどにアップロードして開いてください。</p>
+    </section>
+  `;
+}
+
+function showLoadingState(){
+  const mini = document.getElementById("miniStats");
+  if(mini) mini.innerHTML = `<span class="chip">⏳ 問題データを読み込み中...</span>`;
+}
+
+async function initApp(){
+  showLoadingState();
+  const ok = await loadQuestions();
+  if(!ok) return;
+  warnQuestionDataIssues();
+  renderMiniStats();
+}
+
+initApp();
+</script>
+</body>
+</html>

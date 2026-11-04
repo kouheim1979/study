@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>えいごヒマつぶしクエスト</title>
+  <style>
+    :root {
+      --bg: #fff8e7;
+      --card: #ffffff;
+      --ink: #263238;
+      --muted: #64748b;
+      --main: #ffb703;
+      --main-dark: #fb8500;
+      --sub: #8ecae6;
+      --accent: #90be6d;
+      --danger: #ef476f;
+      --ok: #06d6a0;
+      --line: #e8dcc6;
+      --shadow: 0 8px 24px rgba(38, 50, 56, 0.12);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255, 183, 3, 0.25), transparent 32%),
+        radial-gradient(circle at top right, rgba(142, 202, 230, 0.28), transparent 28%),
+        var(--bg);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      padding: 14px 14px 90px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 8px;
+      background: rgba(255, 248, 231, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(232, 220, 198, 0.7);
+    }
+
+    .brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: linear-gradient(135deg, var(--main), var(--main-dark));
+      box-shadow: var(--shadow);
+      font-size: 24px;
+    }
+
+    .brand-title {
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 8px 11px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line);
+      font-weight: 800;
+      color: var(--ink);
+      box-shadow: 0 2px 10px rgba(38, 50, 56, 0.06);
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .hero {
+      padding: 22px;
+      border-radius: 28px;
+      background:
+        linear-gradient(135deg, rgba(255, 183, 3, 0.98), rgba(251, 133, 0, 0.92)),
+        var(--main);
+      color: #ffffff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "ABC";
+      position: absolute;
+      right: -12px;
+      bottom: -18px;
+      font-size: 78px;
+      font-weight: 1000;
+      opacity: 0.18;
+      transform: rotate(-10deg);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.22;
+    }
+
+    h1 {
+      font-size: clamp(28px, 8vw, 46px);
+      letter-spacing: 0.03em;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 8px 0;
+      line-height: 1.65;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .small {
+      font-size: 13px;
+    }
+
+    .big {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .english-large {
+      font-size: clamp(34px, 12vw, 64px);
+      line-height: 1.05;
+      font-weight: 1000;
+      letter-spacing: 0.02em;
+      word-break: break-word;
+    }
+
+    .question-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--main-dark);
+      margin-bottom: 10px;
+    }
+
+    .question-box {
+      background: #fffdf7;
+      border: 2px dashed rgba(251, 133, 0, 0.35);
+      border-radius: 24px;
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .btn {
+      width: 100%;
+      min-height: 56px;
+      border: 0;
+      border-radius: 18px;
+      padding: 13px 16px;
+      background: var(--card);
+      color: var(--ink);
+      border: 2px solid var(--line);
+      font-weight: 900;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(38, 50, 56, 0.08);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+    }
+
+    .btn:active {
+      transform: translateY(2px) scale(0.99);
+      box-shadow: 0 2px 6px rgba(38, 50, 56, 0.08);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--main), var(--main-dark));
+      color: #ffffff;
+      border-color: rgba(251, 133, 0, 0.25);
+    }
+
+    .btn.secondary {
+      background: #e9f7ff;
+      border-color: #c7e9fa;
+    }
+
+    .btn.good {
+      background: #e8fff7;
+      border-color: #a8f4d8;
+    }
+
+    .btn.danger {
+      background: #fff0f4;
+      border-color: #ffc5d4;
+      color: #b91c45;
+    }
+
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    .btn.choice {
+      text-align: left;
+      min-height: 70px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn.choice.correct {
+      background: #d8fff1;
+      border-color: var(--ok);
+      color: #03624c;
+    }
+
+    .btn.choice.wrong {
+      background: #ffe7ee;
+      border-color: var(--danger);
+      color: #9f1239;
+    }
+
+    .btn.choice.disabled {
+      opacity: 0.72;
+      cursor: default;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .toolbar .btn {
+      flex: 1 1 140px;
+      width: auto;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      background: #fffdf7;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .stat .num {
+      font-weight: 1000;
+      font-size: 22px;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 8px 11px;
+      background: #fff3c4;
+      border: 1px solid #ffe28a;
+      color: #774600;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .badge.locked {
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+      color: #94a3b8;
+    }
+
+    .feedback {
+      border-radius: 22px;
+      padding: 15px;
+      margin-top: 14px;
+      border: 2px solid transparent;
+      animation: pop 0.22s ease;
+    }
+
+    .feedback.ok {
+      background: #e8fff7;
+      border-color: #a8f4d8;
+    }
+
+    .feedback.ng {
+      background: #fff0f4;
+      border-color: #ffc5d4;
+    }
+
+    .study-card {
+      background: #fffdf7;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .list-item {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      border-radius: 18px;
+      background: #fffdf7;
+      border: 1px solid var(--line);
+    }
+
+    .list-item + .list-item {
+      margin-top: 10px;
+    }
+
+    .tagline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .notice {
+      background: #fffdf7;
+      border-left: 6px solid var(--sub);
+      border-radius: 16px;
+      padding: 13px;
+      margin: 12px 0;
+      color: var(--ink);
+    }
+
+    .progress {
+      height: 14px;
+      border-radius: 999px;
+      background: #f1e7d5;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--ok), var(--accent));
+      border-radius: inherit;
+      transition: width 0.25s ease;
+    }
+
+    .timer {
+      font-size: 34px;
+      font-weight: 1000;
+      color: var(--danger);
+      text-align: center;
+      margin: 4px 0 12px;
+    }
+
+    .mini-result {
+      margin-top: 12px;
+      border-radius: 18px;
+      background: #e9f7ff;
+      border: 1px solid #c7e9fa;
+      padding: 12px;
+      font-weight: 900;
+    }
+
+    .footer-nav {
+      position: fixed;
+      z-index: 25;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: min(980px, 100%);
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(255, 248, 231, 0.94);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(232, 220, 198, 0.9);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .footer-nav button {
+      min-height: 48px;
+      font-size: 12px;
+      border-radius: 15px;
+      padding: 8px 6px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(0.96);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .grid.two,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .brand-title {
+        font-size: 16px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .topbar .pill {
+        font-size: 12px;
+        padding: 7px 9px;
+      }
+
+      .card {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">🎒</div>
+        <div>
+          <div class="brand-title">えいごヒマつぶしクエスト</div>
+          <div class="brand-sub">すきま時間で英語レベルアップ</div>
+        </div>
+      </div>
+      <div class="pill" id="topLevel">Lv.1</div>
+    </header>
+
+    <main id="appRoot"></main>
+  </div>
+
+  <nav class="footer-nav">
+    <button class="btn ghost" onclick="goHome()">🏠<br>ホーム</button>
+    <button class="btn ghost" onclick="showModes()">🎮<br>ゲーム</button>
+    <button class="btn ghost" onclick="showWeak()">📝<br>復習</button>
+    <button class="btn ghost" onclick="showList()">📚<br>一覧</button>
+  </nav>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "eigo_himatsubushi_quest_v1";
+
+    const MODES = {
+      vocab: {
+        label: "英単語クイズ",
+        icon: "🔤",
+        description: "日本語を見て、正しい英語を選ぼう。"
+      },
+      ja2en: {
+        label: "日本語から英語",
+        icon: "🇯🇵→🇬🇧",
+        description: "日本語の意味に合う英語を選ぼう。"
+      },
+      en2ja: {
+        label: "英語から日本語",
+        icon: "🇬🇧→🇯🇵",
+        description: "英語に合う日本語を選ぼう。"
+      },
+      fill: {
+        label: "例文穴埋め",
+        icon: "✏️",
+        description: "例文の空欄に入る英語を選ぼう。"
+      },
+      speed: {
+        label: "早押しチャレンジ",
+        icon: "⚡",
+        description: "12秒以内に正解を選ぼう。"
+      }
+    };
+
+    const GENRES = [
+      "あいさつ",
+      "食べ物",
+      "動物",
+      "学校",
+      "家族",
+      "乗り物",
+      "日常会話",
+      "旅行",
+      "感情",
+      "よく使う動詞"
+    ];
+
+    const BADGES = {
+      first_correct: { icon: "🌟", name: "はじめての正解" },
+      streak5: { icon: "🔥", name: "5問連続正解" },
+      streak10: { icon: "🚀", name: "10問連続正解" },
+      challenge50: { icon: "🏅", name: "50問チャレンジ" },
+      challenge100: { icon: "👑", name: "100問チャレンジ" }
+    };
+
+    const PRAISES = [
+      "Great!",
+      "Nice!",
+      "Excellent!",
+      "You got it!",
+      "Good job!",
+      "Perfect!",
+      "すごい！",
+      "その調子！"
+    ];
+
+    const QUESTIONS = [
+      { id: "greet_001", genre: "あいさつ", english: "Hello", japanese: "こんにちは", kana: "ハロー", example: "Hello, my name is Rin.", exampleJa: "こんにちは、私の名前はリンです。", difficulty: "かんたん" },
+      { id: "greet_002", genre: "あいさつ", english: "Good morning", japanese: "おはよう", kana: "グッド モーニング", example: "Good morning, Dad.", exampleJa: "おはよう、お父さん。", difficulty: "かんたん" },
+      { id: "greet_003", genre: "あいさつ", english: "Good night", japanese: "おやすみ", kana: "グッド ナイト", example: "Good night, see you tomorrow.", exampleJa: "おやすみ、また明日ね。", difficulty: "かんたん" },
+      { id: "greet_004", genre: "あいさつ", english: "Thank you", japanese: "ありがとう", kana: "サンキュー", example: "Thank you for helping me.", exampleJa: "手伝ってくれてありがとう。", difficulty: "かんたん" },
+      { id: "greet_005", genre: "あいさつ", english: "You're welcome", japanese: "どういたしまして", kana: "ユア ウェルカム", example: "You're welcome, Miku.", exampleJa: "どういたしまして、ミク。", difficulty: "ふつう" },
+      { id: "greet_006", genre: "あいさつ", english: "Sorry", japanese: "ごめんなさい", kana: "ソーリー", example: "Sorry, I am late.", exampleJa: "ごめんなさい、遅れました。", difficulty: "かんたん" },
+      { id: "greet_007", genre: "あいさつ", english: "Excuse me", japanese: "すみません", kana: "エクスキューズ ミー", example: "Excuse me, where is the station?", exampleJa: "すみません、駅はどこですか。", difficulty: "ふつう" },
+      { id: "greet_008", genre: "あいさつ", english: "See you", japanese: "またね", kana: "シー ユー", example: "See you after school.", exampleJa: "放課後にまたね。", difficulty: "かんたん" },
+      { id: "greet_009", genre: "あいさつ", english: "Nice to meet you", japanese: "はじめまして", kana: "ナイス トゥ ミート ユー", example: "Nice to meet you, Ken.", exampleJa: "はじめまして、ケン。", difficulty: "ふつう" },
+      { id: "greet_010", genre: "あいさつ", english: "How are you?", japanese: "元気ですか", kana: "ハウ アー ユー", example: "How are you today?", exampleJa: "今日は元気ですか。", difficulty: "ふつう" },
+
+      { id: "food_001", genre: "食べ物", english: "Apple", japanese: "りんご", kana: "アップル", example: "Apple is my favorite fruit.", exampleJa: "りんごは私の好きな果物です。", difficulty: "かんたん" },
+      { id: "food_002", genre: "食べ物", english: "Banana", japanese: "バナナ", kana: "バナナ", example: "Banana is yellow.", exampleJa: "バナナは黄色です。", difficulty: "かんたん" },
+      { id: "food_003", genre: "食べ物", english: "Rice", japanese: "ごはん", kana: "ライス", example: "Rice is popular in Japan.", exampleJa: "ごはんは日本で人気です。", difficulty: "かんたん" },
+      { id: "food_004", genre: "食べ物", english: "Bread", japanese: "パン", kana: "ブレッド", example: "Bread smells good.", exampleJa: "パンはいいにおいがします。", difficulty: "かんたん" },
+      { id: "food_005", genre: "食べ物", english: "Milk", japanese: "牛乳", kana: "ミルク", example: "Milk is in the glass.", exampleJa: "牛乳がコップに入っています。", difficulty: "かんたん" },
+      { id: "food_006", genre: "食べ物", english: "Water", japanese: "水", kana: "ウォーター", example: "Water is important for us.", exampleJa: "水は私たちにとって大切です。", difficulty: "かんたん" },
+      { id: "food_007", genre: "食べ物", english: "Chicken", japanese: "鶏肉", kana: "チキン", example: "Chicken is on the plate.", exampleJa: "鶏肉がお皿にあります。", difficulty: "ふつう" },
+      { id: "food_008", genre: "食べ物", english: "Egg", japanese: "卵", kana: "エッグ", example: "Egg is good for breakfast.", exampleJa: "卵は朝食によいです。", difficulty: "かんたん" },
+      { id: "food_009", genre: "食べ物", english: "Vegetable", japanese: "野菜", kana: "ベジタブル", example: "Vegetable soup is healthy.", exampleJa: "野菜スープは健康的です。", difficulty: "ふつう" },
+      { id: "food_010", genre: "食べ物", english: "Strawberry", japanese: "いちご", kana: "ストロベリー", example: "Strawberry cake is sweet.", exampleJa: "いちごケーキは甘いです。", difficulty: "ふつう" },
+
+      { id: "animal_001", genre: "動物", english: "Dog", japanese: "犬", kana: "ドッグ", example: "Dog runs in the park.", exampleJa: "犬が公園で走ります。", difficulty: "かんたん" },
+      { id: "animal_002", genre: "動物", english: "Cat", japanese: "猫", kana: "キャット", example: "Cat sleeps on the sofa.", exampleJa: "猫がソファで寝ます。", difficulty: "かんたん" },
+      { id: "animal_003", genre: "動物", english: "Bird", japanese: "鳥", kana: "バード", example: "Bird sings in the tree.", exampleJa: "鳥が木で歌います。", difficulty: "かんたん" },
+      { id: "animal_004", genre: "動物", english: "Fish", japanese: "魚", kana: "フィッシュ", example: "Fish swims in the river.", exampleJa: "魚が川で泳ぎます。", difficulty: "かんたん" },
+      { id: "animal_005", genre: "動物", english: "Rabbit", japanese: "うさぎ", kana: "ラビット", example: "Rabbit has long ears.", exampleJa: "うさぎは長い耳を持っています。", difficulty: "ふつう" },
+      { id: "animal_006", genre: "動物", english: "Lion", japanese: "ライオン", kana: "ライオン", example: "Lion is very strong.", exampleJa: "ライオンはとても強いです。", difficulty: "かんたん" },
+      { id: "animal_007", genre: "動物", english: "Elephant", japanese: "象", kana: "エレファント", example: "Elephant has a long nose.", exampleJa: "象は長い鼻を持っています。", difficulty: "ふつう" },
+      { id: "animal_008", genre: "動物", english: "Monkey", japanese: "猿", kana: "モンキー", example: "Monkey likes bananas.", exampleJa: "猿はバナナが好きです。", difficulty: "かんたん" },
+      { id: "animal_009", genre: "動物", english: "Dolphin", japanese: "イルカ", kana: "ドルフィン", example: "Dolphin jumps high.", exampleJa: "イルカが高くジャンプします。", difficulty: "ふつう" },
+      { id: "animal_010", genre: "動物", english: "Butterfly", japanese: "ちょう", kana: "バタフライ", example: "Butterfly is beautiful.", exampleJa: "ちょうは美しいです。", difficulty: "チャレンジ" },
+
+      { id: "school_001", genre: "学校", english: "School", japanese: "学校", kana: "スクール", example: "School starts at eight.", exampleJa: "学校は8時に始まります。", difficulty: "かんたん" },
+      { id: "school_002", genre: "学校", english: "Teacher", japanese: "先生", kana: "ティーチャー", example: "Teacher writes on the board.", exampleJa: "先生が黒板に書きます。", difficulty: "かんたん" },
+      { id: "school_003", genre: "学校", english: "Student", japanese: "生徒", kana: "スチューデント", example: "Student reads a book.", exampleJa: "生徒が本を読みます。", difficulty: "ふつう" },
+      { id: "school_004", genre: "学校", english: "Book", japanese: "本", kana: "ブック", example: "Book is on the desk.", exampleJa: "本が机の上にあります。", difficulty: "かんたん" },
+      { id: "school_005", genre: "学校", english: "Pencil", japanese: "えんぴつ", kana: "ペンシル", example: "Pencil is in my bag.", exampleJa: "えんぴつは私のかばんの中にあります。", difficulty: "かんたん" },
+      { id: "school_006", genre: "学校", english: "Notebook", japanese: "ノート", kana: "ノートブック", example: "Notebook is open.", exampleJa: "ノートが開いています。", difficulty: "ふつう" },
+      { id: "school_007", genre: "学校", english: "Desk", japanese: "机", kana: "デスク", example: "Desk is clean.", exampleJa: "机はきれいです。", difficulty: "かんたん" },
+      { id: "school_008", genre: "学校", english: "Classroom", japanese: "教室", kana: "クラスルーム", example: "Classroom is quiet.", exampleJa: "教室は静かです。", difficulty: "ふつう" },
+      { id: "school_009", genre: "学校", english: "Homework", japanese: "宿題", kana: "ホームワーク", example: "Homework is difficult today.", exampleJa: "今日の宿題は難しいです。", difficulty: "ふつう" },
+      { id: "school_010", genre: "学校", english: "Test", japanese: "テスト", kana: "テスト", example: "Test begins now.", exampleJa: "テストが今始まります。", difficulty: "かんたん" },
+
+      { id: "family_001", genre: "家族", english: "Family", japanese: "家族", kana: "ファミリー", example: "Family eats dinner together.", exampleJa: "家族が一緒に夕食を食べます。", difficulty: "かんたん" },
+      { id: "family_002", genre: "家族", english: "Mother", japanese: "母", kana: "マザー", example: "Mother cooks lunch.", exampleJa: "母が昼食を作ります。", difficulty: "かんたん" },
+      { id: "family_003", genre: "家族", english: "Father", japanese: "父", kana: "ファーザー", example: "Father drives a car.", exampleJa: "父が車を運転します。", difficulty: "かんたん" },
+      { id: "family_004", genre: "家族", english: "Sister", japanese: "姉妹", kana: "シスター", example: "Sister likes music.", exampleJa: "姉妹は音楽が好きです。", difficulty: "かんたん" },
+      { id: "family_005", genre: "家族", english: "Brother", japanese: "兄弟", kana: "ブラザー", example: "Brother plays soccer.", exampleJa: "兄弟がサッカーをします。", difficulty: "かんたん" },
+      { id: "family_006", genre: "家族", english: "Grandmother", japanese: "祖母", kana: "グランドマザー", example: "Grandmother makes tea.", exampleJa: "祖母がお茶を入れます。", difficulty: "ふつう" },
+      { id: "family_007", genre: "家族", english: "Grandfather", japanese: "祖父", kana: "グランドファーザー", example: "Grandfather walks slowly.", exampleJa: "祖父がゆっくり歩きます。", difficulty: "ふつう" },
+      { id: "family_008", genre: "家族", english: "Baby", japanese: "赤ちゃん", kana: "ベイビー", example: "Baby smiles at me.", exampleJa: "赤ちゃんが私に笑いかけます。", difficulty: "かんたん" },
+      { id: "family_009", genre: "家族", english: "Cousin", japanese: "いとこ", kana: "カズン", example: "Cousin visits our house.", exampleJa: "いとこが私たちの家に来ます。", difficulty: "チャレンジ" },
+      { id: "family_010", genre: "家族", english: "Parents", japanese: "両親", kana: "ペアレンツ", example: "Parents are kind.", exampleJa: "両親は親切です。", difficulty: "ふつう" },
+
+      { id: "vehicle_001", genre: "乗り物", english: "Car", japanese: "車", kana: "カー", example: "Car is fast.", exampleJa: "車は速いです。", difficulty: "かんたん" },
+      { id: "vehicle_002", genre: "乗り物", english: "Bus", japanese: "バス", kana: "バス", example: "Bus stops here.", exampleJa: "バスはここで止まります。", difficulty: "かんたん" },
+      { id: "vehicle_003", genre: "乗り物", english: "Train", japanese: "電車", kana: "トレイン", example: "Train arrives soon.", exampleJa: "電車はもうすぐ到着します。", difficulty: "かんたん" },
+      { id: "vehicle_004", genre: "乗り物", english: "Airplane", japanese: "飛行機", kana: "エアプレイン", example: "Airplane flies in the sky.", exampleJa: "飛行機が空を飛びます。", difficulty: "ふつう" },
+      { id: "vehicle_005", genre: "乗り物", english: "Bicycle", japanese: "自転車", kana: "バイシクル", example: "Bicycle is near the park.", exampleJa: "自転車は公園の近くにあります。", difficulty: "ふつう" },
+      { id: "vehicle_006", genre: "乗り物", english: "Ship", japanese: "船", kana: "シップ", example: "Ship moves on the sea.", exampleJa: "船が海の上を進みます。", difficulty: "ふつう" },
+      { id: "vehicle_007", genre: "乗り物", english: "Taxi", japanese: "タクシー", kana: "タクシー", example: "Taxi is in front of the station.", exampleJa: "タクシーが駅前にあります。", difficulty: "かんたん" },
+      { id: "vehicle_008", genre: "乗り物", english: "Subway", japanese: "地下鉄", kana: "サブウェイ", example: "Subway is useful in the city.", exampleJa: "地下鉄は街で便利です。", difficulty: "チャレンジ" },
+      { id: "vehicle_009", genre: "乗り物", english: "Motorcycle", japanese: "オートバイ", kana: "モーターサイクル", example: "Motorcycle is loud.", exampleJa: "オートバイは音が大きいです。", difficulty: "チャレンジ" },
+      { id: "vehicle_010", genre: "乗り物", english: "Helicopter", japanese: "ヘリコプター", kana: "ヘリコプター", example: "Helicopter flies over the town.", exampleJa: "ヘリコプターが町の上を飛びます。", difficulty: "チャレンジ" },
+
+      { id: "daily_001", genre: "日常会話", english: "I like it", japanese: "私はそれが好きです", kana: "アイ ライク イット", example: "I like it very much.", exampleJa: "私はそれがとても好きです。", difficulty: "ふつう" },
+      { id: "daily_002", genre: "日常会話", english: "I don't know", japanese: "わかりません", kana: "アイ ドント ノウ", example: "I don't know the answer.", exampleJa: "私は答えがわかりません。", difficulty: "ふつう" },
+      { id: "daily_003", genre: "日常会話", english: "Let's go", japanese: "行こう", kana: "レッツ ゴー", example: "Let's go to the park.", exampleJa: "公園へ行こう。", difficulty: "かんたん" },
+      { id: "daily_004", genre: "日常会話", english: "Wait a minute", japanese: "ちょっと待って", kana: "ウェイト ア ミニット", example: "Wait a minute, please.", exampleJa: "ちょっと待ってください。", difficulty: "ふつう" },
+      { id: "daily_005", genre: "日常会話", english: "I'm hungry", japanese: "お腹がすいた", kana: "アイム ハングリー", example: "I'm hungry after school.", exampleJa: "放課後、お腹がすきました。", difficulty: "ふつう" },
+      { id: "daily_006", genre: "日常会話", english: "I'm tired", japanese: "疲れました", kana: "アイム タイアード", example: "I'm tired today.", exampleJa: "今日は疲れました。", difficulty: "ふつう" },
+      { id: "daily_007", genre: "日常会話", english: "What is this?", japanese: "これは何ですか", kana: "ワット イズ ディス", example: "What is this in English?", exampleJa: "これは英語で何ですか。", difficulty: "ふつう" },
+      { id: "daily_008", genre: "日常会話", english: "Can I try?", japanese: "やってみてもいいですか", kana: "キャン アイ トライ", example: "Can I try this game?", exampleJa: "このゲームをやってみてもいいですか。", difficulty: "チャレンジ" },
+      { id: "daily_009", genre: "日常会話", english: "Good idea", japanese: "いい考えです", kana: "グッド アイディア", example: "Good idea, let's do it.", exampleJa: "いい考えです、やってみましょう。", difficulty: "ふつう" },
+      { id: "daily_010", genre: "日常会話", english: "No problem", japanese: "問題ありません", kana: "ノー プロブレム", example: "No problem, I can help you.", exampleJa: "問題ありません、手伝えます。", difficulty: "ふつう" },
+
+      { id: "travel_001", genre: "旅行", english: "Station", japanese: "駅", kana: "ステーション", example: "Station is near here.", exampleJa: "駅はこの近くです。", difficulty: "かんたん" },
+      { id: "travel_002", genre: "旅行", english: "Hotel", japanese: "ホテル", kana: "ホテル", example: "Hotel is next to the shop.", exampleJa: "ホテルは店の隣です。", difficulty: "かんたん" },
+      { id: "travel_003", genre: "旅行", english: "Ticket", japanese: "切符", kana: "チケット", example: "Ticket is in my pocket.", exampleJa: "切符は私のポケットにあります。", difficulty: "ふつう" },
+      { id: "travel_004", genre: "旅行", english: "Map", japanese: "地図", kana: "マップ", example: "Map helps us find the museum.", exampleJa: "地図は博物館を探すのに役立ちます。", difficulty: "かんたん" },
+      { id: "travel_005", genre: "旅行", english: "Passport", japanese: "パスポート", kana: "パスポート", example: "Passport is very important.", exampleJa: "パスポートはとても大切です。", difficulty: "ふつう" },
+      { id: "travel_006", genre: "旅行", english: "Airport", japanese: "空港", kana: "エアポート", example: "Airport is busy today.", exampleJa: "空港は今日混んでいます。", difficulty: "ふつう" },
+      { id: "travel_007", genre: "旅行", english: "Museum", japanese: "博物館", kana: "ミュージアム", example: "Museum opens at ten.", exampleJa: "博物館は10時に開きます。", difficulty: "チャレンジ" },
+      { id: "travel_008", genre: "旅行", english: "Beach", japanese: "浜辺", kana: "ビーチ", example: "Beach is beautiful in summer.", exampleJa: "浜辺は夏に美しいです。", difficulty: "ふつう" },
+      { id: "travel_009", genre: "旅行", english: "Souvenir", japanese: "おみやげ", kana: "スーベニア", example: "Souvenir is for my family.", exampleJa: "おみやげは家族のためです。", difficulty: "チャレンジ" },
+      { id: "travel_010", genre: "旅行", english: "Reservation", japanese: "予約", kana: "レザベーション", example: "Reservation is under my name.", exampleJa: "予約は私の名前でされています。", difficulty: "チャレンジ" },
+
+      { id: "feeling_001", genre: "感情", english: "Happy", japanese: "うれしい", kana: "ハッピー", example: "Happy children are smiling.", exampleJa: "うれしい子どもたちが笑っています。", difficulty: "かんたん" },
+      { id: "feeling_002", genre: "感情", english: "Sad", japanese: "悲しい", kana: "サッド", example: "Sad music makes me quiet.", exampleJa: "悲しい音楽は私を静かにします。", difficulty: "かんたん" },
+      { id: "feeling_003", genre: "感情", english: "Angry", japanese: "怒っている", kana: "アングリー", example: "Angry voice is scary.", exampleJa: "怒った声はこわいです。", difficulty: "ふつう" },
+      { id: "feeling_004", genre: "感情", english: "Sleepy", japanese: "眠い", kana: "スリーピー", example: "Sleepy cat closes its eyes.", exampleJa: "眠い猫が目を閉じます。", difficulty: "ふつう" },
+      { id: "feeling_005", genre: "感情", english: "Excited", japanese: "わくわくしている", kana: "エキサイテッド", example: "Excited students are talking.", exampleJa: "わくわくした生徒たちが話しています。", difficulty: "チャレンジ" },
+      { id: "feeling_006", genre: "感情", english: "Scared", japanese: "こわがっている", kana: "スケアード", example: "Scared boy hides behind his dad.", exampleJa: "こわがっている男の子がお父さんの後ろに隠れます。", difficulty: "チャレンジ" },
+      { id: "feeling_007", genre: "感情", english: "Surprised", japanese: "驚いた", kana: "サプライズド", example: "Surprised girl opens her eyes.", exampleJa: "驚いた女の子が目を開きます。", difficulty: "チャレンジ" },
+      { id: "feeling_008", genre: "感情", english: "Proud", japanese: "誇らしい", kana: "プラウド", example: "Proud mother smiles.", exampleJa: "誇らしい母が笑います。", difficulty: "チャレンジ" },
+      { id: "feeling_009", genre: "感情", english: "Bored", japanese: "退屈している", kana: "ボアード", example: "Bored kids need a game.", exampleJa: "退屈している子どもたちはゲームが必要です。", difficulty: "チャレンジ" },
+      { id: "feeling_010", genre: "感情", english: "Nervous", japanese: "緊張している", kana: "ナーバス", example: "Nervous student takes a test.", exampleJa: "緊張している生徒がテストを受けます。", difficulty: "チャレンジ" },
+
+      { id: "verb_001", genre: "よく使う動詞", english: "Go", japanese: "行く", kana: "ゴー", example: "Go to school safely.", exampleJa: "安全に学校へ行きなさい。", difficulty: "かんたん" },
+      { id: "verb_002", genre: "よく使う動詞", english: "Come", japanese: "来る", kana: "カム", example: "Come here, please.", exampleJa: "こちらへ来てください。", difficulty: "かんたん" },
+      { id: "verb_003", genre: "よく使う動詞", english: "Eat", japanese: "食べる", kana: "イート", example: "Eat breakfast every morning.", exampleJa: "毎朝朝食を食べましょう。", difficulty: "かんたん" },
+      { id: "verb_004", genre: "よく使う動詞", english: "Drink", japanese: "飲む", kana: "ドリンク", example: "Drink water after running.", exampleJa: "走ったあとに水を飲みましょう。", difficulty: "かんたん" },
+      { id: "verb_005", genre: "よく使う動詞", english: "Read", japanese: "読む", kana: "リード", example: "Read this book aloud.", exampleJa: "この本を声に出して読みなさい。", difficulty: "かんたん" },
+      { id: "verb_006", genre: "よく使う動詞", english: "Write", japanese: "書く", kana: "ライト", example: "Write your name here.", exampleJa: "ここに名前を書きなさい。", difficulty: "ふつう" },
+      { id: "verb_007", genre: "よく使う動詞", english: "Listen", japanese: "聞く", kana: "リッスン", example: "Listen to the teacher.", exampleJa: "先生の話を聞きなさい。", difficulty: "ふつう" },
+      { id: "verb_008", genre: "よく使う動詞", english: "Speak", japanese: "話す", kana: "スピーク", example: "Speak English slowly.", exampleJa: "英語をゆっくり話しなさい。", difficulty: "ふつう" },
+      { id: "verb_009", genre: "よく使う動詞", english: "Play", japanese: "遊ぶ", kana: "プレイ", example: "Play soccer with friends.", exampleJa: "友だちとサッカーをしなさい。", difficulty: "かんたん" },
+      { id: "verb_010", genre: "よく使う動詞", english: "Make", japanese: "作る", kana: "メイク", example: "Make a paper airplane.", exampleJa: "紙飛行機を作りなさい。", difficulty: "ふつう" }
+    ];
+
+    const appRoot = document.getElementById("appRoot");
+    const topLevel = document.getElementById("topLevel");
+
+    let storageOk = true;
+    let timerId = null;
+    let secondsLeft = 0;
+
+    const state = {
+      screen: "home",
+      mode: "vocab",
+      genre: "すべて",
+      queue: [],
+      currentIndex: 0,
+      currentQuestion: null,
+      choices: [],
+      correctValue: "",
+      answered: false,
+      selectedValue: "",
+      feedbackOk: false,
+      sessionCorrect: 0,
+      sessionWrong: 0,
+      sessionTotal: 0,
+      sessionStreak: 0,
+      miniMessage: "",
+      lastLevel: 1,
+      sourceIds: null
+    };
+
+    function todayKey() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+
+    function defaultSave() {
+      return {
+        totalAnswered: 0,
+        totalCorrect: 0,
+        totalWrong: 0,
+        bestStreak: 0,
+        currentStreak: 0,
+        todayDate: todayKey(),
+        todayCount: 0,
+        badges: {},
+        weakMap: {},
+        favorites: {},
+        history: []
+      };
+    }
+
+    let saveData = loadSave();
+
+    function loadSave() {
+      const base = defaultSave();
+      try {
+        const testKey = "__eigo_storage_test__";
+        localStorage.setItem(testKey, "1");
+        localStorage.removeItem(testKey);
+
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return base;
+
+        const parsed = JSON.parse(raw);
+        const merged = Object.assign(base, parsed || {});
+        merged.badges = merged.badges || {};
+        merged.weakMap = merged.weakMap || {};
+        merged.favorites = merged.favorites || {};
+        merged.history = Array.isArray(merged.history) ? merged.history : [];
+
+        if (merged.todayDate !== todayKey()) {
+          merged.todayDate = todayKey();
+          merged.todayCount = 0;
+        }
+
+        return merged;
+      } catch (error) {
+        storageOk = false;
+        return base;
+      }
+    }
+
+    function save() {
+      if (saveData.todayDate !== todayKey()) {
+        saveData.todayDate = todayKey();
+        saveData.todayCount = 0;
+      }
+
+      if (!storageOk) return;
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+      } catch (error) {
+        storageOk = false;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function shuffle(array) {
+      const copied = array.slice();
+      for (let i = copied.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = copied[i];
+        copied[i] = copied[j];
+        copied[j] = temp;
+      }
+      return copied;
+    }
+
+    function sample(array, count) {
+      return shuffle(array).slice(0, count);
+    }
+
+    function getLevel() {
+      return Math.max(1, Math.floor(saveData.totalCorrect / 10) + 1);
+    }
+
+    function getAccuracy(correct, total) {
+      if (!total) return 0;
+      return Math.round((correct / total) * 100);
+    }
+
+    function setScreen(screen) {
+      stopTimer();
+      state.screen = screen;
+      render();
+    }
+
+    function goHome() {
+      resetSession(false);
+      setScreen("home");
+    }
+
+    function showModes() {
+      resetSession(false);
+      setScreen("modes");
+    }
+
+    function showGenres(mode) {
+      if (mode) state.mode = mode;
+      resetSession(false);
+      setScreen("genres");
+    }
+
+    function showWeak() {
+      resetSession(false);
+      setScreen("weak");
+    }
+
+    function showList() {
+      resetSession(false);
+      setScreen("list");
+    }
+
+    function resetSession(keepSource) {
+      state.queue = [];
+      state.currentIndex = 0;
+      state.currentQuestion = null;
+      state.choices = [];
+      state.correctValue = "";
+      state.answered = false;
+      state.selectedValue = "";
+      state.feedbackOk = false;
+      state.sessionCorrect = 0;
+      state.sessionWrong = 0;
+      state.sessionTotal = 0;
+      state.sessionStreak = 0;
+      state.miniMessage = "";
+      state.lastLevel = getLevel();
+      if (!keepSource) state.sourceIds = null;
+      stopTimer();
+    }
+
+    function filteredQuestions(genre, sourceIds) {
+      let base = QUESTIONS.slice();
+
+      if (Array.isArray(sourceIds)) {
+        const set = new Set(sourceIds);
+        base = base.filter(q => set.has(q.id));
+      }
+
+      if (genre && genre !== "すべて") {
+        base = base.filter(q => q.genre === genre);
+      }
+
+      return base;
+    }
+
+    function startGame(mode, genre, sourceIds) {
+      state.mode = mode || state.mode || "vocab";
+      state.genre = genre || "すべて";
+      state.sourceIds = Array.isArray(sourceIds) ? sourceIds.slice() : null;
+
+      const questions = filteredQuestions(state.genre, state.sourceIds);
+
+      resetSession(true);
+
+      if (!questions.length) {
+        state.queue = [];
+        state.screen = "quiz";
+        render();
+        return;
+      }
+
+      state.queue = shuffle(questions.map(q => q.id));
+      state.currentIndex = 0;
+      state.screen = "quiz";
+      prepareQuestion();
+      render();
+    }
+
+    function getQuestionById(id) {
+      return QUESTIONS.find(q => q.id === id) || null;
+    }
+
+    function prepareQuestion() {
+      stopTimer();
+
+      if (!state.queue.length) {
+        state.currentQuestion = null;
+        return;
+      }
+
+      if (state.currentIndex >= state.queue.length) {
+        state.screen = "result";
+        return;
+      }
+
+      const q = getQuestionById(state.queue[state.currentIndex]);
+      if (!q) {
+        state.currentIndex++;
+        prepareQuestion();
+        return;
+      }
+
+      state.currentQuestion = q;
+      state.answered = false;
+      state.selectedValue = "";
+      state.feedbackOk = false;
+      state.miniMessage = "";
+
+      const choiceProp = getChoiceProp(state.mode);
+      state.correctValue = q[choiceProp];
+
+      const wrongPool = QUESTIONS
+        .filter(item => item.id !== q.id)
+        .map(item => item[choiceProp])
+        .filter(Boolean)
+        .filter(value => value !== state.correctValue);
+
+      state.choices = shuffle([state.correctValue].concat(sample(unique(wrongPool), 3)));
+
+      if (state.mode === "speed") {
+        startTimer();
+      }
+    }
+
+    function unique(array) {
+      return Array.from(new Set(array));
+    }
+
+    function getChoiceProp(mode) {
+      if (mode === "en2ja" || mode === "speed") return "japanese";
+      return "english";
+    }
+
+    function getQuestionTitle(mode) {
+      if (mode === "vocab") return "この日本語に合う英語はどれ？";
+      if (mode === "ja2en") return "日本語から英語を選ぼう";
+      if (mode === "en2ja") return "英語から日本語を選ぼう";
+      if (mode === "fill") return "例文の空欄に入る英語はどれ？";
+      if (mode === "speed") return "早押し！英語に合う日本語はどれ？";
+      return "正しい答えを選ぼう";
+    }
+
+    function getQuestionMain(q, mode) {
+      if (!q) return "";
+      if (mode === "en2ja" || mode === "speed") return q.english;
+      if (mode === "fill") return makeBlankSentence(q);
+      return q.japanese;
+    }
+
+    function getQuestionSub(q, mode) {
+      if (!q) return "";
+      if (mode === "en2ja" || mode === "speed") return "読み方：" + q.kana;
+      if (mode === "fill") return q.exampleJa;
+      return "ヒント：ジャンル「" + q.genre + "」 / 難易度「" + q.difficulty + "」";
+    }
+
+    function makeBlankSentence(q) {
+      const escapedEnglish = q.english.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const pattern = new RegExp(escapedEnglish, "i");
+
+      if (pattern.test(q.example)) {
+        return q.example.replace(pattern, "______");
+      }
+
+      return "______ / " + q.example;
+    }
+
+    function startTimer() {
+      secondsLeft = 12;
+      timerId = setInterval(() => {
+        secondsLeft--;
+        const timerEl = document.getElementById("timer");
+        if (timerEl) timerEl.textContent = String(secondsLeft);
+
+        if (secondsLeft <= 0) {
+          stopTimer();
+          if (!state.answered) {
+            answerQuestion("__TIME_UP__");
+          }
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    }
+
+    function answerQuestion(value) {
+      if (state.answered) return;
+
+      stopTimer();
+
+      const q = state.currentQuestion;
+      if (!q) return;
+
+      state.answered = true;
+      state.selectedValue = value;
+
+      const ok = value === state.correctValue;
+      state.feedbackOk = ok;
+
+      state.sessionTotal++;
+      saveData.totalAnswered++;
+      saveData.todayCount++;
+
+      if (ok) {
+        state.sessionCorrect++;
+        state.sessionStreak++;
+        saveData.totalCorrect++;
+        saveData.currentStreak++;
+        saveData.bestStreak = Math.max(saveData.bestStreak, saveData.currentStreak);
+        removeWeakPoint(q.id);
+        unlockBadge("first_correct");
+      } else {
+        state.sessionWrong++;
+        state.sessionStreak = 0;
+        saveData.totalWrong++;
+        saveData.currentStreak = 0;
+        addWeakPoint(q.id);
+      }
+
+      if (state.sessionStreak >= 5) unlockBadge("streak5");
+      if (state.sessionStreak >= 10) unlockBadge("streak10");
+      if (saveData.totalAnswered >= 50) unlockBadge("challenge50");
+      if (saveData.totalAnswered >= 100) unlockBadge("challenge100");
+
+      const newLevel = getLevel();
+      if (newLevel > state.lastLevel) {
+        state.miniMessage = "🎉 レベルアップ！ Lv." + state.lastLevel + " → Lv." + newLevel;
+        state.lastLevel = newLevel;
+      } else if (state.sessionTotal % 5 === 0) {
+        const acc = getAccuracy(state.sessionCorrect, state.sessionTotal);
+        state.miniMessage = "📊 ここまで " + state.sessionTotal + "問 / 正答率 " + acc + "% / 連続 " + state.sessionStreak + "問";
+      }
+
+      saveData.history.unshift({
+        id: q.id,
+        ok: ok,
+        mode: state.mode,
+        at: new Date().toISOString()
+      });
+      saveData.history = saveData.history.slice(0, 100);
+
+      save();
+      render();
+    }
+
+    function addWeakPoint(id) {
+      saveData.weakMap[id] = (saveData.weakMap[id] || 0) + 1;
+    }
+
+    function removeWeakPoint(id) {
+      if (!saveData.weakMap[id]) return;
+
+      saveData.weakMap[id]--;
+
+      if (saveData.weakMap[id] <= 0) {
+        delete saveData.weakMap[id];
+      }
+    }
+
+    function toggleFavorite(id) {
+      if (!id) return;
+
+      if (saveData.favorites[id]) {
+        delete saveData.favorites[id];
+      } else {
+        saveData.favorites[id] = true;
+      }
+
+      save();
+      render();
+    }
+
+    function unlockBadge(key) {
+      if (BADGES[key]) {
+        saveData.badges[key] = true;
+      }
+    }
+
+    function nextQuestion() {
+      if (!state.answered) return;
+      state.currentIndex++;
+      prepareQuestion();
+      render();
+    }
+
+    function resetAllData() {
+      const ok = confirm("学習記録、苦手問題、お気に入り、バッジをすべてリセットします。よろしいですか？");
+      if (!ok) return;
+
+      saveData = defaultSave();
+      save();
+      resetSession(false);
+      setScreen("home");
+    }
+
+    function render() {
+      topLevel.textContent = "Lv." + getLevel();
+      stopTimer();
+
+      if (state.screen === "home") renderHome();
+      else if (state.screen === "modes") renderModes();
+      else if (state.screen === "genres") renderGenres();
+      else if (state.screen === "quiz") renderQuiz();
+      else if (state.screen === "result") renderResult();
+      else if (state.screen === "weak") renderWeak();
+      else if (state.screen === "list") renderList();
+      else renderHome();
+    }
+
+    function renderHome() {
+      const total = saveData.totalAnswered;
+      const acc = getAccuracy(saveData.totalCorrect, total);
+
+      appRoot.innerHTML = `
+        <section class="hero">
+          <h1>英語であそぼう！</h1>
+          <p>車内・待ち時間・すきま時間に、4択クイズで英語を覚えるゲームです。</p>
+          <div class="tagline">
+            <span class="tag">100問入り</span>
+            <span class="tag">スマホ対応</span>
+            <span class="tag">復習つき</span>
+            <span class="tag">保存つき</span>
+          </div>
+        </section>
+
+        ${storageOk ? "" : `
+          <div class="notice">
+            localStorageが使えない環境です。ゲームはできますが、ブラウザを閉じると記録が残らない場合があります。
+          </div>
+        `}
+
+        <section class="card" style="margin-top:14px;">
+          <h2>今日のようす</h2>
+          <div class="stats">
+            <div class="stat"><div class="num">${saveData.todayCount}</div><div class="label">今日の学習</div></div>
+            <div class="stat"><div class="num">${saveData.totalCorrect}</div><div class="label">累計正解</div></div>
+            <div class="stat"><div class="num">${acc}%</div><div class="label">累計正答率</div></div>
+            <div class="stat"><div class="num">${saveData.bestStreak}</div><div class="label">最高連続</div></div>
+          </div>
+
+          <div class="progress">
+            <div style="width:${Math.min(100, (saveData.totalCorrect % 10) * 10)}%"></div>
+          </div>
+          <p class="muted small">次のレベルまであと ${10 - (saveData.totalCorrect % 10 || 10)} 正解。ただし10問ごとにレベルアップします。</p>
+
+          <div class="toolbar">
+            <button class="btn primary" onclick="showModes()">🎮 ゲームをはじめる</button>
+            <button class="btn secondary" onclick="showWeak()">📝 苦手を復習</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>バッジ</h2>
+          ${renderBadges()}
+        </section>
+
+        <section class="card">
+          <h2>メニュー</h2>
+          <div class="grid two">
+            <button class="btn" onclick="showList()">📚 データ一覧を見る</button>
+            <button class="btn" onclick="startFavoriteGame()">⭐ お気に入りだけ練習</button>
+            <button class="btn danger" onclick="resetAllData()">🧹 記録をリセット</button>
+            <button class="btn good" onclick="startGame('vocab','すべて')">🚀 すぐ始める</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderBadges() {
+      return `
+        <div class="badge-row">
+          ${Object.keys(BADGES).map(key => {
+            const badge = BADGES[key];
+            const unlocked = !!saveData.badges[key];
+            return `<span class="badge ${unlocked ? "" : "locked"}">${badge.icon} ${escapeHtml(badge.name)}${unlocked ? "" : " 🔒"}</span>`;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderModes() {
+      appRoot.innerHTML = `
+        <section class="card">
+          <h2>ゲームモードを選んでね</h2>
+          <p class="muted">まずは「英単語クイズ」がおすすめです。</p>
+          <div class="grid two">
+            ${Object.keys(MODES).map(key => {
+              const mode = MODES[key];
+              return `
+                <button class="btn choice" onclick="showGenres('${key}')">
+                  <span>
+                    <strong>${mode.icon} ${escapeHtml(mode.label)}</strong><br>
+                    <span class="small muted">${escapeHtml(mode.description)}</span>
+                  </span>
+                  <span>▶</span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderGenres() {
+      appRoot.innerHTML = `
+        <section class="card">
+          <h2>ジャンルを選ぼう</h2>
+          <p class="muted">モード：${escapeHtml(MODES[state.mode].label)}</p>
+
+          <div class="grid two">
+            <button class="btn primary" onclick="startGame('${state.mode}', 'すべて')">
+              🌈 すべてから出題
+            </button>
+            ${GENRES.map(genre => {
+              const count = QUESTIONS.filter(q => q.genre === genre).length;
+              return `
+                <button class="btn" onclick="startGame('${state.mode}', '${escapeHtml(genre)}')">
+                  ${escapeHtml(genre)}<br>
+                  <span class="small muted">${count}問</span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderQuiz() {
+      const q = state.currentQuestion;
+
+      if (!QUESTIONS.length) {
+        appRoot.innerHTML = `
+          <section class="card">
+            <h2>問題データがありません</h2>
+            <p>QUESTIONS配列に問題を追加してください。</p>
+            <button class="btn primary" onclick="goHome()">ホームへ</button>
+          </section>
+        `;
+        return;
+      }
+
+      if (!q) {
+        appRoot.innerHTML = `
+          <section class="card">
+            <h2>出題できる問題がありません</h2>
+            <p class="muted">ジャンル、苦手問題、またはお気に入りの条件に合う問題がありません。</p>
+            <button class="btn primary" onclick="showModes()">ゲーム選択へ</button>
+          </section>
+        `;
+        return;
+      }
+
+      const progress = Math.round(((state.currentIndex + 1) / state.queue.length) * 100);
+      const isFav = !!saveData.favorites[q.id];
+
+      appRoot.innerHTML = `
+        <section class="card">
+          <div class="toolbar" style="margin-top:0;">
+            <span class="pill">🎮 ${escapeHtml(MODES[state.mode].label)}</span>
+            <span class="pill">📘 ${escapeHtml(q.genre)}</span>
+            <span class="pill">${state.currentIndex + 1}/${state.queue.length}</span>
+          </div>
+
+          <div class="progress">
+            <div style="width:${progress}%"></div>
+          </div>
+
+          ${state.mode === "speed" && !state.answered ? `<div class="timer">⏱ <span id="timer">${secondsLeft || 12}</span></div>` : ""}
+
+          <div class="question-box">
+            <div class="question-title">${escapeHtml(getQuestionTitle(state.mode))}</div>
+            <div class="${state.mode === "fill" ? "big" : "english-large"}">${escapeHtml(getQuestionMain(q, state.mode))}</div>
+            <p class="muted">${escapeHtml(getQuestionSub(q, state.mode))}</p>
+          </div>
+
+          <div class="grid">
+            ${state.choices.map(choice => renderChoiceButton(choice)).join("")}
+          </div>
+
+          <div class="toolbar">
+            <button class="btn ${isFav ? "good" : "secondary"}" onclick="toggleFavorite('${q.id}')">
+              ${isFav ? "⭐ お気に入り解除" : "☆ お気に入り"}
+            </button>
+            <button class="btn ghost" onclick="showModes()">モード変更</button>
+          </div>
+
+          ${state.answered ? renderFeedback(q) : ""}
+        </section>
+      `;
+
+      if (state.mode === "speed" && !state.answered) {
+        startTimer();
+      }
+    }
+
+    function renderChoiceButton(choice) {
+      let className = "btn choice";
+
+      if (state.answered) {
+        if (choice === state.correctValue) className += " correct";
+        else if (choice === state.selectedValue) className += " wrong";
+        else className += " disabled";
+      }
+
+      const mark = state.answered && choice === state.correctValue
+        ? "⭕"
+        : state.answered && choice === state.selectedValue
+          ? "❌"
+          : "👉";
+
+      return `
+        <button class="${className}" onclick="answerQuestion('${escapeJsArg(choice)}')" ${state.answered ? "disabled" : ""}>
+          <span>${escapeHtml(choice)}</span>
+          <span>${mark}</span>
+        </button>
+      `;
+    }
+
+    function escapeJsArg(value) {
+      return String(value)
+        .replaceAll("\\", "\\\\")
+        .replaceAll("'", "\\'")
+        .replaceAll("\n", "\\n")
+        .replaceAll("\r", "");
+    }
+
+    function renderFeedback(q) {
+      const ok = state.feedbackOk;
+      const praise = PRAISES[Math.floor(Math.random() * PRAISES.length)];
+      const correctText = state.correctValue;
+      const selectedText = state.selectedValue === "__TIME_UP__" ? "時間切れ" : state.selectedValue;
+
+      return `
+        <div class="feedback ${ok ? "ok" : "ng"}">
+          <h3>${ok ? "🎉 正解！ " + praise : "💡 おしい！"}</h3>
+          ${ok ? `
+            <p>よくできました。連続正解：<strong>${state.sessionStreak}</strong>問</p>
+          ` : `
+            <p>あなたの答え：<strong>${escapeHtml(selectedText)}</strong></p>
+            <p>正解：<strong>${escapeHtml(correctText)}</strong></p>
+            <p class="muted">まちがえた問題は「苦手問題」に入り、あとで復習できます。</p>
+          `}
+
+          <div class="study-card">
+            <h3>もう一度見る</h3>
+            <p><strong>英語：</strong>${escapeHtml(q.english)}</p>
+            <p><strong>日本語：</strong>${escapeHtml(q.japanese)}</p>
+            <p><strong>読み方：</strong>${escapeHtml(q.kana)}</p>
+            <p><strong>例文：</strong>${escapeHtml(q.example)}</p>
+            <p><strong>例文の意味：</strong>${escapeHtml(q.exampleJa)}</p>
+            <p><strong>難易度：</strong>${escapeHtml(q.difficulty)}</p>
+          </div>
+
+          ${state.miniMessage ? `<div class="mini-result">${escapeHtml(state.miniMessage)}</div>` : ""}
+
+          <div class="toolbar">
+            <button class="btn primary" onclick="nextQuestion()">次の問題へ</button>
+            <button class="btn secondary" onclick="state.screen='result'; render()">結果を見る</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderResult() {
+      const total = state.sessionTotal;
+      const acc = getAccuracy(state.sessionCorrect, total);
+
+      appRoot.innerHTML = `
+        <section class="card">
+          <h2>結果発表</h2>
+          <div class="stats">
+            <div class="stat"><div class="num">${total}</div><div class="label">挑戦数</div></div>
+            <div class="stat"><div class="num">${state.sessionCorrect}</div><div class="label">正解</div></div>
+            <div class="stat"><div class="num">${state.sessionWrong}</div><div class="label">不正解</div></div>
+            <div class="stat"><div class="num">${acc}%</div><div class="label">正答率</div></div>
+          </div>
+
+          <div class="notice">
+            ${resultMessage(acc, total)}
+          </div>
+
+          <h3>現在のバッジ</h3>
+          ${renderBadges()}
+
+          <div class="toolbar">
+            <button class="btn primary" onclick="startGame('${state.mode}', '${escapeJsArg(state.genre)}', ${state.sourceIds ? JSON.stringify(state.sourceIds).replaceAll('"', "&quot;") : "null"})">もう一回</button>
+            <button class="btn secondary" onclick="showModes()">モード選択へ</button>
+            <button class="btn good" onclick="showWeak()">苦手を復習</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function resultMessage(acc, total) {
+      if (!total) return "まだ問題を解いていません。まずは1問チャレンジしてみましょう。";
+      if (acc >= 90) return "すばらしい！かなり覚えています。次は早押しチャレンジもおすすめです。";
+      if (acc >= 70) return "いい感じです！間違えた問題を復習すると、もっと強くなれます。";
+      if (acc >= 50) return "ここから伸びます。例文と読み方を見ながら、もう一回やってみましょう。";
+      return "最初はまちがえてOKです。苦手問題だけ復習すると覚えやすいです。";
+    }
+
+    function renderWeak() {
+      const weakIds = Object.keys(saveData.weakMap).filter(id => saveData.weakMap[id] > 0);
+      const weakQuestions = weakIds
+        .map(id => getQuestionById(id))
+        .filter(Boolean)
+        .sort((a, b) => (saveData.weakMap[b.id] || 0) - (saveData.weakMap[a.id] || 0));
+
+      appRoot.innerHTML = `
+        <section class="card">
+          <h2>苦手問題リスト</h2>
+          <p class="muted">間違えた問題がここに入ります。正解すると少しずつ減ります。</p>
+
+          ${weakQuestions.length ? `
+            <div class="toolbar">
+              <button class="btn primary" onclick='startGame("vocab", "すべて", ${JSON.stringify(weakQuestions.map(q => q.id))})'>
+                📝 苦手だけ復習する
+              </button>
+            </div>
+
+            ${weakQuestions.map(q => `
+              <div class="list-item">
+                <div><strong>${escapeHtml(q.english)}</strong> / ${escapeHtml(q.japanese)}</div>
+                <div class="small muted">読み方：${escapeHtml(q.kana)} / 苦手度：${saveData.weakMap[q.id]}</div>
+                <div class="small">${escapeHtml(q.example)}</div>
+              </div>
+            `).join("")}
+          ` : `
+            <div class="notice">
+              まだ苦手問題はありません。すごい！ゲームで間違えると、ここに自動で追加されます。
+            </div>
+            <button class="btn primary" onclick="showModes()">ゲームを始める</button>
+          `}
+        </section>
+      `;
+    }
+
+    function renderList() {
+      const favoriteIds = Object.keys(saveData.favorites);
+      const favCount = favoriteIds.length;
+
+      appRoot.innerHTML = `
+        <section class="card">
+          <h2>データ一覧</h2>
+          <p class="muted">内蔵データは ${QUESTIONS.length} 問です。お気に入りは ${favCount} 問です。</p>
+
+          <div class="toolbar">
+            <button class="btn primary" onclick="startGame('vocab', 'すべて')">全部から練習</button>
+            <button class="btn secondary" onclick="startFavoriteGame()">お気に入り練習</button>
+          </div>
+
+          ${GENRES.map(genre => {
+            const items = QUESTIONS.filter(q => q.genre === genre);
+            return `
+              <div class="card" style="box-shadow:none; margin-top:12px;">
+                <h3>${escapeHtml(genre)}：${items.length}問</h3>
+                ${items.map(q => `
+                  <div class="list-item">
+                    <div>
+                      <strong>${escapeHtml(q.english)}</strong>
+                      <span class="muted"> / ${escapeHtml(q.japanese)}</span>
+                    </div>
+                    <div class="small muted">読み方：${escapeHtml(q.kana)} / 難易度：${escapeHtml(q.difficulty)}</div>
+                    <div class="small">${escapeHtml(q.example)}<br>${escapeHtml(q.exampleJa)}</div>
+                    <button class="btn ${saveData.favorites[q.id] ? "good" : "ghost"}" onclick="toggleFavorite('${q.id}')">
+                      ${saveData.favorites[q.id] ? "⭐ お気に入り解除" : "☆ お気に入り"}
+                    </button>
+                  </div>
+                `).join("")}
+              </div>
+            `;
+          }).join("")}
+        </section>
+      `;
+    }
+
+    function startFavoriteGame() {
+      const ids = Object.keys(saveData.favorites);
+      if (!ids.length) {
+        alert("お気に入りがまだありません。データ一覧やクイズ画面で☆を押して登録してください。");
+        return;
+      }
+      startGame("vocab", "すべて", ids);
+    }
+
+    render();
+  </script>
+</body>
+</html>

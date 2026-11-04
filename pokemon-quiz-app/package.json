@@ -1,0 +1,14 @@
+{
+  "name": "pokemon-quiz-app",
+  "version": "2.0.5",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:data": "node scripts/build-pokemon-data.mjs",
+    "build:data:full": "POKEMON_MAX_SPECIES=1025 node scripts/build-pokemon-data.mjs",
+    "serve": "npx --yes serve ."
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#202a3d">
+<meta name="description" content="47都道府県をドラフトして自分だけのチームをつくる対戦ゲーム。ひとりでCPU対戦、みんなで2〜20人プレイ。地元ボーナスと出場順で勝負しよう。">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>都道府県ドラフトバトル｜地元も、切り札も。キミが指名。</title>
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&family=Reggae+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css?v=2.0.0-rc.1">
+</head>
+<body>
+<a href="#app" class="skip">ゲーム画面へ移動</a>
+<header class="topbar"><div class="shell"><button type="button" class="brand" data-action="home" aria-label="都道府県ドラフトバトル ホーム"><em aria-hidden="true">47</em><span>都道府県ドラフトバトル<small>DRAFT BATTLE / PARTY EDITION</small></span></button><nav class="tools" aria-label="ツール"><button type="button" class="iconbtn" id="sound-toggle" data-action="sound" aria-pressed="false" aria-label="効果音の切り替え">音 OFF</button><button type="button" class="iconbtn" data-action="help" aria-label="遊び方">？</button></nav></div></header>
+<div id="connection" hidden></div>
+<main id="app" class="shell" tabindex="-1"><div class="loader"><h1>都道府県ドラフトバトル</h1><p>ゲームを読み込んでいます。</p><p>表示されない場合は、通信状態を確認して再読み込みしてください。</p></div></main>
+<dialog id="modal" aria-labelledby="modal-title"></dialog>
+<div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+<input type="file" id="import-file" accept="application/json,.json" hidden>
+<noscript>このゲームにはJavaScriptが必要です。ブラウザーでJavaScriptを有効にしてください。</noscript>
+<script src="./data.js?v=2.0.0-rc.1"></script>
+<script src="./engine.js?v=2.0.0-rc.1"></script>
+<script src="./online.js?v=2.0.0-rc.1"></script>
+<script src="./app.js?v=2.0.0-rc.1"></script>
+</body>
+</html>

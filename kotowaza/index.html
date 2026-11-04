@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ことばクエスト 〜慣用句・ことわざ・古事成語バトル〜</title>
+  <style>
+    :root {
+      --bg: #f7fbff;
+      --card: #ffffff;
+      --text: #16324f;
+      --sub: #385a7c;
+      --primary: #2d7ff9;
+      --primary-press: #1f66d1;
+      --accent: #00a67e;
+      --warn: #d16f00;
+      --danger: #c0392b;
+      --border: #c8d9ec;
+      --shadow: 0 6px 16px rgba(22, 50, 79, 0.1);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .app {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 12px 12px 48px;
+    }
+
+    .screen {
+      display: none;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .screen.active { display: block; }
+
+    h1 {
+      margin: 8px 0 12px;
+      font-size: clamp(24px, 5vw, 34px);
+      line-height: 1.3;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: clamp(22px, 4.4vw, 30px);
+      line-height: 1.4;
+    }
+
+    h3 { font-size: 22px; margin: 8px 0; }
+
+    p, li { font-size: 18px; }
+
+    .subtitle {
+      color: var(--sub);
+      margin-top: 0;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      min-height: 46px;
+      padding: 10px 14px;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      background: var(--primary);
+      transition: transform 0.08s ease, background 0.15s ease;
+      width: 100%;
+    }
+
+    .btn:hover { background: var(--primary-press); }
+    .btn:active { transform: scale(0.98); }
+    .btn:focus-visible { outline: 3px solid #ffb703; outline-offset: 2px; }
+
+    .btn.secondary { background: #556f8b; }
+    .btn.good { background: var(--accent); }
+    .btn.warn { background: var(--warn); }
+    .btn.danger { background: var(--danger); }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .chip {
+      display: inline-block;
+      background: #eaf3ff;
+      border: 1px solid #bfd7f6;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-weight: 700;
+      margin-right: 6px;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .status {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .status .box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fafdff;
+      font-weight: 700;
+    }
+
+    .question {
+      border: 2px solid #d4e5fa;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 10px 0;
+      background: #f8fcff;
+    }
+
+    .question .prompt {
+      font-size: 23px;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    .choices { display: grid; gap: 8px; margin-top: 10px; }
+
+    .choice {
+      min-height: 48px;
+      width: 100%;
+      text-align: left;
+      border: 2px solid #9fc4f4;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 700;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .choice:hover { background: #eef6ff; }
+    .choice:focus-visible { outline: 3px solid #ffb703; }
+    .choice[disabled] { opacity: 0.8; cursor: not-allowed; }
+
+    .feedback {
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 10px;
+      border: 2px solid #bdd8f9;
+      background: #f4f9ff;
+      font-size: 18px;
+      white-space: pre-line;
+    }
+
+    .guide {
+      border-left: 6px solid #ffd166;
+      background: #fff8e6;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .small { font-size: 16px; color: var(--sub); }
+    .small.rare { font-weight: 800; color: #7a4b00; }
+
+    .today-word {
+      background: #eef8ff;
+      border: 2px dashed #9ec8f7;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .battle-board {
+      border: 2px solid #cde0f6;
+      background: #f6fbff;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .monster-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .monster-avatar {
+      font-size: clamp(40px, 8vw, 58px);
+      filter: drop-shadow(0 2px 0 #b6d3f2);
+      transition: transform 0.2s ease;
+    }
+
+    .monster-avatar.hit { animation: hitShake 0.45s ease; }
+    .monster-avatar.special { animation: flashStrike 0.75s ease; }
+
+    .monster-hp {
+      width: 100%;
+      height: 14px;
+      background: #d9e9fa;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #abc9ea;
+      margin-top: 8px;
+    }
+
+    .monster-hp-bar {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #ff5f6d, #ff9f43);
+      transition: width 0.35s ease;
+    }
+
+    .battle-log {
+      margin-top: 6px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #22486f;
+    }
+
+    .treasure-toast {
+      border: 2px solid #ffd166;
+      background: #fff8d9;
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 10px;
+      font-weight: 700;
+      display: none;
+    }
+
+    @keyframes hitShake {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+      100% { transform: translateX(0); }
+    }
+
+    @keyframes flashStrike {
+      0% { transform: scale(1); filter: brightness(1); }
+      40% { transform: scale(1.2); filter: brightness(1.5); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .entry {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fcfeff;
+    }
+
+    .entry h4 { margin: 0 0 6px; font-size: 20px; }
+
+    select {
+      min-height: 46px;
+      border-radius: 10px;
+      border: 2px solid #9fc4f4;
+      width: 100%;
+      padding: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .footer-nav { margin-top: 12px; }
+
+    @media (max-width: 420px) {
+      .app { padding: 8px; }
+      .screen { padding: 12px; }
+      .question .prompt { font-size: 21px; }
+      p, li, .btn, .choice, select { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" id="appRoot">
+    <section id="titleScreen" class="screen active" aria-labelledby="titleHeading">
+      <h1 id="titleHeading">ことばクエスト<br>〜慣用句・ことわざ・古事成語バトル〜</h1>
+      <p class="subtitle">ことば博士と いっしょに、ことばの ぼうけんへ！</p>
+      <div class="guide" aria-live="polite">👨‍🏫 ことば博士「1回10問！3〜5分でサクッと学べるよ。まちがえても大丈夫、つぎでレベルアップ！」</div>
+      <article class="today-word" id="todayWordBox" aria-live="polite"></article>
+      <div id="titleStats" class="status"></div>
+      <button class="btn good" id="startFromTitle" aria-label="モード選択へ進む">ゲームスタート！</button>
+      <div class="footer-nav row">
+        <button class="btn secondary" data-nav="dictionaryScreen">言葉図鑑</button>
+        <button class="btn secondary" data-nav="settingsScreen">設定</button>
+      </div>
+    </section>
+
+    <section id="modeScreen" class="screen" aria-labelledby="modeHeading">
+      <h2 id="modeHeading" tabindex="-1">モードをえらぼう</h2>
+      <p class="subtitle">きょうは どのバトルに する？</p>
+      <div class="menu-grid">
+        <button class="btn" data-mode="idiom">慣用句モード</button>
+        <button class="btn" data-mode="proverb">ことわざモード</button>
+        <button class="btn" data-mode="koji">古事成語モード</button>
+        <button class="btn good" data-mode="mix">ミックスモード</button>
+        <button class="btn warn" data-mode="review">復習モード</button>
+      </div>
+      <div class="footer-nav row">
+        <button class="btn secondary" data-nav="titleScreen">タイトルへ</button>
+        <button class="btn secondary" data-nav="settingsScreen">設定</button>
+      </div>
+    </section>
+
+    <section id="quizScreen" class="screen" aria-labelledby="quizHeading">
+      <h2 id="quizHeading" tabindex="-1">クイズバトル</h2>
+      <div class="status" id="quizStatus"></div>
+      <section class="battle-board" aria-live="polite">
+        <div class="monster-row">
+          <div>
+            <strong id="monsterName">まちがいモンスター</strong>
+            <div class="small" id="monsterState">のんびりしている…</div>
+          </div>
+          <div class="monster-avatar" id="monsterAvatar" role="img" aria-label="まちがいモンスター">👾</div>
+        </div>
+        <div class="monster-hp" aria-label="モンスターHP">
+          <div class="monster-hp-bar" id="monsterHpBar"></div>
+        </div>
+        <div class="battle-log" id="battleLog">バトル開始！ことばでダメージをあたえよう！</div>
+      </section>
+      <div class="guide" id="guideMessage">🧙 かんちゃん「いける！あせらず えらぼう！」</div>
+      <article class="question">
+        <div class="small" id="questionMeta"></div>
+        <div class="prompt" id="questionPrompt"></div>
+        <div class="choices" id="choicesArea"></div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn secondary" id="hintBtn" style="max-width:220px;">ヒントを見る</button>
+          <button class="btn" id="nextBtn" style="max-width:220px; display:none;">つぎの問題へ</button>
+        </div>
+        <div id="feedback" class="feedback" aria-live="polite" style="display:none;"></div>
+        <div id="treasureToast" class="treasure-toast" aria-live="polite"></div>
+      </article>
+      <div class="footer-nav row">
+        <button class="btn secondary" data-nav="modeScreen">モード選択へ</button>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen" aria-labelledby="resultHeading">
+      <h2 id="resultHeading" tabindex="-1">けっか発表！</h2>
+      <div class="guide" id="resultGuide"></div>
+      <div id="resultSummary" class="status"></div>
+      <div id="resultDetail"></div>
+      <div class="footer-nav row">
+        <button class="btn good" data-nav="modeScreen">もう1回あそぶ</button>
+        <button class="btn secondary" data-nav="dictionaryScreen">言葉図鑑を見る</button>
+      </div>
+    </section>
+
+    <section id="dictionaryScreen" class="screen" aria-labelledby="dictionaryHeading">
+      <h2 id="dictionaryHeading" tabindex="-1">言葉図鑑</h2>
+      <p class="subtitle">あつめた言葉を チェックしよう</p>
+      <div id="dictionaryProgress" class="guide"></div>
+      <label for="dictionaryFilter">カテゴリでしぼる</label>
+      <select id="dictionaryFilter" aria-label="図鑑カテゴリ選択">
+        <option value="all">すべて</option>
+        <option value="idiom">慣用句</option>
+        <option value="proverb">ことわざ</option>
+        <option value="koji">古事成語</option>
+      </select>
+      <div id="dictionaryList" class="list" style="margin-top:10px;"></div>
+      <div class="footer-nav row">
+        <button class="btn secondary" data-nav="titleScreen">タイトルへ</button>
+        <button class="btn secondary" data-nav="modeScreen">モード選択へ</button>
+      </div>
+    </section>
+
+    <section id="reviewScreen" class="screen" aria-labelledby="reviewHeading">
+      <h2 id="reviewHeading" tabindex="-1">復習ノート</h2>
+      <p id="reviewMessage" class="guide">まちがえた問題をもう一度！</p>
+      <div id="reviewList" class="list"></div>
+      <div class="footer-nav row">
+        <button class="btn warn" data-mode="review">復習モードをはじめる</button>
+        <button class="btn secondary" data-nav="modeScreen">モード選択へ</button>
+      </div>
+    </section>
+
+    <section id="settingsScreen" class="screen" aria-labelledby="settingsHeading">
+      <h2 id="settingsHeading" tabindex="-1">設定</h2>
+      <label for="difficultySelect">難易度をえらぶ</label>
+      <select id="difficultySelect" aria-label="難易度選択">
+        <option value="all">ぜんぶ</option>
+        <option value="easy">かんたん</option>
+        <option value="normal">ふつう</option>
+        <option value="hard">むずかしい</option>
+      </select>
+      <p class="small">※ モード開始時にこの設定が使われます。</p>
+      <div class="row" style="margin-top:12px;">
+        <button class="btn good" id="saveSettingsBtn">設定を保存</button>
+        <button class="btn danger" id="resetDataBtn">学習記録をリセット</button>
+      </div>
+      <div id="settingsInfo" class="guide" style="margin-top:10px;">設定をかえると、つぎのプレイから反映されるよ。</div>
+      <div class="footer-nav row">
+        <button class="btn secondary" data-nav="titleScreen">タイトルへ</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const WORDS = [
+      {id:1,category:'idiom',word:'頭が下がる',reading:'あたまがさがる',meaning:'すごいと思って尊敬すること',question:'「頭が下がる」の意味は？',choices:['とても怒ること','すごいと思って尊敬すること','頭が痛くなること','がっかりすること'],answer:'すごいと思って尊敬すること',hint:'すばらしい行いを見たときの気持ち。',explanation:'人のりっぱな行いに、自然と尊敬の気持ちになることだよ。',example:'毎日れんしゅうする友だちには頭が下がる。',difficulty:'easy',type:'meaning',story:'雨の日もゴミひろいを続ける先ぱいを見て…'},
+      {id:2,category:'idiom',word:'顔が広い',reading:'かおがひろい',meaning:'知り合いがたくさんいること',question:'「顔が広い」の意味は？',choices:['顔が大きいこと','知り合いがたくさんいること','笑顔がすてきなこと','はずかしがり屋なこと'],answer:'知り合いがたくさんいること',hint:'いろいろな人とつながりがあるよ。',explanation:'たくさんの人に知られていて、つながりが多いようす。',example:'先生は地域で顔が広い。',difficulty:'easy',type:'meaning',story:'町のおまつりで、だれに会ってもあいさつされる先生。'},
+      {id:3,category:'idiom',word:'耳が痛い',reading:'みみがいたい',meaning:'自分にも思い当たってつらいこと',question:'「耳が痛い」の意味は？',choices:['耳の病気になること','大きな音で耳がいたいこと','自分にも思い当たってつらいこと','聞こえなくなること'],answer:'自分にも思い当たってつらいこと',hint:'注意された内容が自分にも当てはまるとき。',explanation:'ほんとうのことを言われて、ドキッとする気持ち。',example:'早ね早おきの話は、夜ふかしのぼくには耳が痛い。',difficulty:'normal',type:'meaning',story:'先生が「宿題はためないこと」と話した。'},
+      {id:4,category:'idiom',word:'手を貸す',reading:'てをかす',meaning:'手伝うこと',question:'「手を貸す」の意味は？',choices:['道具を貸すこと','手伝うこと','手をつなぐこと','お金を貸すこと'],answer:'手伝うこと',hint:'一人ではたいへんなときにすること。',explanation:'こまっている人を助けるために、力をかすこと。',example:'重いにもつ運びに手を貸す。',difficulty:'easy',type:'word',story:'荷物が多くてこまっている友だちがいる。'},
+      {id:5,category:'idiom',word:'口がかたい',reading:'くちがかたい',meaning:'ひみつをもらさないこと',question:'「口がかたい」の意味は？',choices:['話すのがにがて','ひみつをもらさないこと','口があかないこと','食べるのがはやいこと'],answer:'ひみつをもらさないこと',hint:'だいじな話を安心して任せられる。',explanation:'人に言ってはいけないことをきちんと守れるようす。',example:'あの子は口がかたいから相談しやすい。',difficulty:'easy',type:'word',story:'友だちのサプライズ計画をないしょにしたい。'},
+      {id:6,category:'idiom',word:'胸を張る',reading:'むねをはる',meaning:'自信をもってどうどうとすること',question:'「胸を張る」の意味は？',choices:['いばって歩くこと','自信をもってどうどうとすること','深呼吸をすること','胸がいたくなること'],answer:'自信をもってどうどうとすること',hint:'がんばった後の気持ち。',explanation:'やるべきことをして、じぶんをほこらしく思えるようす。',example:'最後まで走りきって胸を張った。',difficulty:'easy',type:'meaning',story:'れんしゅうのせいかが出て、リレーで完走した。'},
+      {id:7,category:'idiom',word:'鼻が高い',reading:'はながたかい',meaning:'ほこらしい気持ちになること',question:'「鼻が高い」の意味は？',choices:['においがよく分かること','ほこらしい気持ちになること','はなが長いこと','元気がないこと'],answer:'ほこらしい気持ちになること',hint:'家ぞくや友だちが活やくしたとき。',explanation:'うれしくて、えっへん！という気持ちになること。',example:'弟が全国大会に出て、ぼくまで鼻が高い。',difficulty:'normal',type:'meaning',story:'妹が絵のコンクールで金賞をとった。'},
+      {id:8,category:'idiom',word:'腰を上げる',reading:'こしをあげる',meaning:'やっと行動をはじめること',question:'「腰を上げる」の意味は？',choices:['立ち上がること','やっと行動をはじめること','ダンスをすること','つかれてすわること'],answer:'やっと行動をはじめること',hint:'ずっと先のばししていたことを始める。',explanation:'なかなか始められなかったことに、ようやく取りかかること。',example:'夏休みの宿題にやっと腰を上げた。',difficulty:'normal',type:'story',story:'しめ切り前日、まだ自由研究が終わっていない。'},
+      {id:9,category:'idiom',word:'肩を落とす',reading:'かたをおとす',meaning:'がっかりすること',question:'「肩を落とす」の意味は？',choices:['肩がいたいこと','がっかりすること','力をためること','ねむくなること'],answer:'がっかりすること',hint:'しょんぼりしたようす。',explanation:'うまくいかなくて、元気がなくなること。',example:'試合に負けて肩を落とした。',difficulty:'easy',type:'meaning',story:'楽しみにしていた遠足が雨で中止に。'},
+      {id:10,category:'idiom',word:'目が回る',reading:'めがまわる',meaning:'とてもいそがしいこと',question:'「目が回る」の意味は？',choices:['ぐるぐる回ること','ねむくなること','とてもいそがしいこと','目が悪くなること'],answer:'とてもいそがしいこと',hint:'やることが多すぎる！',explanation:'忙しくて、休むひまがないほどのようす。',example:'学芸会のじゅんびで目が回る。',difficulty:'easy',type:'story',story:'朝から夜まで予定がいっぱい。'},
+      {id:11,category:'idiom',word:'気が散る',reading:'きがちる',meaning:'集中できないこと',question:'「気が散る」の意味は？',choices:['元気になること','集中できないこと','気もちが軽くなること','体が散らばること'],answer:'集中できないこと',hint:'まわりが気になってしまう。',explanation:'ひとつのことに気持ちを向け続けられない状態。',example:'テレビの音で気が散る。',difficulty:'normal',type:'word',story:'宿題中にゲームの音が聞こえてくる。'},
+      {id:12,category:'idiom',word:'手に汗を握る',reading:'てにあせをにぎる',meaning:'はらはらして見守ること',question:'「手に汗を握る」の意味は？',choices:['暑くて汗をかくこと','手を洗うこと','はらはらして見守ること','緊張しないこと'],answer:'はらはらして見守ること',hint:'勝負のさいごの場面でドキドキ。',explanation:'どうなるか分からず、強いきんちょうを感じること。',example:'決勝戦は手に汗を握る展開だった。',difficulty:'hard',type:'meaning',story:'PK戦のラストキックをみんなで見ている。'},
+      {id:13,category:'idiom',word:'息をのむ',reading:'いきをのむ',meaning:'おどろきで一瞬ことばが出ないこと',question:'「息をのむ」の意味は？',choices:['深呼吸すること','走って息切れすること','おどろきで一瞬ことばが出ないこと','おなかがすくこと'],answer:'おどろきで一瞬ことばが出ないこと',hint:'すごい光景を見たとき。',explanation:'びっくりして、思わず息を止めるような気持ち。',example:'大きな花火に息をのんだ。',difficulty:'hard',type:'story',story:'空いっぱいに広がる花火を見た。'},
+      {id:14,category:'idiom',word:'腕を磨く',reading:'うでをみがく',meaning:'力をつけるために練習すること',question:'「腕を磨く」の意味は？',choices:['腕をあらうこと','力をつけるために練習すること','ケガをなおすこと','うで時計を買うこと'],answer:'力をつけるために練習すること',hint:'上手になるためにコツコツ。',explanation:'もっと上手にできるよう、努力を重ねること。',example:'ピアノの腕を磨く。',difficulty:'normal',type:'word',story:'発表会に向けて毎日練習している。'},
+      {id:15,category:'idiom',word:'水に流す',reading:'みずにながす',meaning:'いやなことを忘れて仲直りすること',question:'「水に流す」の意味は？',choices:['川であそぶこと','いらない物をすてること','いやなことを忘れて仲直りすること','飲み物をこぼすこと'],answer:'いやなことを忘れて仲直りすること',hint:'けんかのあとに大切。',explanation:'前のトラブルをいつまでも引きずらず、気持ちを切りかえること。',example:'昨日のけんかは水に流して遊ぼう。',difficulty:'hard',type:'story',story:'友だちとぶつかったけど、明日は同じチーム。'},
+
+      {id:16,category:'proverb',word:'石の上にも三年',reading:'いしのうえにもさんねん',meaning:'つらくても続ければ成果が出ること',question:'「石の上にも三年」の意味は？',choices:['石は三年でこわれる','つらくても続ければ成果が出ること','三年ごとに引っこすこと','石を集めること'],answer:'つらくても続ければ成果が出ること',hint:'あきらめずに続けるのがポイント。',explanation:'すぐ結果が出なくても、がまんして続けると道が開けるよ。',example:'毎日練習して、石の上にも三年で上達した。',difficulty:'easy',type:'meaning',story:'なわとびが苦手だったけど毎日れんしゅう。'},
+      {id:17,category:'proverb',word:'習うより慣れろ',reading:'ならうよりなれろ',meaning:'くり返しやって身につけることが大切',question:'「習うより慣れろ」の意味は？',choices:['先生に教わるな','くり返しやって身につけることが大切','新しいノートを買う','すぐにやめる'],answer:'くり返しやって身につけることが大切',hint:'実際にやってみる！',explanation:'説明だけでなく、体験しながら覚えるのが上達への近道。',example:'パソコン操作は習うより慣れろだね。',difficulty:'easy',type:'word',story:'自転車は本を読むだけでは乗れない。'},
+      {id:18,category:'proverb',word:'急がば回れ',reading:'いそがばまわれ',meaning:'急ぐときほど安全な方法を選ぶ',question:'「急がば回れ」の意味は？',choices:['いつも急いで進む','急ぐときほど安全な方法を選ぶ','近道だけ使う','走って回る'],answer:'急ぐときほど安全な方法を選ぶ',hint:'遠回りが、結果的に早いことも。',explanation:'あせって失敗するより、確実な方法がいちばん。',example:'テスト前こそ急がば回れで基本を見直した。',difficulty:'normal',type:'story',story:'せまい道はこむので、少し遠い大通りを使う。'},
+      {id:19,category:'proverb',word:'転ばぬ先の杖',reading:'ころばぬさきのつえ',meaning:'失敗する前に準備しておくこと',question:'「転ばぬ先の杖」の意味は？',choices:['つえを買うこと','失敗する前に準備しておくこと','ころんだら休むこと','先に走ること'],answer:'失敗する前に準備しておくこと',hint:'予防が大切。',explanation:'問題が起きる前に、そなえをしておこうという教え。',example:'遠足前の持ち物チェックは転ばぬ先の杖。',difficulty:'easy',type:'meaning',story:'雨がふりそうなので、かさを持っていく。'},
+      {id:20,category:'proverb',word:'七転び八起き',reading:'ななころびやおき',meaning:'何度失敗しても立ち上がること',question:'「七転び八起き」の意味は？',choices:['七回ねむること','何度失敗しても立ち上がること','ころばないこと','八回だけ成功すること'],answer:'何度失敗しても立ち上がること',hint:'あきらめない心！',explanation:'失敗はしてもいい。つぎに向かって立ち上がることが大切。',example:'計算ミスしても七転び八起きでチャレンジ。',difficulty:'easy',type:'meaning',story:'なわとびで何回もひっかかってしまう。'},
+      {id:21,category:'proverb',word:'案ずるより産むが易し',reading:'あんずるよりうむがやすし',meaning:'心配しすぎるよりやってみると案外できる',question:'「案ずるより産むが易し」の意味は？',choices:['赤ちゃんは簡単に生まれる','心配しすぎるよりやってみると案外できる','考えないほうがよい','何もしないのが一番'],answer:'心配しすぎるよりやってみると案外できる',hint:'やってみたら「できた！」という感じ。',explanation:'始める前は不安でも、実行すると意外とうまくいくこと。',example:'発表は案ずるより産むが易しだった。',difficulty:'hard',type:'story',story:'発表前はドキドキ。でも話し始めるとスラスラ。'},
+      {id:22,category:'proverb',word:'猿も木から落ちる',reading:'さるもきからおちる',meaning:'上手な人でも失敗することがある',question:'「猿も木から落ちる」の意味は？',choices:['猿は木が苦手','上手な人でも失敗することがある','木は危ない','猿を助けること'],answer:'上手な人でも失敗することがある',hint:'名人にもミスはある。',explanation:'得意なことでも、いつも完ぺきとはかぎらない。',example:'先生でも漢字をまちがえる。猿も木から落ちるだね。',difficulty:'normal',type:'word',story:'いつも満点の友だちが計算を1つまちがえた。'},
+      {id:23,category:'proverb',word:'二兎を追う者は一兎をも得ず',reading:'にとをおうものはいっとをもえず',meaning:'同時に多くをねらうとどちらも失う',question:'「二兎を追う者は一兎をも得ず」の意味は？',choices:['うさぎは二匹がいい','同時に多くをねらうとどちらも失う','一つだけやってもだめ','うさぎを追いかける遊び'],answer:'同時に多くをねらうとどちらも失う',hint:'欲ばりすぎに注意。',explanation:'目標をしぼらないと、どれも中途半端になりやすい。',example:'ゲームと宿題を同時にして失敗。二兎を追う者は一兎をも得ず。',difficulty:'hard',type:'meaning',story:'テレビを見ながら宿題をして、どちらも進まない。'},
+      {id:24,category:'proverb',word:'継続は力なり',reading:'けいぞくはちからなり',meaning:'続けることで大きな力になる',question:'「継続は力なり」の意味は？',choices:['力があれば続く','続けることで大きな力になる','すぐやめるのが大事','力は生まれつき'],answer:'続けることで大きな力になる',hint:'毎日の積み重ね。',explanation:'小さな努力でも続けると、確かな実力になるよ。',example:'毎朝の読書で語いが増えた。継続は力なり。',difficulty:'easy',type:'meaning',story:'毎日10分だけ読書を続けた。'},
+      {id:25,category:'proverb',word:'塵も積もれば山となる',reading:'ちりもつもればやまとなる',meaning:'小さなことも積み重なると大きくなる',question:'「塵も積もれば山となる」の意味は？',choices:['山にはちりが多い','小さなことも積み重なると大きくなる','ちりはすぐ消える','山は削れる'],answer:'小さなことも積み重なると大きくなる',hint:'少しずつでも続ける。',explanation:'毎日の小さな努力や節約が、大きな結果につながる。',example:'1日1ページでも塵も積もれば山となる。',difficulty:'easy',type:'word',story:'毎日少しずつ貯金して、ほしい本を買えた。'},
+      {id:26,category:'proverb',word:'情けは人のためならず',reading:'なさけはひとのためならず',meaning:'人に親切にすると巡って自分のためにもなる',question:'「情けは人のためならず」の意味は？',choices:['親切はしないほうがよい','人に親切にすると巡って自分のためにもなる','人のためだけに生きる','情けは弱さだ'],answer:'人に親切にすると巡って自分のためにもなる',hint:'やさしさは回ってくる。',explanation:'だれかへの親切は、いつか自分にもよい形で返ってくる。',example:'道案内をしたら後で助けてもらえた。情けは人のためならず。',difficulty:'hard',type:'story',story:'落とし物を届けたら、後日自分も助けられた。'},
+      {id:27,category:'proverb',word:'雨降って地固まる',reading:'あめふってじかたまる',meaning:'もめごとの後で前よりよくなる',question:'「雨降って地固まる」の意味は？',choices:['雨の日は地面がやわらかい','もめごとの後で前よりよくなる','雨は嫌い','地面を固める仕事'],answer:'もめごとの後で前よりよくなる',hint:'けんかの後の仲直り。',explanation:'問題を乗りこえることで、関係がより強くなること。',example:'言い合いの後で本音を話せて、雨降って地固まるだった。',difficulty:'normal',type:'story',story:'友だちとけんかしたが、話し合って仲直りした。'},
+      {id:28,category:'proverb',word:'百聞は一見にしかず',reading:'ひゃくぶんはいっけんにしかず',meaning:'何度も聞くより一度見るほうがよく分かる',question:'「百聞は一見にしかず」の意味は？',choices:['聞くことが大事','何度も聞くより一度見るほうがよく分かる','百回見るべき','見てはいけない'],answer:'何度も聞くより一度見るほうがよく分かる',hint:'じっさいに見るのが早い。',explanation:'説明だけより、実物を見ることで理解が深まる。',example:'工場見学で、百聞は一見にしかずを実感した。',difficulty:'normal',type:'meaning',story:'動画で見るより、実験を目の前で見たら理解できた。'},
+      {id:29,category:'proverb',word:'笑う門には福来る',reading:'わらうかどにはふくきたる',meaning:'明るく笑っている人には幸せが来る',question:'「笑う門には福来る」の意味は？',choices:['大声で笑うと怒られる','明るく笑っている人には幸せが来る','門の前で笑うこと','福は偶然だけで来る'],answer:'明るく笑っている人には幸せが来る',hint:'前向きな気持ちが大切。',explanation:'笑顔や明るいふるまいは、よい流れを呼びこむ。',example:'みんなで笑顔であいさつ。笑う門には福来る。',difficulty:'easy',type:'word',story:'朝からニコニコして学校へ行く。'},
+      {id:30,category:'proverb',word:'失敗は成功のもと',reading:'しっぱいはせいこうのもと',meaning:'失敗から学ぶことで成功につながる',question:'「失敗は成功のもと」の意味は？',choices:['失敗は悪いだけ','失敗から学ぶことで成功につながる','成功は失敗しない人だけ','何もしないのが安全'],answer:'失敗から学ぶことで成功につながる',hint:'まちがいからヒントを得る。',explanation:'失敗の理由を考えると、次はうまくいきやすい。',example:'実験がうまくいかなくても、失敗は成功のもと。',difficulty:'easy',type:'meaning',story:'工作で一度こわれたが、作り直したら完成した。'},
+
+      {id:31,category:'koji',word:'五里霧中',reading:'ごりむちゅう',meaning:'どうしてよいか分からないこと',question:'「五里霧中」の意味は？',choices:['長い道のり','どうしてよいか分からないこと','とても楽しいこと','霧の研究'],answer:'どうしてよいか分からないこと',hint:'先が見えない気持ち。',explanation:'状況がつかめず、進む方向が見えないようす。',example:'むずかしい問題で五里霧中になった。',difficulty:'normal',type:'meaning',story:'新しいゲームのルールが分からず困っている。'},
+      {id:32,category:'koji',word:'一石二鳥',reading:'いっせきにちょう',meaning:'一つの行動で二つの得をすること',question:'「一石二鳥」の意味は？',choices:['石で鳥を取ること','一つの行動で二つの得をすること','二回努力すること','鳥を育てること'],answer:'一つの行動で二つの得をすること',hint:'お得が2つ。',explanation:'1回の行動で、2つ以上のよい結果を得ること。',example:'歩いて登校したら運動にもなって一石二鳥。',difficulty:'easy',type:'word',story:'図書館まで歩くと本も借りられ運動にもなる。'},
+      {id:33,category:'koji',word:'温故知新',reading:'おんこちしん',meaning:'昔のことを学んで新しい考えを得ること',question:'「温故知新」の意味は？',choices:['新しいことだけ学ぶ','昔のことを学んで新しい考えを得ること','古い物を捨てる','記憶力をためす'],answer:'昔のことを学んで新しい考えを得ること',hint:'むかしを知ると今に役立つ。',explanation:'過去の知識をふり返ると、新しい発見につながる。',example:'歴史を学んで町づくりを考えるのは温故知新だ。',difficulty:'hard',type:'meaning',story:'昔の道具を調べて、今の便利さを考える。'},
+      {id:34,category:'koji',word:'試行錯誤',reading:'しこうさくご',meaning:'いろいろ試して工夫すること',question:'「試行錯誤」の意味は？',choices:['計画を立てないこと','いろいろ試して工夫すること','失敗しないこと','答えを待つこと'],answer:'いろいろ試して工夫すること',hint:'やってみて、直して、またやる。',explanation:'うまくいく方法を見つけるまで、くり返し試すこと。',example:'ロボット作りで試行錯誤した。',difficulty:'normal',type:'story',story:'工作がうまく動かず、部品を何度も入れかえた。'},
+      {id:35,category:'koji',word:'電光石火',reading:'でんこうせっか',meaning:'とてもすばやいこと',question:'「電光石火」の意味は？',choices:['光る石','とてもすばやいこと','じっくり考えること','夜に行動すること'],answer:'とてもすばやいこと',hint:'ピカッ！の速さ。',explanation:'雷の光のように、一瞬で動くこと。',example:'電光石火のパスで得点した。',difficulty:'easy',type:'meaning',story:'ゴール前で一瞬のチャンスを決めた。'},
+      {id:36,category:'koji',word:'臥薪嘗胆',reading:'がしんしょうたん',meaning:'目標のために苦労に耐えること',question:'「臥薪嘗胆」の意味は？',choices:['寝る前におやつ','目標のために苦労に耐えること','楽して勝つこと','胆力を試すこと'],answer:'目標のために苦労に耐えること',hint:'いつか達成するためにがまん。',explanation:'大きな目標のため、つらさに負けず努力を続けること。',example:'大会優勝を目ざして臥薪嘗胆の日々。',difficulty:'hard',type:'story',story:'朝練を続け、遊びたい気持ちをこらえる。'},
+      {id:37,category:'koji',word:'異口同音',reading:'いくどうおん',meaning:'多くの人が同じ意見を言うこと',question:'「異口同音」の意味は？',choices:['歌が上手','多くの人が同じ意見を言うこと','声が似ていること','音楽の授業'],answer:'多くの人が同じ意見を言うこと',hint:'みんな同じことを言う。',explanation:'別々の人が、そろって同じ意見を述べること。',example:'新メニューがおいしいと異口同音に話した。',difficulty:'normal',type:'word',story:'クラス全員が「その案がいい」と言った。'},
+      {id:38,category:'koji',word:'自業自得',reading:'じごうじとく',meaning:'自分の行いの結果を自分で受けること',question:'「自業自得」の意味は？',choices:['だれかのせいにする','自分の行いの結果を自分で受けること','運が悪いだけ','助けが来ること'],answer:'自分の行いの結果を自分で受けること',hint:'したことは自分に返る。',explanation:'よくも悪くも、自分の行動の結果は自分に返ってくる。',example:'夜ふかししてねむいのは自業自得だ。',difficulty:'normal',type:'meaning',story:'宿題を後回しにして、朝あわてる。'},
+      {id:39,category:'koji',word:'百発百中',reading:'ひゃっぱつひゃくちゅう',meaning:'打つたびに必ず当たること',question:'「百発百中」の意味は？',choices:['百回やること','打つたびに必ず当たること','百点を取ること','運がいいだけ'],answer:'打つたびに必ず当たること',hint:'はずれなし。',explanation:'何度やっても失敗せず、すべて当てること。',example:'フリースローが百発百中だった。',difficulty:'easy',type:'word',story:'的当てで、投げるたびに命中した。'},
+      {id:40,category:'koji',word:'馬耳東風',reading:'ばじとうふう',meaning:'人の意見を聞き流して気にしないこと',question:'「馬耳東風」の意味は？',choices:['馬が風をよぶ','人の意見を聞き流して気にしないこと','春の風が心地よいこと','耳が良いこと'],answer:'人の意見を聞き流して気にしないこと',hint:'注意しても右から左へ。',explanation:'せっかくの助言を聞かずに流してしまうこと。',example:'注意を馬耳東風にしては成長できない。',difficulty:'hard',type:'story',story:'何度注意されても、同じミスをくり返してしまう。'},
+      {id:41,category:'koji',word:'以心伝心',reading:'いしんでんしん',meaning:'言葉にしなくても気持ちが通じること',question:'「以心伝心」の意味は？',choices:['手紙で伝える','言葉にしなくても気持ちが通じること','心を読む力','大声で伝える'],answer:'言葉にしなくても気持ちが通じること',hint:'アイコンタクトで通じる。',explanation:'長く一緒にいる相手と、言わなくても分かり合えること。',example:'ダブルスの相手とは以心伝心だった。',difficulty:'hard',type:'meaning',story:'目を合わせただけで、次の動きが分かった。'},
+      {id:42,category:'koji',word:'晴耕雨読',reading:'せいこううどく',meaning:'晴れの日は働き雨の日は読書する生活',question:'「晴耕雨読」の意味は？',choices:['晴れでも雨でも遊ぶ','晴れの日は働き雨の日は読書する生活','雨の日に運動する','天気予報をみる'],answer:'晴れの日は働き雨の日は読書する生活',hint:'自然に合わせたおだやかな暮らし。',explanation:'天気に合わせて、落ち着いて過ごす生活スタイル。',example:'休日は晴耕雨読の気分で過ごした。',difficulty:'hard',type:'meaning',story:'晴れの日は畑、雨の日は本を読む。'},
+      {id:43,category:'koji',word:'有言実行',reading:'ゆうげんじっこう',meaning:'言ったことを実際にやりとげること',question:'「有言実行」の意味は？',choices:['話すだけで終わる','言ったことを実際にやりとげること','だまって行動する','計画を変える'],answer:'言ったことを実際にやりとげること',hint:'「やる」と決めたらやる！',explanation:'目標を口にしたあと、本当に実行して結果を出すこと。',example:'毎日走ると決めて続けるのは有言実行。',difficulty:'easy',type:'word',story:'「毎日漢字10個」と宣言して続けた。'},
+      {id:44,category:'koji',word:'切磋琢磨',reading:'せっさたくま',meaning:'仲間と励まし合って高め合うこと',question:'「切磋琢磨」の意味は？',choices:['一人でがんばる','仲間と励まし合って高め合うこと','けんかすること','作品をこわすこと'],answer:'仲間と励まし合って高め合うこと',hint:'ライバルと一緒に成長。',explanation:'友だち同士で刺激し合い、実力を高めること。',example:'部活で切磋琢磨して記録が伸びた。',difficulty:'normal',type:'story',story:'友だちとタイムを競いながら練習した。'},
+      {id:45,category:'koji',word:'起死回生',reading:'きしかいせい',meaning:'ピンチから一気に立て直すこと',question:'「起死回生」の意味は？',choices:['ゆっくり回復する','ピンチから一気に立て直すこと','何もしないで待つこと','最初から勝つこと'],answer:'ピンチから一気に立て直すこと',hint:'最後の一手で大逆転。',explanation:'もうだめかと思う場面から、見事に持ち直すこと。',example:'終了直前のゴールで起死回生！',difficulty:'hard',type:'meaning',story:'試合終了前、1点差で負けている。'}
+    ];
+
+    const STORAGE_KEY = 'kotobaQuestDataV1';
+    const TREASURE_MILESTONES = [3, 5, 10];
+    const TREASURE_TYPES = ['言葉カード', '称号', '星', 'スタンプ'];
+    const TITLES = ['ひよこ冒険者', 'ことばハンター', 'ことば勇者', '伝説のことば使い'];
+    const STAMPS = ['🔥', '🌈', '🛡️', '⚡', '📘', '🐉'];
+    const CHESTS = ['🧰', '🎁', '🗝️', '📦'];
+    const MONSTERS = ['👾', '😈', '🐲', '🦑'];
+    const CHARACTER_LINES = {
+      correct: ['やったね！その調子！', 'いいぞ！ことばの一撃！', '大正解！どんどん進もう！', 'ナイス！ことば力アップ中！'],
+      wrong: ['次はチャンス！', 'まちがえた言葉ほど覚えやすいよ。', 'だいじょうぶ、次で取り返せる！', '一歩ずつでOK！'],
+      hint: ['ヒントは作戦！うまく使おう。', 'ナイス判断！ここから逆転だ。', 'ヒントを使うのも強さだよ。'],
+      result: ['10問クリアおめでとう！', '今日もよくがんばったね！', 'つぎの冒険も楽しみだね！', '言葉マスターに近づいてる！']
+    };
+    const LEVEL_TABLE = [
+      {level: 1, title: 'ことば見習い', need: 0},
+      {level: 5, title: 'ことば探検家', need: 30},
+      {level: 10, title: 'ことば勇者', need: 90},
+      {level: 20, title: 'ことば博士', need: 220},
+      {level: 30, title: 'ことばマスター', need: 420}
+    ];
+    const appState = {
+      mode: 'mix',
+      difficulty: 'all',
+      deck: [],
+      index: 0,
+      score: 0,
+      correct: 0,
+      combo: 0,
+      chestClaimedInRun: [],
+      monsterHp: 100,
+      monsterEmoji: '👾',
+      specialCount: 0,
+      hintUsed: false,
+      answered: false,
+      currentQuestion: null,
+      data: {
+        unlockedWordIds: [],
+        wrongQuestionIds: [],
+        totalPlays: 0,
+        totalCorrect: 0,
+        bestScore: 0,
+        treasures: [],
+        titles: [],
+        stars: 0,
+        stamps: [],
+        settings: {difficulty: 'all'},
+        lastPlayedAt: ''
+      },
+      storageAvailable: true
+    };
+
+    function canUseStorage() {
+      try {
+        const k = '__test_key__';
+        localStorage.setItem(k, '1');
+        localStorage.removeItem(k);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function loadData() {
+      appState.storageAvailable = canUseStorage();
+      if (!appState.storageAvailable) return;
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        appState.data = {
+          ...appState.data,
+          ...parsed,
+          treasures: Array.isArray(parsed.treasures) ? parsed.treasures : [],
+          titles: Array.isArray(parsed.titles) ? parsed.titles : [],
+          stamps: Array.isArray(parsed.stamps) ? parsed.stamps : [],
+          stars: Number(parsed.stars) || 0,
+          settings: {...appState.data.settings, ...(parsed.settings || {})}
+        };
+      } catch (error) {
+        console.warn('保存データの読み込みに失敗しました', error);
+      }
+    }
+
+    function saveData() {
+      if (!appState.storageAvailable) return;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState.data));
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach((screen) => {
+        screen.classList.toggle('active', screen.id === screenId);
+      });
+      const heading = document.querySelector(`#${screenId} h2, #${screenId} h1`);
+      if (heading) heading.focus();
+      if (screenId === 'titleScreen') renderTitleStats();
+      if (screenId === 'dictionaryScreen') renderDictionary();
+      if (screenId === 'reviewScreen') renderReviewScreen();
+      if (screenId === 'settingsScreen') renderSettings();
+    }
+
+    function toSet(arr) {
+      return new Set(Array.isArray(arr) ? arr : []);
+    }
+
+    function pickRandom(arr, count) {
+      const copied = arr.slice();
+      for (let i = copied.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copied[i], copied[j]] = [copied[j], copied[i]];
+      }
+      return copied.slice(0, Math.min(count, copied.length));
+    }
+
+    function categoryLabel(cat) {
+      if (cat === 'idiom') return '慣用句';
+      if (cat === 'proverb') return 'ことわざ';
+      return '古事成語';
+    }
+
+    function rarityLabel(diff) {
+      if (diff === 'easy') return '★';
+      if (diff === 'normal') return '★★';
+      if (diff === 'hard') return '★★★';
+      return '👑';
+    }
+
+    function getRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getTodayWord() {
+      const now = new Date();
+      const seed = `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}-${now.getUTCDate()}`;
+      let hash = 0;
+      for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) % WORDS.length;
+      return WORDS[hash];
+    }
+
+    function getPlayerLevel(totalCorrect) {
+      const thresholds = [
+        {level: 1, title: 'ことば見習い', min: 0, next: 30},
+        {level: 5, title: 'ことば探検家', min: 30, next: 90},
+        {level: 10, title: 'ことば勇者', min: 90, next: 220},
+        {level: 20, title: 'ことば博士', min: 220, next: 420},
+        {level: 30, title: 'ことばマスター', min: 420, next: null}
+      ];
+      for (let i = thresholds.length - 1; i >= 0; i -= 1) {
+        if (totalCorrect >= thresholds[i].min) return thresholds[i];
+      }
+      return thresholds[0];
+    }
+
+    function difficultyLabel(value) {
+      return value === 'easy' ? 'かんたん' : value === 'normal' ? 'ふつう' : 'むずかしい';
+    }
+
+    function modeFilter(mode) {
+      if (mode === 'idiom') return (item) => item.category === 'idiom';
+      if (mode === 'proverb') return (item) => item.category === 'proverb';
+      if (mode === 'koji') return (item) => item.category === 'koji';
+      return () => true;
+    }
+
+    function buildDeck(mode) {
+      const diff = appState.data.settings.difficulty || 'all';
+      const byMode = WORDS.filter(modeFilter(mode));
+      let pool = diff === 'all' ? byMode : byMode.filter((item) => item.difficulty === diff);
+      if (pool.length < 10) {
+        pool = byMode;
+      }
+
+      if (mode === 'review') {
+        const wrongSet = toSet(appState.data.wrongQuestionIds);
+        const wrongPool = pool.filter((item) => wrongSet.has(item.id));
+        if (wrongPool.length === 0) return [];
+        const restPool = pool.filter((item) => !wrongSet.has(item.id));
+        const deck = [...pickRandom(wrongPool, 10), ...pickRandom(restPool, 10)];
+        return pickRandom(deck, Math.min(10, deck.length));
+      }
+
+      return pickRandom(pool, 10);
+    }
+
+    function buildQuestion(item) {
+      const format = ['meaning', 'word', 'story'][Math.floor(Math.random() * 3)];
+      const sameCategory = WORDS.filter((w) => w.category === item.category && w.id !== item.id);
+      const otherWords = WORDS.filter((w) => w.id !== item.id);
+      let prompt = '';
+      let answerText = '';
+      let choices = [];
+      let formatLabel = '';
+
+      if (format === 'meaning') {
+        prompt = `【意味をえらぼう】\n「${item.word}」の意味として正しいのはどれ？`;
+        answerText = item.meaning;
+        choices = pickRandom(sameCategory.map((w) => w.meaning), 3);
+        choices.push(answerText);
+        formatLabel = '意味を選ぶ問題';
+      } else if (format === 'word') {
+        prompt = `【言葉をえらぼう】\n「${item.meaning}」を表す言葉はどれ？`;
+        answerText = item.word;
+        choices = pickRandom(sameCategory.map((w) => w.word), 3);
+        choices.push(answerText);
+        formatLabel = '言葉を選ぶ問題';
+      } else {
+        prompt = `【ストーリー問題】\n${item.story}\nこの場面にいちばん合う言葉は？`;
+        answerText = item.word;
+        choices = pickRandom(otherWords.filter((w) => w.category === item.category).map((w) => w.word), 3);
+        choices.push(answerText);
+        formatLabel = 'ストーリー問題';
+      }
+
+      choices = pickRandom(Array.from(new Set(choices)), 4);
+      if (!choices.includes(answerText)) {
+        choices[Math.floor(Math.random() * choices.length)] = answerText;
+      }
+      const answerIndex = choices.findIndex((c) => c === answerText);
+      return {item, prompt, choices, answerIndex, formatLabel, format};
+    }
+
+    function startMode(mode) {
+      appState.mode = mode;
+      appState.deck = buildDeck(mode);
+      if (mode === 'review' && appState.deck.length === 0) {
+        showScreen('reviewScreen');
+        return;
+      }
+      appState.index = 0;
+      appState.score = 0;
+      appState.correct = 0;
+      appState.combo = 0;
+      appState.chestClaimedInRun = [];
+      appState.monsterHp = 100;
+      appState.monsterEmoji = getRandom(MONSTERS);
+      appState.specialCount = 0;
+      appState.hintUsed = false;
+      appState.answered = false;
+      appState.data.totalPlays += 1;
+      appState.data.lastPlayedAt = new Date().toISOString();
+      saveData();
+      showScreen('quizScreen');
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const item = appState.deck[appState.index];
+      const q = buildQuestion(item);
+      appState.currentQuestion = q;
+      appState.hintUsed = false;
+      appState.answered = false;
+
+      const total = appState.deck.length;
+      const lv = getPlayerLevel(appState.data.totalCorrect);
+      document.getElementById('quizStatus').innerHTML = `
+        <div class="box">問題: ${appState.index + 1}/${total}</div>
+        <div class="box">スコア: ${appState.score}</div>
+        <div class="box">コンボ: ${appState.combo}</div>
+        <div class="box">正解: ${appState.correct}</div>
+        <div class="box">Lv.${lv.level} ${lv.title}</div>
+        <div class="box">必殺技: ${appState.specialCount}回</div>
+      `;
+      document.getElementById('questionMeta').textContent = `${categoryLabel(item.category)} / ${difficultyLabel(item.difficulty)} / ${q.formatLabel}`;
+      document.getElementById('questionPrompt').textContent = q.prompt;
+      document.getElementById('feedback').style.display = 'none';
+      document.getElementById('nextBtn').style.display = 'none';
+      document.getElementById('hintBtn').disabled = false;
+      document.getElementById('guideMessage').textContent = '🧙 ことちゃん「あせらず読んで、ぴったりの答えをえらぼう！」';
+      document.getElementById('treasureToast').style.display = 'none';
+      renderMonsterPanel();
+
+      const choicesArea = document.getElementById('choicesArea');
+      choicesArea.innerHTML = '';
+      q.choices.forEach((choice, i) => {
+        const button = document.createElement('button');
+        button.className = 'choice';
+        button.type = 'button';
+        button.setAttribute('aria-label', `選択肢 ${i + 1}`);
+        button.textContent = `${i + 1}. ${choice}`;
+        button.addEventListener('click', () => answerQuestion(i));
+        choicesArea.appendChild(button);
+      });
+    }
+
+    function updateLearningData(isCorrect, itemId) {
+      const unlocked = toSet(appState.data.unlockedWordIds);
+      const wrongSet = toSet(appState.data.wrongQuestionIds);
+
+      if (isCorrect) {
+        unlocked.add(itemId);
+        if (appState.mode === 'review') {
+          wrongSet.delete(itemId);
+        }
+      } else {
+        wrongSet.add(itemId);
+      }
+
+      appState.data.unlockedWordIds = Array.from(unlocked);
+      appState.data.wrongQuestionIds = Array.from(wrongSet);
+      saveData();
+    }
+
+    function renderMonsterPanel(logText = '') {
+      const hp = Math.max(0, appState.monsterHp);
+      const hpRate = `${hp}%`;
+      document.getElementById('monsterName').textContent = appState.mode === 'review' ? '復習まちがいモンスター' : 'まちがいモンスター';
+      document.getElementById('monsterState').textContent = hp <= 0 ? 'ぐったりしている…' : `HP ${hp}/100`;
+      document.getElementById('monsterHpBar').style.width = hpRate;
+      document.getElementById('monsterAvatar').textContent = appState.mode === 'review' ? '😵‍💫' : appState.monsterEmoji;
+      if (logText) document.getElementById('battleLog').textContent = logText;
+    }
+
+    function grantTreasure(triggerLabel) {
+      const type = getRandom(TREASURE_TYPES);
+      const chest = getRandom(CHESTS);
+      let item;
+      if (type === '言葉カード') item = `${getRandom(WORDS).word}カード`;
+      if (type === '称号') item = getRandom(TITLES);
+      if (type === '星') item = `スター +${Math.floor(Math.random() * 3) + 1}`;
+      if (type === 'スタンプ') item = getRandom(STAMPS);
+      const record = {id: Date.now() + Math.floor(Math.random() * 1000), trigger: triggerLabel, type, item};
+      appState.data.treasures = [...appState.data.treasures, record].slice(-80);
+      if (type === '称号') appState.data.titles = Array.from(new Set([...(appState.data.titles || []), item]));
+      if (type === 'スタンプ') appState.data.stamps = Array.from(new Set([...(appState.data.stamps || []), item]));
+      if (type === '星') appState.data.stars = (appState.data.stars || 0) + Number(item.replace('スター +', ''));
+      saveData();
+
+      const toast = document.getElementById('treasureToast');
+      toast.style.display = 'block';
+      toast.textContent = `${chest} 宝箱オープン！「${item}」をゲット！（${triggerLabel}）`;
+    }
+
+    function checkTreasureMilestone() {
+      TREASURE_MILESTONES.forEach((point) => {
+        if (appState.correct >= point && !appState.chestClaimedInRun.includes(point)) {
+          appState.chestClaimedInRun.push(point);
+          grantTreasure(`${point}問正解`);
+        }
+      });
+    }
+
+    function answerQuestion(selectedIndex) {
+      if (appState.answered) return;
+      appState.answered = true;
+
+      const q = appState.currentQuestion;
+      const item = q.item;
+      const isCorrect = selectedIndex === q.answerIndex;
+      const basePoint = item.difficulty === 'easy' ? 10 : item.difficulty === 'normal' ? 15 : 20;
+      let earned = basePoint;
+
+      if (appState.hintUsed) earned = Math.max(5, earned - 5);
+
+      if (isCorrect) {
+        appState.correct += 1;
+        appState.combo += 1;
+        appState.data.totalCorrect += 1;
+        let damage = item.difficulty === 'easy' ? 12 : item.difficulty === 'normal' ? 16 : 20;
+        if (appState.combo >= 3) {
+          earned += 10;
+          damage += 18;
+          appState.specialCount += 1;
+        }
+        appState.monsterHp = Math.max(0, appState.monsterHp - damage);
+        appState.score += earned;
+      } else {
+        appState.combo = 0;
+      }
+
+      updateLearningData(isCorrect, item.id);
+
+      const feedback = document.getElementById('feedback');
+      const comboText = isCorrect && appState.combo >= 3 ? '\n🔥 3問連続正解ボーナス +10！' : '';
+      const reviewText = appState.mode === 'review' && isCorrect ? '\n📝 まちがいモンスターをやっつけた！復習クリア！' : '';
+
+      if (isCorrect) {
+        feedback.textContent = `○ 正解！\n${earned}ポイントゲット！${comboText}${reviewText}\n\n解説: ${item.explanation}`;
+        const line = getRandom(CHARACTER_LINES.correct);
+        document.getElementById('guideMessage').textContent = `🎉 ことば博士「${line}」`;
+        const monster = document.getElementById('monsterAvatar');
+        monster.classList.remove('hit', 'special');
+        void monster.offsetWidth;
+        monster.classList.add(appState.combo >= 3 ? 'special' : 'hit');
+        const log = appState.combo >= 3
+          ? `⚡ 必殺技「ことばスラッシュ」！大ダメージ！ 残りHP ${appState.monsterHp}`
+          : `💥 ${appState.mode === 'review' ? '復習アタック！' : 'ことばアタック！'} 残りHP ${appState.monsterHp}`;
+        renderMonsterPanel(log);
+        checkTreasureMilestone();
+      } else {
+        feedback.textContent = `× おしい！\n正解は「${q.choices[q.answerIndex]}」だよ。\n\n意味: ${item.meaning}\n解説: ${item.explanation}\n例文: ${item.example}`;
+        document.getElementById('guideMessage').textContent = `👾 ことちゃん「${getRandom(CHARACTER_LINES.wrong)}」`;
+        renderMonsterPanel('😈 まちがいモンスターがニヤリ…でも次で逆転だ！');
+      }
+      feedback.style.display = 'block';
+
+      document.querySelectorAll('.choice').forEach((btn) => btn.disabled = true);
+      document.getElementById('hintBtn').disabled = true;
+      document.getElementById('nextBtn').style.display = 'inline-block';
+    }
+
+    function showHint() {
+      if (appState.answered) return;
+      appState.hintUsed = true;
+      const q = appState.currentQuestion;
+      const feedback = document.getElementById('feedback');
+      feedback.style.display = 'block';
+      feedback.textContent = `💡 ヒント: ${q.item.hint}\n（ヒントを使うとポイントが少し下がるよ）`;
+      document.getElementById('guideMessage').textContent = `🧙 かんちゃん「${getRandom(CHARACTER_LINES.hint)}」`;
+    }
+
+    function nextQuestion() {
+      appState.index += 1;
+      if (appState.index >= appState.deck.length) {
+        finishQuiz();
+      } else {
+        renderQuestion();
+      }
+    }
+
+    function calcRank(score) {
+      if (score >= 180) return 'S';
+      if (score >= 130) return 'A';
+      if (score >= 90) return 'B';
+      return 'C';
+    }
+
+    function finishQuiz() {
+      appState.data.bestScore = Math.max(appState.data.bestScore, appState.score);
+      if (!appState.chestClaimedInRun.includes(100)) {
+        appState.chestClaimedInRun.push(100);
+        grantTreasure('10問クリア');
+      }
+      saveData();
+
+      const rank = calcRank(appState.score);
+      const monsterResult = appState.monsterHp <= 0 ? '✅ モンスター討伐成功！' : `⚠️ モンスターは逃げた…（残りHP ${appState.monsterHp}）`;
+      document.getElementById('resultSummary').innerHTML = `
+        <div class="box">正解数: ${appState.correct} / ${appState.deck.length}</div>
+        <div class="box">スコア: ${appState.score}</div>
+        <div class="box">ランク: ${rank}</div>
+        <div class="box">モード: ${appState.mode === 'review' ? '復習' : appState.mode === 'mix' ? 'ミックス' : categoryLabel(appState.mode)}</div>
+        <div class="box">バトル結果: ${monsterResult}</div>
+        <div class="box">必殺技回数: ${appState.specialCount}</div>
+      `;
+      document.getElementById('resultDetail').innerHTML = `
+        <p>総プレイ回数: <strong>${appState.data.totalPlays}</strong></p>
+        <p>総正解数: <strong>${appState.data.totalCorrect}</strong></p>
+        <p>最高スコア: <strong>${appState.data.bestScore}</strong></p>
+        <p>獲得スター: <strong>${appState.data.stars || 0}</strong></p>
+      `;
+
+      const guide = rank === 'S'
+        ? '🏆 こじくん「すごい！ことばマスター級！」'
+        : rank === 'A'
+          ? '🌟 ことちゃん「あと少しでS！とっても上手！」'
+          : rank === 'B'
+            ? '👍 かんちゃん「いい調子！復習でさらに強くなるよ！」'
+            : '😊 ことば博士「まずは10問クリアがえらい！次はもっとのびるよ！」';
+      document.getElementById('resultGuide').textContent = `${guide} ${getRandom(CHARACTER_LINES.result)}`;
+      showScreen('resultScreen');
+    }
+
+    function renderTitleStats() {
+      const last = appState.data.lastPlayedAt ? new Date(appState.data.lastPlayedAt).toLocaleString('ja-JP') : 'まだプレイしていないよ';
+      const storageText = appState.storageAvailable ? '保存OK' : '保存OFF（この端末では保存できないよ）';
+      const lv = getPlayerLevel(appState.data.totalCorrect);
+      const nextNeed = lv.next ? `${Math.max(0, lv.next - appState.data.totalCorrect)}問` : 'MAXレベル！';
+      document.getElementById('titleStats').innerHTML = `
+        <div class="box">総プレイ: ${appState.data.totalPlays}</div>
+        <div class="box">総正解: ${appState.data.totalCorrect}</div>
+        <div class="box">最高スコア: ${appState.data.bestScore}</div>
+        <div class="box">プレイヤー: Lv.${lv.level} ${lv.title}</div>
+        <div class="box">次のレベルまで: ${nextNeed}</div>
+        <div class="box">最終プレイ: ${last}</div>
+        <div class="box">保存状態: ${storageText}</div>
+        <div class="box">現在の難易度: ${appState.data.settings.difficulty === 'all' ? 'ぜんぶ' : difficultyLabel(appState.data.settings.difficulty)}</div>
+        <div class="box">称号: ${(appState.data.titles || []).length} / スタンプ: ${(appState.data.stamps || []).length}</div>
+      `;
+    }
+
+    function renderTodayWord() {
+      const today = getTodayWord();
+      document.getElementById('todayWordBox').innerHTML = `
+        <strong>📅 今日のことば: ${today.word}</strong>
+        <p style="margin:6px 0;"><strong>意味:</strong> ${today.meaning}</p>
+        <p style="margin:0;"><strong>例文:</strong> ${today.example}</p>
+      `;
+    }
+
+    function renderDictionary() {
+      const filter = document.getElementById('dictionaryFilter').value;
+      const unlockedSet = toSet(appState.data.unlockedWordIds);
+      const list = document.getElementById('dictionaryList');
+      list.innerHTML = '';
+
+      const filtered = WORDS.filter((w) => filter === 'all' ? true : w.category === filter);
+      const unlockedCount = filtered.filter((w) => unlockedSet.has(w.id)).length;
+      const percent = filtered.length ? Math.floor((unlockedCount / filtered.length) * 100) : 0;
+      document.getElementById('dictionaryProgress').textContent = `📚 図鑑達成率: ${unlockedCount}/${filtered.length} (${percent}%)`;
+
+      filtered.forEach((word) => {
+        const got = unlockedSet.has(word.id);
+        const div = document.createElement('article');
+        div.className = 'entry';
+        if (!got) {
+          div.innerHTML = `
+            <h4>？？？</h4>
+            <p class="small">${categoryLabel(word.category)} / ${difficultyLabel(word.difficulty)} / レア度: ${rarityLabel(word.difficulty)}</p>
+            <p>まだ見つけていない言葉だよ。クイズで正解してゲットしよう！</p>
+          `;
+        } else {
+          div.innerHTML = `
+            <h4>${word.word}（${word.reading}）</h4>
+            <p><strong>意味:</strong> ${word.meaning}</p>
+            <p><strong>解説:</strong> ${word.explanation}</p>
+            <p><strong>例文:</strong> ${word.example}</p>
+            <p class="small rare">${categoryLabel(word.category)} / ${difficultyLabel(word.difficulty)} / レア度: ${rarityLabel(word.difficulty)}</p>
+          `;
+        }
+        list.appendChild(div);
+      });
+    }
+
+    function renderReviewScreen() {
+      const wrongSet = toSet(appState.data.wrongQuestionIds);
+      const reviewItems = WORDS.filter((w) => wrongSet.has(w.id));
+      const msg = document.getElementById('reviewMessage');
+      const list = document.getElementById('reviewList');
+      list.innerHTML = '';
+
+      if (reviewItems.length === 0) {
+        msg.textContent = '🌈 まだ復習する問題はないよ。すごい！';
+        return;
+      }
+
+      msg.textContent = `👾 まちがいモンスターが ${reviewItems.length} 体いるよ。復習バトルでやっつけよう！`;
+      reviewItems.slice(0, 12).forEach((item) => {
+        const div = document.createElement('article');
+        div.className = 'entry';
+        div.innerHTML = `<h4>👾 ${item.word}</h4><p><strong>弱点ヒント:</strong> ${item.hint}</p><p class="small">${categoryLabel(item.category)} / レア度 ${rarityLabel(item.difficulty)}</p>`;
+        list.appendChild(div);
+      });
+    }
+
+    function renderSettings() {
+      document.getElementById('difficultySelect').value = appState.data.settings.difficulty || 'all';
+      document.getElementById('settingsInfo').textContent = appState.storageAvailable
+        ? '設定をかえると、つぎのプレイから反映されるよ。'
+        : 'この端末では保存が使えないため、設定はその場だけ有効です。';
+    }
+
+    function saveSettings() {
+      const difficulty = document.getElementById('difficultySelect').value;
+      appState.data.settings.difficulty = difficulty;
+      saveData();
+      document.getElementById('settingsInfo').textContent = `✅ 設定を保存したよ！難易度: ${difficulty === 'all' ? 'ぜんぶ' : difficultyLabel(difficulty)}`;
+      renderTitleStats();
+    }
+
+    function resetData() {
+      const ok = window.confirm('学習記録をすべてリセットします。よろしいですか？');
+      if (!ok) return;
+      const second = window.confirm('ほんとうに消しますか？この操作はもとに戻せません。');
+      if (!second) return;
+
+      appState.data = {
+        unlockedWordIds: [],
+        wrongQuestionIds: [],
+        totalPlays: 0,
+        totalCorrect: 0,
+        bestScore: 0,
+        treasures: [],
+        titles: [],
+        stars: 0,
+        stamps: [],
+        settings: {difficulty: 'all'},
+        lastPlayedAt: ''
+      };
+      saveData();
+      renderSettings();
+      renderTitleStats();
+      alert('学習記録をリセットしました。');
+    }
+
+    function registerEvents() {
+      document.getElementById('startFromTitle').addEventListener('click', () => showScreen('modeScreen'));
+      document.querySelectorAll('[data-nav]').forEach((btn) => {
+        btn.addEventListener('click', () => showScreen(btn.dataset.nav));
+      });
+      document.querySelectorAll('[data-mode]').forEach((btn) => {
+        btn.addEventListener('click', () => startMode(btn.dataset.mode));
+      });
+
+      document.getElementById('hintBtn').addEventListener('click', showHint);
+      document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+      document.getElementById('dictionaryFilter').addEventListener('change', renderDictionary);
+      document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+      document.getElementById('resetDataBtn').addEventListener('click', resetData);
+
+      document.addEventListener('keydown', (event) => {
+        if (!document.getElementById('quizScreen').classList.contains('active')) return;
+        if (event.key === 'Enter' && appState.answered) {
+          nextQuestion();
+        }
+      });
+    }
+
+    function init() {
+      loadData();
+      registerEvents();
+      renderTodayWord();
+      renderTitleStats();
+      renderSettings();
+    }
+
+    init();
+  </script>
+</body>
+</html>

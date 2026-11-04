@@ -1,10 +1,10 @@
 # 成績ラボ｜模試分析アプリ
 
-英語学習アプリのリポジトリ [toeic](https://github.com/kouheim1979/toeic) 内にある、PINでロック解除する成績分析アプリです。
+英語学習アプリのリポジトリ [study](https://github.com/kouheim1979/study) 内にある、PINでロック解除する成績分析アプリです。
 
 ## アプリ
 
-[成績ラボ（GitHub Pages）](https://kouheim1979.github.io/toeic/zenken-moshi-lab/)
+[成績ラボ（GitHub Pages）](https://kouheim1979.github.io/study/zenken-moshi-lab/)
 
 ## 単元分析（新トップ画面）
 

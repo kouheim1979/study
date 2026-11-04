@@ -4,7 +4,7 @@
 
 ## 開く
 
-https://kouheim1979.github.io/toeic/pattern-pocket/
+https://kouheim1979.github.io/study/pattern-pocket/
 
 ## 今回のデザイン変更
 

@@ -1,0 +1,33 @@
+name: Validate application
+
+# Publishing is handled only by GitHub's standard pages build and deployment.
+# Keep Pages configured to deploy from the main branch, / (root).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Check application files
+        run: |
+          test -s index.html
+          test -s app.js
+          test -s data.js
+          test -s style.css
+          node --check app.js
+          node --check data.js

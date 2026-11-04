@@ -4,7 +4,7 @@ LINE登録やアカウント作成なしで使える、英語のリズム・弱�
 
 ## 起動
 
-[GitHub Pagesで開く](https://kouheim1979.github.io/toeic/soundbeat/)
+[GitHub Pagesで開く](https://kouheim1979.github.io/study/soundbeat/)
 
 iPhoneのSafariで開き、共有メニュー →「ホーム画面に追加」を選ぶとアプリとして使えます。
 GitHub Pagesでの公開設定によっては、リンクが利用できるまで時間がかかる場合があります。

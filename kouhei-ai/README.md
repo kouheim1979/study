@@ -2,13 +2,13 @@
 
 Kouheiさん向けの単体HTMLチャットアプリ。
 
-**開く → https://kouheim1979.github.io/toeic/kouhei-ai/**
+**開く → https://kouheim1979.github.io/study/kouhei-ai/**
 
 ## iPhone・iPadでの現状（v1.1.0）
 
 小規模GPU計算と保存の動作は実機の診断で確認できました。過去にSafariのページ自体が停止した原因は未確定です。ユーザーから起動成功の報告がありました。v1.1.0では小型のQwen3系を試験用として追加しています。
 
-**起動確認 → https://kouheim1979.github.io/toeic/kouhei-ai/?v=1.1.0&startup=1**
+**起動確認 → https://kouheim1979.github.io/study/kouhei-ai/?v=1.1.0&startup=1**
 
 1. 「小型AIで起動テスト」を押します。SmolLM2 135M（英語中心の試運転用モデル）を読み込み、固定の短い英文への回答を16トークン以内で生成して停止します。プロフィールや会話はこの試運転に使用しません。
 2. 成功すると「日本語用AIを起動」が使えます。初期選択はQwen2.5 0.5Bです。Qwen3 0.6B／Qwen3.5 0.8Bも選択できます（iPhoneでは試験用）。選んだモデルを会話長2048トークンで読み込みます。1回の入力は500文字、回答は最大256トークンです。短い質問から確認してください。

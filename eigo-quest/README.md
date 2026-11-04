@@ -6,7 +6,7 @@ REMSを参考にした、独自教材による反復・置換・文の拡張ト�
 
 `eigo-quest/index.html` がアプリ本体です。HTML・CSS・JavaScript・教材を1ファイルに含みます。リポジトリ直下の既存TOEICアプリは変更しません。
 
-GitHub Pagesの公開先： https://kouheim1979.github.io/toeic/eigo-quest/
+GitHub Pagesの公開先： https://kouheim1979.github.io/study/eigo-quest/
 
 ## 練習
 
