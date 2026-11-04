@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>英検3級 面接ルーム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+<style>
+/* Layout: one narrow column like a phone held in the waiting room; the 問題カード is the only "object" on the page. */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --card:#ffffff; --ink:#1d2533; --muted:#5d6878; --line:#cfd6df;
+  --accent:#0d6e6a; --accent-ink:#ffffff; --accent-soft:#d8ece9; --amber:#c98a12; --amber-soft:#f8ecd2;
+  --good:#2f7d3e; --warn:#b4541c;
+  --skin:#ffffff; --hair:#3a4252; --c1:#d6e6ef; --c2:#e9dfcf; --c3:#dfe8d6;
+  --jp:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --en:"Literata",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a22; --surface:#1d2530; --card:#f4f6f8; --ink:#1d2533; --muted:#9aa6b6; --line:#334050;
+  --accent:#4fb3ab; --accent-ink:#0c1a1a; --accent-soft:#1f3b3a; --amber:#e6b44f; --amber-soft:#3a3020;
+  --good:#7cc98a; --warn:#f0a070; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#141a22; --surface:#1d2530; --card:#f4f6f8; --ink:#1d2533; --muted:#9aa6b6; --line:#334050;
+  --accent:#4fb3ab; --accent-ink:#0c1a1a; --accent-soft:#1f3b3a; --amber:#e6b44f; --amber-soft:#3a3020;
+  --good:#7cc98a; --warn:#f0a070; color-scheme:dark;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--txt,var(--fg));font-family:var(--jp);line-height:1.6;font-size:15px}
+:root{--fg:#1d2533}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--fg:#e6ebf1}}
+:root[data-theme="dark"]{--fg:#e6ebf1}
+.wrap{max-width:620px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:1.5rem;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h2{font-size:1.1rem;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:.88rem}
+button{font-family:inherit;font-size:1rem;cursor:pointer;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);padding:10px 14px}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button.ghost{background:transparent}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+
+/* progress rail */
+.rail{display:flex;gap:4px;margin:4px 0 14px}
+.rail span{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.rail span.on{background:var(--accent)}
+.rail span.now{background:var(--amber)}
+.phase{font-size:.78rem;letter-spacing:.08em;color:var(--muted);font-weight:700}
+
+/* examiner */
+.ex{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start}
+.ex .av{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent);font-weight:900;font-size:.8rem}
+.ex .bub{background:var(--surface);border:1.5px solid var(--line);border-radius:4px 14px 14px 14px;padding:10px 12px;min-width:0}
+.ex .who{font-size:.72rem;color:var(--muted);font-weight:700;letter-spacing:.06em}
+.ex .line{font-family:var(--en);font-size:1.08rem;margin-top:2px}
+.ex .line.hiddenq{font-family:var(--jp);color:var(--muted);font-size:.9rem}
+.mini{font-size:.82rem;padding:6px 10px;border-radius:8px}
+.you{border-left:4px solid var(--amber);background:var(--amber-soft);padding:10px 12px;border-radius:0 10px 10px 0}
+.you .who{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--amber)}
+.you .say{font-family:var(--en);font-size:1.05rem}
+
+/* 問題カード */
+.qcard{background:var(--card);color:#1d2533;border:2px solid #1d2533;border-radius:6px;padding:14px 14px 10px;box-shadow:0 2px 0 #1d2533}
+.qcard .ptitle{font-family:var(--en);font-weight:600;text-align:center;font-size:1.05rem;margin-bottom:6px}
+.qcard .ptext{font-family:var(--en);font-size:1.02rem;line-height:1.75;margin:0 0 10px}
+.qcard svg{display:block;width:100%;height:auto;border-top:1.5px solid #1d2533;padding-top:8px}
+.turned{border:2px dashed var(--line);border-radius:6px;padding:28px 14px;text-align:center;color:var(--muted)}
+
+.big-timer{font-variant-numeric:tabular-nums;font-size:3rem;font-weight:900;text-align:center;color:var(--amber);line-height:1}
+.timer{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.85rem}
+.timer.late{color:var(--warn);font-weight:700}
+
+textarea{width:100%;min-height:92px;font-family:var(--en);font-size:1.05rem;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);resize:vertical}
+input[type=text]{font-family:inherit;font-size:1rem;padding:9px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);width:100%}
+.hint{font-size:.8rem;color:var(--muted)}
+
+/* home */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.pick{text-align:left;display:flex;flex-direction:column;gap:2px;padding:12px}
+.pick .n{font-size:.72rem;color:var(--muted);font-weight:700;letter-spacing:.06em}
+.pick .t{font-family:var(--en);font-weight:600;font-size:1.02rem}
+.pick .h{font-size:.78rem;color:var(--accent)}
+.pick[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.panel{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:14px}
+.flow{margin:0;padding-left:1.3em;font-size:.88rem;color:var(--muted)}
+.flow li{margin:2px 0}
+.toggle{display:flex;align-items:center;gap:8px;font-size:.92rem}
+.toggle input{width:20px;height:20px;accent-color:var(--accent)}
+
+/* results */
+.score-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.score-head .tot{font-size:2.6rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.pass{display:inline-block;padding:3px 10px;border-radius:99px;font-weight:700;font-size:.85rem}
+.pass.ok{background:var(--accent-soft);color:var(--good)}
+.pass.ng{background:var(--amber-soft);color:var(--warn)}
+.item{border-top:1.5px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:6px}
+.item .q{font-family:var(--en);font-weight:600}
+.item .a{font-family:var(--en)}
+.item .lab{font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.06em}
+.item .better{font-family:var(--en);background:var(--accent-soft);border-radius:8px;padding:6px 10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{min-width:40px;padding:6px 0;font-variant-numeric:tabular-nums;font-weight:700}
+.row button.mini[aria-pressed=true],.chips button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.note{font-size:.85rem;color:var(--muted)}
+.fb-good{color:var(--good);font-size:.9rem}
+.fb-fix{color:var(--warn);font-size:.9rem}
+@media (prefers-reduced-motion:no-preference){.fade{animation:fade .25s ease}@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}}
+
+/* svg line art */
+.ln{stroke:#1d2533;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.sf{fill:#ffffff;stroke:#1d2533;stroke-width:2;stroke-linejoin:round}
+.f1{fill:#d6e6ef}.f2{fill:#e9dfcf}.f3{fill:#dfe8d6}.fk{fill:#1d2533}.fh{fill:#3a4252}.fo{fill:#f2c79a}.fg{fill:#cdd3db}
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<div class="wrap" id="app"></div>
+
+<script>
+/* ---------- picture helpers (black line art, like the real card) ---------- */
+const L=(x1,y1,x2,y2,w)=>`<line class="ln" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"${w?` style="stroke-width:${w}"`:''}/>`;
+const R=(x,y,w,h,c='',rx=0)=>`<rect class="sf ${c}" x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}"/>`;
+const C=(x,y,r,c='')=>`<circle class="sf ${c}" cx="${x}" cy="${y}" r="${r}"/>`;
+const PATH=(d,c='')=>`<path class="sf ${c}" d="${d}"/>`;
+const PL=(d,w)=>`<path class="ln" d="${d}"${w?` style="stroke-width:${w}"`:''}/>`;
+
+function fig(o){
+  const s=o.s||1,f=o.f||1,k=o.kind,sit=o.pose==='sit',dy=sit?12:0,w=-52+dy;
+  const top=o.top||'f1',bot=o.bot||'f2';
+  const skirt=(k==='w'||k==='g');
+  const leg=(pts,thick)=>thick
+    ? `<polyline points="${pts}" style="fill:none;stroke:#1d2533;stroke-width:8;stroke-linecap:round;stroke-linejoin:round"/><polyline points="${pts}" class="${bot}" style="fill:none;stroke:currentColor;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round"/>`
+    : `<polyline points="${pts}" style="fill:none;stroke:#1d2533;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"/>`;
+  let legs;
+  if(sit) legs=[`-3,${w} 17,${w} 17,-1`,`3,${w} 21,${w} 21,-1`];
+  else if(o.pose==='walk') legs=[`-5,${w} -14,-2`,`5,${w} 13,-2`];
+  else legs=[`-6,${w} -6,-2`,`6,${w} 6,-2`];
+  const pants=!skirt;
+  const botColor={f1:'#d6e6ef',f2:'#e9dfcf',f3:'#dfe8d6',fg:'#cdd3db'}[bot]||'#e9dfcf';
+  let g='';
+  const shoe=(pts)=>{const p=pts.split(' ').pop().split(',');return `<ellipse cx="${+p[0]+3}" cy="${+p[1]+1}" rx="6" ry="3" class="fk"/>`};
+  const hl=o.hl||[-13,-58+dy], hr=o.hr||[13,-58+dy];
+  const arm=(h,sx)=>`<line x1="${sx}" y1="${-86+dy}" x2="${h[0]}" y2="${h[1]}" style="stroke:#1d2533;stroke-width:7.5;stroke-linecap:round"/><line x1="${sx}" y1="${-86+dy}" x2="${h[0]}" y2="${h[1]}" style="stroke:${({f1:'#d6e6ef',f2:'#e9dfcf',f3:'#dfe8d6',fg:'#cdd3db'})[top]};stroke-width:4;stroke-linecap:round"/><circle cx="${h[0]}" cy="${h[1]}" r="3.6" class="sf" style="stroke-width:1.5"/>`;
+  // long hair behind
+  if(k==='w') g+=PATH(`M-9,${-113+dy} Q-19,${-98+dy} -13,${-84+dy} L-3,${-88+dy} Z`,'fh');
+  if(k==='g') g+=C(-14,-102+dy,5,'fh');
+  g+=arm(hl,-10);
+  legs.forEach(p=>{g+=`<g style="color:${botColor}">${leg(p,pants)}</g>`+shoe(p)});
+  if(skirt) g+=PATH(sit?`M-13,${w-2} L13,${w-2} L24,${w+8} L-8,${w+8} Z`:`M-13,${w-2} L13,${w-2} L18,${w+18} L-18,${w+18} Z`,bot);
+  else g+=PATH(`M-13,${w-3} L13,${w-3} L13,${w+4} L-13,${w+4} Z`,bot);
+  g+=PATH(`M-12,${-89+dy} Q0,${-93+dy} 12,${-89+dy} L13,${w} L-13,${w} Z`,top);
+  g+=C(0,-104+dy,11);
+  g+=`<circle cx="5.5" cy="${-105+dy}" r="1.5" class="fk"/>`+PL(`M5,${-98+dy} q2.5,1.5 5,-0.5`,1.5);
+  g+=PATH(`M-11.5,${-101+dy} C-13,${-119+dy} 11,${-121+dy} 11.5,${-106+dy} C5,${-112+dy} -3,${-111+dy} -6,${-104+dy} C-8,${-103+dy} -10,${-102+dy} -11.5,${-101+dy}Z`,'fh');
+  if(k==='g') g+=R(-11.5,-104+dy,3,4,'fk');
+  g+=arm(hr,10);
+  if(o.extra) g+=o.extra;
+  return `<g transform="translate(${o.x},${o.y}) scale(${s*f},${s})">${g}</g>`;
+}
+function thought(cx,cy,r,hx,hy,inner){
+  const mx=(cx+hx)/2,my=(cy+r+hy)/2;
+  return C(hx+(mx-hx)*0.3,hy-6,2.5)+C(mx,my,4)+`<ellipse class="sf" cx="${cx}" cy="${cy}" rx="${r*1.25}" ry="${r}"/>`+inner;
+}
+const bird=(x,y,f=1)=>`<g transform="translate(${x},${y}) scale(${f},1)">${PATH('M-8,0 Q-2,-7 6,-3 L10,-5 L8,0 Q2,5 -8,0Z','fg')}<path d="M8,-4 l4,1 l-4,1z" class="fk"/>${L(-1,3,-1,7,1.5)}${L(2,3,2,7,1.5)}</g>`;
+const svgWrap=(body)=>`<svg viewBox="0 0 360 215" role="img" aria-label="イラスト">${body}</svg>`;
+
+const SCENES={
+ cook(){
+  let b='';
+  b+=L(0,200,360,200);
+  b+=R(300,78,52,122,'',3)+L(300,122,352,122)+L(308,100,308,112,3)+L(308,130,308,146,3);
+  b+=fig({x:70,y:200,kind:'w',top:'f1',bot:'f2',hl:[22,-68],hr:[40,-72]});
+  b+=R(28,138,124,62)+L(28,150,152,150);
+  b+=R(84,131,58,7,'f2',2);
+  b+=PATH('M120,133 l14,-3 l-1,5 z','fo')+C(103,134,3,'fo')+C(110,134,3,'fo')+C(96,134.5,3,'fo');
+  b+=L(110,128,118,124,3)+PATH('M118,124 l16,-9 l1,3 l-15,8 z','fg');
+  b+=fig({x:216,y:200,s:.8,kind:'b',top:'f3',bot:'fg',hl:[8,-84],hr:[24,-81]});
+  b+=R(172,138,98,62)+R(192,132,56,7,'fg',2)+PL('M244,132 v-14 h-10 v4',3);
+  b+=`<ellipse class="sf" cx="232" cy="131" rx="11" ry="3.5"/>`+C(222,124,3)+C(228,120,2.2)+C(240,122,2.6);
+  b+=fig({x:278,y:200,s:.78,kind:'g',top:'f2',bot:'f1'});
+  b+=thought(300,40,22,282,108,
+     PATH('M290,30 L310,30 L310,58 L290,58 Z')+PATH('M290,30 L295,22 L305,22 L310,30 Z','fg')+R(294,40,12,10,'f1',1)+'');
+  return svgWrap(b);
+ },
+ bike(){
+  let b='';
+  b+=L(0,198,360,198);
+  b+=R(48,92,14,106,'f2')+`<ellipse class="sf f3" cx="55" cy="66" rx="48" ry="40"/>`+PL('M55,100 L55,80 M55,88 L36,74 M56,84 L76,70',2);
+  b+=bird(30,46,1)+bird(80,40,-1)+bird(62,82,1);
+  b+=R(130,112,100,6,'f2',2)+L(140,118,140,152,3)+L(220,118,220,152,3)+R(130,124,100,6,'f2',2);
+  b+=fig({x:160,y:194,kind:'m',pose:'sit',top:'f1',bot:'fg',hl:[22,-62],hr:[28,-66]});
+  b+=PATH('M178,126 L190,116 L202,122 L192,132 Z')+PATH('M190,116 L192,132',2);
+  b+=R(126,152,108,7,'f2',2)+L(132,159,132,198,3)+L(228,159,228,198,3);
+  b+=C(262,180,17)+C(320,180,17)+C(262,180,2,'fk')+C(320,180,2,'fk');
+  b+=PL('M262,180 L285,164 L320,180 M285,164 L282,150 M273,150 L292,150 M285,164 L308,160 L320,180 M308,160 L312,148 L320,146',3);
+  b+=fig({x:282,y:182,s:.8,kind:'b',pose:'sit',top:'f3',bot:'f1',hl:[34,-44],hr:[38,-42]});
+  return svgWrap(b);
+ },
+ music(){
+  let b='';
+  b+=L(0,195,360,195);
+  b+=R(290,52,60,64,'f1',2)+R(290,52,34,64,'',0)+R(296,52,34,64,'',0)+PATH('M332,74 q6,-6 12,0 q4,0 4,5 h-18 q-2,-5 2,-5z');
+  b+=R(16,92,82,100,'f2',3)+R(16,128,96,9)+L(26,128,26,137,1.2)+L(36,128,36,137,1.2)+L(46,128,46,137,1.2)+L(56,128,56,137,1.2)+L(66,128,66,137,1.2)+L(76,128,76,137,1.2)+L(86,128,86,137,1.2)+L(96,128,96,137,1.2)+L(106,128,106,137,1.2);
+  b+=R(116,160,30,6,'f2',2)+L(131,166,131,195,3);
+  b+=fig({x:132,y:194,s:.8,f:-1,kind:'g',pose:'sit',top:'f1',bot:'f3',hl:[28,-82],hr:[36,-80]});
+  b+=fig({x:190,y:195,s:.8,kind:'b',pose:'walk',top:'f3',bot:'fg',hl:[22,-70],hr:[26,-76]});
+  b+=PL('M200,124 h20 v18 M220,142 v22 M200,124 v40 M200,142 h20',3)+PL('M206,118 h20 v18 M226,136 v22 M206,118 v40',2.4);
+  b+=fig({x:256,y:195,kind:'w',top:'f2',bot:'f1'});
+  b+=thought(222,38,22,248,86,R(208,26,28,24,'',1)+L(222,26,222,50)+PL('M200,38 l5,-3 v6z M244,38 l-5,-3 v6z',2));
+  return svgWrap(b);
+ },
+ pets(){
+  let b='';
+  b+=L(0,196,360,196)+PL('M0,206 Q180,186 360,206',1.5);
+  b+=`<ellipse class="sf f3" cx="340" cy="150" rx="26" ry="40"/>`+R(337,180,6,16,'f2');
+  b+=fig({x:86,y:196,kind:'w',pose:'walk',top:'f3',bot:'f1',hr:[22,-60]});
+  b+=PL('M108,136 Q140,170 160,168',1.5);
+  b+=`<ellipse class="sf f2" cx="150" cy="178" rx="18" ry="9"/>`+C(166,168,7,'f2')+PATH('M162,163 l-4,8 l5,-1z','fh')+`<circle cx="169" cy="167" r="1.2" class="fk"/>`;
+  b+=L(138,184,136,196,3)+L(145,186,145,196,3)+L(156,186,157,196,3)+L(162,184,165,196,3)+PL('M132,175 q-8,-8 -4,-14',2.4);
+  b+=fig({x:212,y:196,s:.8,kind:'b',top:'f1',bot:'fg',hr:[22,-128],hl:[-18,-70]});
+  b+=C(244,58,6,'f2')+PL('M232,72 l-6,6 M236,76 l-7,5',1.5);
+  b+=fig({x:300,y:196,s:.78,f:-1,kind:'g',top:'f2',bot:'f3'});
+  b+=thought(300,48,20,300,104,R(286,40,28,18,'fg',3)+C(300,49,6)+R(290,36,8,4,'fk',1));
+  return svgWrap(b);
+ },
+ study(){
+  let b='';
+  b+=L(0,200,360,200);
+  b+=`<rect x="20" y="34" width="150" height="74" rx="3" style="fill:#2f4a3e;stroke:#1d2533;stroke-width:2"/>`+`<path d="M34,56 h50 M34,72 h80 M34,88 h36" style="fill:none;stroke:#e9eef0;stroke-width:2;stroke-linecap:round"/>`+R(20,108,150,5,'f2');
+  b+=R(256,70,90,82,'f1',2)+L(301,70,301,152)+L(256,111,346,111);
+  b+=fig({x:258,y:200,s:.8,kind:'b',top:'f3',bot:'fg',hr:[32,-112]});
+  b+=PATH('M280,104 q6,-4 12,0 q-2,7 -12,8 z','f2');
+  b+=R(60,150,120,8,'f2',2)+L(68,158,68,200,3)+L(172,158,172,200,3);
+  b+=R(72,141,30,9,'f1',1)+R(75,132,26,9,'f3',1)+R(116,141,32,9,'f2',1)+R(158,122,9,28,'f1',1);
+  return svgWrap(b);
+ }
+};
+
+/* ---------- 問題（オリジナル。実際の過去問ではありません） ---------- */
+const CARDS=[
+ {id:'cook',title:'Cooking Classes',hint:'料理教室',
+  passage:'Many people want to learn how to make delicious food. Cooking classes are popular in many towns. People can learn to cook new dishes with their friends, so they enjoy going to cooking classes on weekends.',
+  pic:'台所。左で女性がまな板の上でニンジンを切っている。中央で男の子が流しでお皿を洗っている。右の冷蔵庫の前の女の子の吹き出しに牛乳パック（これから牛乳を飲むつもり）。',
+  q:[
+   {t:'Please look at the passage. Why do people enjoy going to cooking classes on weekends?',m:'Because they can learn to cook new dishes with their friends.'},
+   {t:'Please look at the picture. What is the woman doing?',m:'She is cutting carrots.'},
+   {t:'Please look at the girl. What is she going to do?',m:'She is going to drink some milk.'},
+   {t:'What kind of food do you like to eat?',m:'I like to eat curry and rice.'},
+   {t:'Do you often go to the library?',yes:'Please tell me more.',no:'What do you usually do after school?',my:'Yes, I do. I go there to read books every Saturday.',mn:'No, I don\'t. I usually play soccer with my friends.'}
+  ]},
+ {id:'bike',title:'Riding a Bike',hint:'自転車',
+  passage:'Riding a bike is good for our health. Many students ride their bikes to school every day. Some people like to ride along the river, so they go cycling on sunny weekends.',
+  pic:'公園。左の木に鳥が3羽とまっている。中央のベンチで男性が座って本を読んでいる。右で男の子が自転車に乗っている。',
+  q:[
+   {t:'Please look at the passage. Why do some people go cycling on sunny weekends?',m:'Because they like to ride along the river.'},
+   {t:'Please look at the picture. What is the man doing?',m:'He is reading a book.'},
+   {t:'How many birds are there in the tree?',m:'There are three.'},
+   {t:'What time do you usually get up on weekends?',m:'I usually get up at seven thirty.'},
+   {t:'Have you ever been to the sea?',yes:'Please tell me more.',no:'What would you like to do this winter?',my:'Yes, I have. I swam in the sea with my family last summer.',mn:'No, I haven\'t. I\'d like to go skiing with my family.'}
+  ]},
+ {id:'music',title:'School Concerts',hint:'学校のコンサート',
+  passage:'Many schools have concerts every year. Students practice playing music for a long time. They want to show their families how well they can play, so they practice hard before the concert.',
+  pic:'音楽室。左で女の子がピアノを弾いている。中央で男の子がいすを（2脚）運んでいる。右の女性の吹き出しに、窓を閉める様子（これから窓を閉めるつもり）。窓は開いている。',
+  q:[
+   {t:'Please look at the passage. Why do students practice hard before the concert?',m:'Because they want to show their families how well they can play.'},
+   {t:'Please look at the picture. What is the boy doing?',m:'He is carrying chairs.'},
+   {t:'Please look at the woman. What is she going to do?',m:'She is going to close the window.'},
+   {t:'What do you like to do on rainy days?',m:'I like to watch movies at home.'},
+   {t:'Do you play any musical instruments?',yes:'Please tell me more.',no:'What do you want to do this weekend?',my:'Yes, I do. I play the guitar, and I practice every day.',mn:'No, I don\'t. I want to go shopping with my sister.'}
+  ]},
+ {id:'pets',title:'Taking Care of Pets',hint:'ペットの世話',
+  passage:'Many families in Japan have pets. Dogs and cats are very popular. Pets need food and exercise every day, so people must take good care of them.',
+  pic:'公園の小道。左で女性が犬を散歩させている。中央で男の子がボールを投げている。右の女の子の吹き出しにカメラ（これから写真を撮るつもり）。',
+  q:[
+   {t:'Please look at the passage. Why must people take good care of their pets?',m:'Because they need food and exercise every day.'},
+   {t:'Please look at the picture. What is the woman doing?',m:'She is walking her dog.'},
+   {t:'Please look at the girl. What is she going to do?',m:'She is going to take a picture.'},
+   {t:'Where do you want to go next summer?',m:'I want to go to Hokkaido.'},
+   {t:'Do you like to cook?',yes:'Please tell me more.',no:'What do you like to do in your free time?',my:'Yes, I do. I often make pancakes for my family.',mn:'No, I don\'t. I like to read comic books.'}
+  ]},
+ {id:'study',title:'Online Shopping',hint:'ネットショッピング',
+  passage:'Today, many people buy things on the internet. They can shop at home at any time, so online shopping is very useful for busy people. Some people read reviews before they buy something.',
+  pic:'教室。左に黒板。中央の机の上に本が4冊ある。右で男の子が布で窓をふいている（掃除している）。',
+  q:[
+   {t:'Please look at the passage. Why is online shopping very useful for busy people?',m:'Because they can shop at home at any time.'},
+   {t:'Please look at the picture. What is the boy doing?',m:'He is cleaning the window.'},
+   {t:'How many books are there on the desk?',m:'There are four.'},
+   {t:'How did you come here today?',m:'I came here by train.'},
+   {t:'Do you like sports?',yes:'Please tell me more.',no:'What did you do last weekend?',my:'Yes, I do. I like basketball, and I play it at school.',mn:'No, I don\'t. I went to a museum with my friend.'}
+  ]}
+];
+
+/* ---------- state ---------- */
+const STORE='eiken3-mensetsu-v1';
+let saved={};try{saved=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}catch(e){}
+const persist=()=>{try{localStorage.setItem(STORE,JSON.stringify(saved))}catch(e){}};
+const S={step:'home',cardIdx:0,showText:!!saved.showText,rate:saved.rate||0.9,a:{},yn:null,introI:0,endI:0,grade:null,self:{read:null,att:null}};
+let timerId=null,sampleFn=null;
+
+const STEPS=['intro','silent','aloud','q1','q2','q3','turn','q4','q5','end'];
+const LABEL={intro:'入室・あいさつ',silent:'黙読（20秒）',aloud:'音読',q1:'No.1 パッセージ',q2:'No.2 イラスト',q3:'No.3 イラスト',turn:'カードを裏返す',q4:'No.4 あなた自身',q5:'No.5 あなた自身',end:'退室'};
+const INTRO=[
+ ['Hello. Can I have your card, please?','Here you are.','面接カードを渡しながら'],
+ ['Thank you. Please have a seat.','Thank you.','座る前にひとこと'],
+ ['My name is Ms. Brown. May I have your name, please?','My name is ___.','フルネームで'],
+ ['Thank you. This is the Grade 3 test. OK?','OK.','笑顔で'],
+ ['Let\'s begin. Here\'s your card.','Thank you.','問題カードを受け取る']
+];
+const ENDING=[
+ ['This is the end of the test. Could I have the card back, please?','Here you are.','問題カードを返す'],
+ ['Thank you. You may go now.','Thank you. Goodbye.','最後まで笑顔で']
+];
+
+/* ---------- speech ---------- */
+let voice=null;
+function pickVoice(){try{const vs=speechSynthesis.getVoices();voice=vs.find(v=>/en-US/i.test(v.lang)&&/Samantha|Google US|Aria|Jenny/i.test(v.name))||vs.find(v=>/en-US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null}catch(e){}}
+try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
+function say(t){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=S.rate;if(voice)u.voice=voice;speechSynthesis.speak(u)}catch(e){}}
+const hush=()=>{try{speechSynthesis.cancel()}catch(e){}};
+
+/* ---------- utils ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const card=()=>CARDS[S.cardIdx];
+function clearTimer(){if(timerId){clearInterval(timerId);timerId=null}}
+function rail(){const i=STEPS.indexOf(S.step);return `<div class="phase">${esc(LABEL[S.step]||'')}</div><div class="rail">${STEPS.map((s,j)=>`<span class="${j<i?'on':j===i?'now':''}"></span>`).join('')}</div>`}
+function examiner(line,{hide=false,repeat=true}={}){
+  return `<div class="ex fade"><div class="av">面接<br>委員</div><div class="bub"><div class="who">EXAMINER</div>
+  <div class="line ${hide?'hiddenq':''}" id="exline">${hide?'（音声で質問中。聞き取って答えよう）':esc(line)}</div>
+  <div class="row" style="margin-top:8px">${repeat?`<button class="mini ghost" data-act="again">🔁 Could you say that again?</button>`:''}${hide?`<button class="mini ghost" data-act="reveal">文字で見る</button>`:''}</div></div></div>`;
+}
+function qcardHTML(){const c=card();return `<div class="qcard fade"><div class="ptitle">${esc(c.title)}</div><p class="ptext">${esc(c.passage)}</p>${SCENES[c.id]()}</div>`}
+function answerBox(key,ph){
+  return `<div class="stack"><label for="ans" class="hint">あなたの答え（声に出して言ってから入力。キーボードのマイクで音声入力すると本番に近くなります）</label>
+  <textarea id="ans" placeholder="${esc(ph)}">${esc(S.a[key]||'')}</textarea>
+  <div class="row" style="justify-content:space-between"><span class="timer" id="tm">0秒</span><button class="primary" data-act="next">答えた → 次へ</button></div></div>`;
+}
+function startElapsed(limit=10){clearTimer();const t0=Date.now();timerId=setInterval(()=>{const e=Math.floor((Date.now()-t0)/1000),el=$('#tm');if(!el)return;el.textContent=e+'秒'+(e>=limit?'　早めに答え始めよう':'');el.classList.toggle('late',e>=limit)},500)}
+
+/* ---------- screens ---------- */
+function render(){
+  clearTimer();const app=$('#app');const c=card();
+  if(S.step==='home'){app.innerHTML=home();return}
+  if(S.step==='result'){app.innerHTML=result();return}
+  let h=rail();
+  if(S.step==='intro'){const [ex,you,tip]=INTRO[S.introI];
+    h+=`<div class="stack">${examiner(ex)}<div class="you fade"><div class="who">YOU · ${esc(tip)}</div><div class="say">${esc(you)}</div></div>
+    <div class="row" style="justify-content:flex-end"><button class="primary" data-act="intro-next">言った → 次へ</button></div></div>`;}
+  else if(S.step==='silent'){h+=`<div class="stack">${examiner('First, please read the passage silently for 20 seconds.',{repeat:false})}
+    <div class="big-timer" id="cd">20</div>${qcardHTML()}<div class="note">イラストもざっと見ておこう。No.2・No.3で聞かれます。</div></div>`;}
+  else if(S.step==='aloud'){h+=`<div class="stack">${examiner('All right. Please read the passage aloud.')}${qcardHTML()}
+    <div class="note">タイトルから読み始めよう。意味のまとまりで区切り、<b>so</b> の前で少し間をとると自然です。</div>
+    <div class="row" style="justify-content:space-between"><span class="timer" id="tm">0秒</span><button class="primary" data-act="next">読み終わった</button></div></div>`;}
+  else if(/^q[123]$/.test(S.step)){const n=+S.step[1],q=c.q[n-1];
+    h+=`<div class="stack">${examiner(q.t,{hide:!S.showText})}${qcardHTML()}${answerBox(S.step,n===1?'Because ...':n===2?'He / She is ...':'')}</div>`;}
+  else if(S.step==='turn'){h+=`<div class="stack">${examiner('Now, please turn the card over.')}
+    <div class="note">ここからはカードを見ずに、あなた自身のことを答えます。</div>
+    <div class="row" style="justify-content:flex-end"><button class="primary" data-act="next">カードを裏返した</button></div></div>`;}
+  else if(S.step==='q4'){const q=c.q[3];
+    h+=`<div class="stack">${examiner(q.t,{hide:!S.showText})}<div class="turned">問題カードは裏返しています</div>${answerBox('q4','I ...')}</div>`;}
+  else if(S.step==='q5'){const q=c.q[4];
+    if(!S.yn){h+=`<div class="stack">${examiner(q.t,{hide:!S.showText})}<div class="turned">問題カードは裏返しています</div>
+      <div class="note">まず Yes / No で答えます（例：Yes, I do. / No, I don't.）。声に出してから選んでください。</div>
+      <div class="row"><button class="primary" data-act="yn" data-v="yes">Yes と答えた</button><button data-act="yn" data-v="no">No と答えた</button></div></div>`;}
+    else{const fol=S.yn==='yes'?q.yes:q.no;
+      h+=`<div class="stack">${examiner(fol,{hide:!S.showText})}<div class="turned">問題カードは裏返しています</div>${answerBox('q5','')}</div>`;}}
+  else if(S.step==='end'){const [ex,you,tip]=ENDING[S.endI];
+    h+=`<div class="stack">${examiner(ex)}<div class="you fade"><div class="who">YOU · ${esc(tip)}</div><div class="say">${esc(you)}</div></div>
+    <div class="row" style="justify-content:flex-end"><button class="primary" data-act="end-next">${S.endI<ENDING.length-1?'言った → 次へ':'退室して結果を見る'}</button></div></div>`;}
+  h+=`<div class="row" style="margin-top:22px;justify-content:space-between"><button class="ghost mini" data-act="quit">やめる</button><span class="hint">${esc(c.title)}</span></div>`;
+  app.innerHTML=h;
+  const ta=$('#ans');if(ta){ta.addEventListener('input',()=>{S.a[S.step==='q5'?'q5':S.step]=ta.value});startElapsed(S.step==='q4'||S.step==='q5'?12:10)}
+  if(S.step==='aloud')startElapsed(60);
+  if(S.step==='silent'){let r=20;timerId=setInterval(()=>{r--;const el=$('#cd');if(el)el.textContent=r;if(r<=0){S.step='aloud';enter()}},1000)}
+}
+function currentLine(){const c=card();
+  if(S.step==='intro')return INTRO[S.introI][0];if(S.step==='end')return ENDING[S.endI][0];
+  if(S.step==='silent')return 'First, please read the passage silently for 20 seconds.';
+  if(S.step==='aloud')return 'All right. Please read the passage aloud.';
+  if(S.step==='turn')return 'Now, please turn the card over.';
+  if(/^q[1-4]$/.test(S.step))return c.q[+S.step[1]-1].t;
+  if(S.step==='q5'){const q=c.q[4];return !S.yn?q.t:(S.yn==='yes'?q.yes:q.no)}
+  return '';}
+function enter(){render();const l=currentLine();if(l)setTimeout(()=>say(l),120)}
+
+function home(){
+  const rows=CARDS.map((c,i)=>{const r=saved['r_'+c.id];return `<button class="pick" data-act="pick" data-i="${i}" aria-pressed="${i===S.cardIdx}">
+    <span class="n">CARD ${String.fromCharCode(65+i)}</span><span class="t">${esc(c.title)}</span><span class="h">${esc(c.hint)}${r?`　前回 ${r.total}/33`:''}</span></button>`}).join('');
+  return `<div class="stack fade">
+   <div><h1>英検3級 面接ルーム</h1><div class="sub">二次試験の流れを、入室から退室まで通しで練習します。</div></div>
+   <div class="panel stack"><h2>問題カードを選ぶ</h2><div class="cards">${rows}</div>
+    <div class="note">練習用のオリジナル問題です（実際の過去問ではありません）。</div></div>
+   <div class="panel stack"><h2>本番の流れ</h2>
+    <ol class="flow"><li>入室・あいさつ（面接カードを渡す）</li><li>パッセージを20秒黙読 → 音読</li><li>No.1 パッセージについて</li><li>No.2・No.3 イラストについて</li><li>カードを裏返して No.4・No.5 あなた自身のこと</li><li>カードを返して退室</li></ol>
+    <div class="note">配点の目安：音読5点＋No.1〜5 各5点＋アティチュード3点＝33点。合格目安は17点前後です。</div></div>
+   <div class="panel stack"><h2>設定</h2>
+    <label class="toggle"><input type="checkbox" id="showText" ${S.showText?'checked':''}>質問を文字でも表示する（練習モード）</label>
+    <div class="hint">オフにすると本番と同じく、質問は音声だけ。聞き取れなければ「Could you say that again?」で聞き直せます。</div>
+    <div class="row"><span class="toggle">読み上げの速さ</span>
+     <button class="mini" data-act="rate" data-v="0.75" aria-pressed="${S.rate==0.75}">ゆっくり</button>
+     <button class="mini" data-act="rate" data-v="0.9" aria-pressed="${S.rate==0.9}">ふつう</button>
+     <button class="mini" data-act="rate" data-v="1" aria-pressed="${S.rate==1}">本番より速め</button>
+     <button class="mini ghost" data-act="test">🔊 試し聞き</button></div></div>
+   <button class="primary" data-act="start" style="padding:14px">面接をはじめる（${esc(card().title)}）</button>
+  </div>`;
+}
+
+/* ---------- grading ---------- */
+function items(){const c=card();return [1,2,3,4,5].map(n=>{const q=c.q[n-1];
+  if(n<5)return {no:n,q:q.t,model:q.m,ans:S.a['q'+n]||''};
+  const fol=S.yn==='yes'?q.yes:q.no;return {no:5,q:`${q.t} → (${S.yn==='yes'?'Yes':S.yn==='no'?'No':'未回答'}) → ${fol}`,model:S.yn==='no'?q.mn:q.my,ans:(S.yn?(S.yn==='yes'?'[Yes と回答] ':'[No と回答] '):'')+(S.a.q5||'')}})}
+async function grade(){
+  if(!sampleFn){S.grade={state:'off'};render();return}
+  S.grade={state:'busy'};render();
+  const c=card(),its=items();
+  const prompt=`あなたは英検3級二次試験（面接）の採点に慣れた先生です。受験者は日本の中学生くらいです。下の回答を採点し、日本語でやさしく具体的に助言してください。
+
+採点基準（各問0〜5点）：5=質問に合った内容で、文として正しい／4=小さな誤りが1つ／3=意味は通じるが文法の誤りや主語・動詞が欠けた答え／1〜2=一部だけ・単語のみ／0=無回答・質問と無関係。
+- No.1: パッセージの内容から答えているか。people→they のような代名詞の置き換え、Because で始める形、so の前の部分を答えているか。
+- No.2/3: イラストの内容に合っているか。現在進行形（He is ~ing）や be going to の形、There are ~ の形。
+- No.4/5: 自分のことを主語と動詞のある文で答えているか。No.5は Yes/No の後の追加質問への答えを評価。お手本と内容が違っても、質問に合っていれば満点にしてよい。
+- 回答は音声入力の可能性があるため、句読点・大文字・明らかな音声認識の誤変換は減点しない。
+
+パッセージ（${c.title}）：${c.passage}
+イラストの内容：${c.pic}
+
+${its.map(i=>`No.${i.no}
+質問: ${i.q}
+お手本の一例: ${i.model}
+受験者の回答: ${i.ans.trim()||'（無回答）'}`).join('\n\n')}
+
+JSONだけで返してください。形式：
+{"items":[{"no":1,"score":0,"good":"よかった点（20字程度、なければ空）","fix":"直すとよい点（40字以内、なければ空）","better":"この受験者の答えを生かした、より良い英文1文〜2文"}],"overall":"全体へのひとこと（2文以内）"}`;
+  try{
+    const r=await sampleFn.json(prompt,{modelTier:'default'});
+    if(!r||!Array.isArray(r.items))throw {code:'invalid_json'};
+    S.grade={state:'done',items:r.items,overall:String(r.overall||'')};
+  }catch(e){
+    const code=e&&e.code;
+    S.grade={state:(code==='not_granted'||code==='sampling_disabled'||code==='not_declared'||code==='capability_disabled'||code==='capability_removed')?'off':'err',code};
+  }
+  render();
+}
+function scoreOf(no){const g=S.grade;if(g&&g.items){const it=g.items.find(x=>+x.no===no);if(it&&S.manual?.[no]==null)return Math.max(0,Math.min(5,Math.round(+it.score||0)))}return S.manual?.[no]??null}
+function result(){
+  const its=items(),g=S.grade||{};
+  const qs=[1,2,3,4,5].map(scoreOf);
+  const qsum=qs.reduce((a,b)=>a+(b||0),0),allq=qs.every(v=>v!=null);
+  const tot=qsum+(S.self.read||0)+(S.self.att||0),complete=allq&&S.self.read!=null&&S.self.att!=null;
+  if(complete){saved['r_'+card().id]={total:tot,at:Date.now()};persist()}
+  const chips=(key,max,val)=>`<div class="chips">${Array.from({length:max+1},(_,i)=>`<button data-act="chip" data-k="${key}" data-v="${i}" aria-pressed="${val===i}">${i}</button>`).join('')}</div>`;
+  let status='';
+  if(g.state==='busy')status=`<div class="panel">採点中です… 30秒ほどかかることがあります。</div>`;
+  else if(g.state==='off')status=`<div class="panel note">ここでは自動採点が使えません。お手本と比べて、各問の点数を自分でつけてみましょう。</div>`;
+  else if(g.state==='err')status=`<div class="panel row" style="justify-content:space-between"><span class="note">採点を取得できませんでした。少し待ってからもう一度お試しください。</span><button class="mini" data-act="regrade">もう一度採点</button></div>`;
+  else if(g.state==='done'&&g.overall)status=`<div class="panel">${esc(g.overall)}</div>`;
+  else if(!g.state)status=`<div class="panel row" style="justify-content:space-between"><span class="note">Claude に No.1〜5 を採点してもらえます（初回は許可の確認が出ます）。</span><button class="primary mini" data-act="regrade">採点する</button></div>`;
+  const body=its.map(i=>{const gi=g.items?.find(x=>+x.no===i.no);return `<div class="item">
+    <div class="lab">No.${i.no}</div><div class="q">${esc(i.q)}</div>
+    <div><span class="lab">あなた</span><div class="a">${esc(i.ans.trim())||'<span class="note">（無回答）</span>'}</div></div>
+    ${gi?.good?`<div class="fb-good">○ ${esc(gi.good)}</div>`:''}${gi?.fix?`<div class="fb-fix">△ ${esc(gi.fix)}</div>`:''}
+    <div><span class="lab">${gi?.better?'よりよい答え':'お手本の一例'}</span><div class="better">${esc(gi?.better||i.model)}</div></div>
+    <div class="row"><span class="lab">点数</span>${chips('q'+i.no,5,scoreOf(i.no))}</div></div>`}).join('');
+  return `<div class="stack fade">
+   <div><div class="phase">RESULT · ${esc(card().title)}</div>
+   <div class="score-head"><span class="tot">${tot}</span><span class="sub">/ 33</span>
+    ${complete?`<span class="pass ${tot>=17?'ok':'ng'}">${tot>=17?'合格ライン到達':'合格目安まであと'+(17-tot)+'点'}</span>`:'<span class="note">音読・態度の自己採点を入れると合計が出ます</span>'}</div></div>
+   ${status}
+   <div class="panel stack"><h2>自己チェック</h2>
+    <div class="stack"><div><b>音読</b>（0〜5）<div class="hint">はっきり・つかえず・意味の区切りで読めたか</div></div>${chips('read',5,S.self.read)}</div>
+    <div class="stack"><div><b>アティチュード</b>（0〜3）<div class="hint">あいさつ・声の大きさ・沈黙しなかったか</div></div>${chips('att',3,S.self.att)}</div></div>
+   <div class="panel stack"><h2>No.1〜5 の答え</h2>${body}</div>
+   <div class="row"><button class="primary" data-act="retry">同じカードでもう一度</button><button data-act="home">ほかのカードへ</button></div>
+  </div>`;
+}
+
+/* ---------- events ---------- */
+document.addEventListener('change',e=>{if(e.target.id==='showText'){S.showText=e.target.checked;saved.showText=S.showText;persist()}});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+  if(a==='pick'){S.cardIdx=+b.dataset.i;render();return}
+  if(a==='rate'){S.rate=+b.dataset.v;saved.rate=S.rate;persist();render();say('Hello. Can I have your card, please?');return}
+  if(a==='test'){say('Please look at the picture. What is the woman doing?');return}
+  if(a==='start'||a==='retry'){S.a={};S.yn=null;S.introI=0;S.endI=0;S.grade=null;S.manual={};S.self={read:null,att:null};S.step='intro';enter();window.scrollTo(0,0);return}
+  if(a==='home'||a==='quit'){hush();S.step='home';render();window.scrollTo(0,0);return}
+  if(a==='again'){say(currentLine());return}
+  if(a==='reveal'){const el=$('#exline');if(el){el.textContent=currentLine();el.classList.remove('hiddenq')}b.remove();return}
+  if(a==='intro-next'){if(S.introI<INTRO.length-1){S.introI++;enter()}else{S.step='silent';enter()}return}
+  if(a==='end-next'){if(S.endI<ENDING.length-1){S.endI++;enter()}else{hush();S.step='result';render();window.scrollTo(0,0);grade()}return}
+  if(a==='yn'){S.yn=b.dataset.v;enter();return}
+  if(a==='next'){const i=STEPS.indexOf(S.step);S.step=STEPS[i+1];enter();window.scrollTo(0,0);return}
+  if(a==='regrade'){grade();return}
+  if(a==='chip'){const k=b.dataset.k,v=+b.dataset.v;if(k==='read')S.self.read=v;else if(k==='att')S.self.att=v;else{S.manual=S.manual||{};S.manual[+k.slice(1)]=v}render();return}
+});
+
+S.manual={};
+render();
+(async()=>{try{if(window.claude&&claude.use){sampleFn=await claude.use('sample')}}catch(e){sampleFn=null}})();
+</script>
+
+</body>
+</html>

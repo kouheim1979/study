@@ -11,6 +11,7 @@ GitHub Pages: https://kouheim1979.github.io/study/
 | [soundbeat](soundbeat/) | SoundBeat | 英語 |
 | [eigo-quest](eigo-quest/) | えいごヒマつぶしクエスト | 英語 |
 | [Turn-method](Turn-method/) | ターンメソッド（英語発話トレーニング） | 英語 |
+| [eiken3-mensetsu](eiken3-mensetsu/) | 英検3級 面接ルーム（二次試験の面接練習） | 英語 |
 | [zenken-moshi-lab](zenken-moshi-lab/) | 成績ラボ（単元分析・全県模試） | その他 |
 
 そのほか、`eigo-ai`（えいごヒマつぶしクエスト用のVercel AIバックエンド）と `kouhei-ai`（相談室）が同居しています。
