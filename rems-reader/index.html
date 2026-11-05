@@ -26,6 +26,28 @@ button,input,a{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-v
 footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}footer a{color:inherit}
 @media(max-width:790px){.layout{grid-template-columns:1fr}.panel{padding:15px}.selection{display:grid;grid-template-columns:1fr 1fr;gap:15px}.selection>div{min-width:0}.units{margin-bottom:0}.seg-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:7px}.seg{margin:0}.tip{margin-top:12px}.reader{order:2}.catalog{order:1}.frame{height:55vh;min-height:360px}}
 @media(max-width:500px){.top{padding:18px 16px 24px}.hero-tag{display:none}.main{padding:12px 10px 48px}.return{padding:12px 14px;border-radius:12px}.panel{border-radius:13px}.selection{display:block}.books{margin-bottom:14px}.units{margin-bottom:15px}.seg-box{grid-template-columns:1fr 1fr}.seg{padding:9px;font-size:.8rem}.seg strong{font-size:.77rem}.seg span{font-size:.7rem}.reader-top{align-items:center}.mode{width:100%;display:flex}.mode button{flex:1}.jump{order:1}.star{margin-left:0}.controls{gap:6px}.round{padding:9px 12px;min-height:40px}.frame{height:56vh;min-height:330px}.shelf{grid-template-columns:1fr}.pdf-actions a{flex:1;text-align:center}.tip{display:none}}
+
+/* Stable reading mode: avoid cross-origin iframe and Google Docs embeds. */
+[hidden]{display:none!important}
+.frame{height:auto;min-height:0!important;overflow:visible;background:#f5faf7;border:1px solid #d6e5dc;border-radius:14px;padding:0}
+.frame.loading:before{content:none}
+.reading-actions{padding:24px 18px;text-align:center}
+.doc-icon{font-size:2.4rem;margin:0 0 8px}
+.reading-actions h3{font-size:1.12rem;margin:0 0 8px}
+.reading-actions p{margin:0 auto 15px;max-width:460px;font-size:.86rem;line-height:1.7;color:#5a7270}
+.big-link{display:inline-block;text-decoration:none;font-size:1.04rem;padding:15px 22px;border-radius:12px;margin-bottom:13px}
+.local-reader{margin:16px auto 0;border-top:1px solid #d8e5dc;padding-top:16px;max-width:490px}
+.file-label{display:inline-block;background:#fff;border:1px solid #a9c9be;padding:11px 16px;border-radius:11px;color:#106b65;font-size:.89rem;font-weight:800;cursor:pointer}
+.file-label:focus-within{outline:3px solid #73cbc2}
+#local-pdf{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0}
+#local-status{font-size:.78rem!important;margin:12px 0 0!important;color:#48685d}
+#canvas-wrap{padding:10px;background:#f2f5f3;text-align:center}
+#pdf-canvas{max-width:100%;height:auto;display:block;margin:0 auto;background:white;box-shadow:0 1px 10px #0002}
+#canvas-status{color:#586d6a;font-size:.8rem;margin:8px 0}
+#change-pdf{border:1px solid #b4d6ca;background:white;color:#146d64;font-size:.79rem;padding:9px 12px;border-radius:8px;margin:10px auto 3px;font-weight:700}
+.reader-how{font-size:.79rem;background:#fff;padding:10px 13px;border-radius:10px;border:1px solid #e1eae4;margin:6px 0 0;line-height:1.55;color:#536d67}
+@media(max-width:500px){.frame{height:auto!important;min-height:0!important}.reading-actions{padding:19px 12px}.big-link{display:block}.pdf-actions a{flex:1}.reader-how{font-size:.76rem}}
+
 </style>
 </head>
 <body>
@@ -46,9 +68,28 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
    <div class="reader-top"><div><p class="heading">NOW READING</p><h2 id="reader-title" class="reader-title">Book 1 · Unit A</h2><p id="reader-subtitle" class="subtitle">Lesson 11–14</p></div><div class="mode" role="group" aria-label="解答表示"><button type="button" id="no-answer" aria-pressed="true">問題のみ</button><button type="button" id="answer" aria-pressed="false">解答付き</button></div></div>
    <div class="controls"><button class="round" id="prev" type="button" aria-label="1ページ前">← 前へ</button><div class="jump"><input id="page" type="number" min="1" inputmode="numeric" aria-label="教材の通しページ"><span id="total">/ 258</span><button id="go" type="button">移動</button></div><button class="round" id="next" type="button">次へ →</button><button class="round star" id="bookmark" type="button" aria-pressed="false">☆ しおり</button></div>
    <div class="pagebar"><span id="page-text">Unit A · p.187</span><span id="file-text">PDF内 11ページ目</span></div><div class="meter"><div id="progress"></div></div>
-   <div class="pdf-actions"><a class="primary" id="open-pdf" target="_blank" rel="noopener noreferrer">↗ SafariでPDFを開く</a><a id="download-pdf" target="_blank" rel="noopener noreferrer">↓ 公式PDFを保存</a><button id="switch-viewer" class="viewmode" type="button">表示方式を切替</button><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
-   <div class="frame loading" id="frame"><iframe id="pdf" title="QQEnglish R.E.M.S. PDF教材" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="preview-help"><span id="preview-label">ページが表示されない場合は、PDFを直接開いてください</span><a id="pdf-fallback" target="_blank" rel="noopener noreferrer">PDFを直接開く ↗</a></div></div>
-   <p class="notice" id="notice">iPhoneではGoogleドキュメントによるプレビューを使用します。ページ指定が反映されない場合は、PDFを直接開いてPDF内のページ番号を指定してください。プレビューが表示されない場合も直接開く機能が使えます。ネット接続が必要です。</p>
+   <div class="pdf-actions"><a class="primary" id="open-pdf" target="_blank" rel="noopener noreferrer">↗ 公式PDFで読む</a><a id="download-pdf" target="_blank" rel="noopener noreferrer">↓ PDFを保存</a><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
+   <div class="frame" id="frame">
+     <div class="reading-actions" id="reading-actions">
+       <div class="doc-icon" aria-hidden="true">📖</div>
+       <h3>公式PDFを開いて読む</h3>
+       <p>iPhoneで表示が途切れないよう、外部サイトの埋め込みを廃止しました。</p>
+       <a class="primary big-link" id="pdf-fallback" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">↗ この教材を開く</a>
+       <div class="local-reader">
+         <p><strong>アプリ内で1ページずつ読みたい場合</strong></p>
+         <p>上の「PDFを保存」からiPhoneの「ファイル」に保存したPDFを選択すると、この画面に直接描画します。選んだPDFは、この端末に保存され次回も開けます。</p>
+         <label class="file-label" for="local-pdf">＋ 保存したPDFを選択</label>
+         <input type="file" id="local-pdf" accept=".pdf,application/pdf" aria-label="保存したR.E.M.S.教材PDFを選択">
+         <p id="local-status" role="status" aria-live="polite"></p>
+       </div>
+     </div>
+     <div id="canvas-wrap" hidden>
+       <canvas id="pdf-canvas" aria-label="保存したPDFの現在ページ"></canvas>
+       <p id="canvas-status" role="status"></p>
+       <button id="change-pdf" type="button">別のPDFを読み込む</button>
+     </div>
+   </div>
+   <p class="reader-how">PDFを直接開いた場合、ブラウザによっては自動で指定ページに移動できません。アプリ内の「PDF内 ○ページ目」を目安に移動してください。保存済PDFを選択した場合は、この画面の「前へ・次へ・移動」でページを切り替えられます。</p>
    <div class="shelf"><div class="mini"><h3>最近開いたページ</h3><div id="recent" class="quick"></div></div><div class="mini"><h3>保存したしおり</h3><div id="bookmarks" class="quick"></div></div></div>
   </section>
  </div>
@@ -90,9 +131,66 @@ let saved={last:{unit:"A",page:187,answers:false},byUnit:{},recent:[],bookmarks:
 try {const s=JSON.parse(localStorage.getItem(KEY)); if(s && typeof s==="object")saved={...saved,...s};}catch(e){}
 const validUnit=u=>typeof u==="string" && Object.hasOwn(SPEC,u);
 const safePage=(u,p)=>Math.max(1,Math.min(maxPage(u),Math.floor(Number(p)||1)));
-const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
-let viewerMode=isIOS?"google":"native";
-let frameTimeout;
+let activeDocKey="", pdfDocument=null, renderRequest=0, loadingKey="", loadToken=0;
+let drawQueue=Promise.resolve(), pdfJsLoading=null;
+const CDN="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+const fileKey=(unit,seg,answers)=>"rems-"+unit+"-"+seg.ls+"-"+seg.le+"-"+(answers?"answers":"questions");
+function readSegment(){return parse(state.unit).find(x=>state.page>=x.start&&state.page<=x.end);}
+function openDB(){return new Promise((resolve,reject)=>{
+ if(!("indexedDB" in window)){reject(Error("このブラウザでは保存できません"));return;}
+ const req=indexedDB.open("rems-reader-pdfs",1);
+ req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains("files"))req.result.createObjectStore("files");};
+ req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);
+});}
+async function fromDB(key){try{const db=await openDB();return await new Promise((resolve,reject)=>{const t=db.transaction("files","readonly");const q=t.objectStore("files").get(key);q.onsuccess=()=>{resolve(q.result);db.close()};q.onerror=()=>{reject(q.error);db.close()};});}catch(e){return null;}}
+async function toDB(key,data){const db=await openDB();return new Promise((resolve,reject)=>{const t=db.transaction("files","readwrite");t.objectStore("files").put(data,key);t.oncomplete=()=>{db.close();resolve()};t.onerror=()=>{db.close();reject(t.error)};});}
+function ensurePdfJS(){if(window.pdfjsLib)return Promise.resolve();if(pdfJsLoading)return pdfJsLoading;
+ pdfJsLoading=new Promise((resolve,reject)=>{const el=document.createElement("script");el.src=CDN+"pdf.min.js";el.onload=()=>{if(!window.pdfjsLib){reject(Error("PDF描画エンジンが読み込めません"));return;}pdfjsLib.GlobalWorkerOptions.workerSrc=CDN+"pdf.worker.min.js";resolve();};el.onerror=()=>reject(Error("PDF表示ライブラリを読み込めません。ネットワークをご確認ください。"));document.head.append(el);});
+ return pdfJsLoading;}
+function showLocal(yes){$("reading-actions").hidden=!!yes;$("canvas-wrap").hidden=!yes;}
+function drawPage(offset){if(!pdfDocument||!activeDocKey)return;const key=activeDocKey,seq=++renderRequest;
+ drawQueue=drawQueue.catch(()=>{}).then(async()=>{
+   if(seq!==renderRequest||activeDocKey!==key||!pdfDocument)return;
+   const d=pdfDocument, index=Math.min(Math.max(offset,1),d.numPages);
+   $("canvas-status").textContent="ページを表示しています…";
+   const pg=await d.getPage(index);
+   if(seq!==renderRequest||activeDocKey!==key)return;
+   const vp=pg.getViewport({scale:1});
+   const width=Math.max(250,Math.min($("frame").getBoundingClientRect().width-24,920));
+   const ratio=Math.min(2.1,width/vp.width);
+   const scaled=pg.getViewport({scale:ratio});
+   const pixelRatio=Math.min(window.devicePixelRatio||1,2);
+   const c=$("pdf-canvas"),ctx=c.getContext("2d");
+   c.width=Math.ceil(scaled.width*pixelRatio);c.height=Math.ceil(scaled.height*pixelRatio);
+   c.style.width=scaled.width+"px";c.style.height=scaled.height+"px";
+   ctx.setTransform(pixelRatio,0,0,pixelRatio,0,0);ctx.clearRect(0,0,scaled.width,scaled.height);
+   await pg.render({canvasContext:ctx,viewport:scaled}).promise;
+   if(seq===renderRequest)$("canvas-status").textContent="PDF内 "+index+" / "+d.numPages+" ページ";
+ }).catch(e=>{$("canvas-status").textContent="描画できませんでした："+String(e.message||e);});}
+async function loadLocal(data,key,token){
+ try{
+   $("local-status").textContent="PDFを準備しています…";
+   await ensurePdfJS();
+   if(token!==loadToken)return;
+   const doc=await pdfjsLib.getDocument({data:new Uint8Array(data.slice(0))}).promise;
+   if(token!==loadToken){doc.destroy();return;}
+   pdfDocument=doc;activeDocKey=key;showLocal(true);
+   $("local-status").textContent="";
+   drawPage(state.page-readSegment().start+1);
+ }catch(e){if(token===loadToken){showLocal(false);$("local-status").textContent="読み込みに失敗しました："+String(e.message||e);}}}
+async function updateLocalReader(){
+ const seg=readSegment(),key=fileKey(state.unit,seg,state.answers);
+ if(activeDocKey===key&&pdfDocument){showLocal(true);drawPage(state.page-seg.start+1);return;}
+ if(loadingKey===key)return;
+ activeDocKey="";pdfDocument=null;showLocal(false);++renderRequest;
+ loadingKey=key;const token=++loadToken;$("local-status").textContent="この教材の保存済PDFを確認中…";
+ const savedPdf=await fromDB(key);
+ if(token!==loadToken)return;
+ loadingKey="";
+ if(savedPdf)await loadLocal(savedPdf,key,token);
+ else $("local-status").textContent="この教材はまだ端末に保存されていません。";
+}
+
 let state={unit:validUnit(saved.last?.unit)?saved.last.unit:"A",page:187,answers:!!saved.last?.answers};
 state.page=safePage(state.unit,saved.last?.page);
 const hash=decodeURIComponent(location.hash.slice(1)).match(/^([A-T])\/(\d+)\/([01])$/);
@@ -117,25 +215,28 @@ function render(){
  $("prev").disabled=state.page<=1;$("next").disabled=state.page>=maxPage(u);
  const currentUrl=pdfUrl(u,seg,state.answers);const anchored=currentUrl+"#page="+offset+"&view=FitH";
  $("open-pdf").href=anchored;$("download-pdf").href=currentUrl;$("pdf-fallback").href=anchored;
- $("switch-viewer").textContent=viewerMode==="google"?"通常のPDF表示に切替":"iPhone向け表示に切替";
- const previewUrl=viewerMode==="google"
-   ?"https://docs.google.com/gview?embedded=true&url="+encodeURIComponent(currentUrl)+"#:0.page."+(offset-1)
-   :anchored;
- if($("pdf").dataset.url!==previewUrl){
-   $("frame").classList.add("loading");
-   $("preview-label").textContent="読み込めない場合はPDFを直接開く";
-   $("pdf").src=previewUrl;$("pdf").dataset.url=previewUrl;
-   clearTimeout(frameTimeout);
-   frameTimeout=setTimeout(()=>$("frame").classList.remove("loading"),9000);
- }
+ updateLocalReader();
 
  const isStarred=(saved.bookmarks||[]).some(x=>x.unit===u&&x.page===state.page);$("bookmark").textContent=isStarred?"★ しおり済":"☆ しおり";$("bookmark").setAttribute("aria-pressed",String(isStarred));
  $("return-text").textContent="Book "+bookOf(saved.last.unit)+" · Unit "+saved.last.unit+" / p."+saved.last.page+" から再開";
  showRecent(saved.recent,"recent","まだありません");showRecent(saved.bookmarks,"bookmarks","☆ しおりボタンで保存");
 }
-$("pdf").addEventListener("load",()=>{clearTimeout(frameTimeout);$("frame").classList.remove("loading");});
-$("pdf").addEventListener("error",()=>{$("frame").classList.remove("loading");$("preview-label").textContent="埋め込み表示に失敗しました。直接開くを使ってください";});
-$("switch-viewer").onclick=()=>{viewerMode=viewerMode==="google"?"native":"google";$("pdf").dataset.url="";render();};
+$("local-pdf").addEventListener("change",async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ const seg=readSegment(),key=fileKey(state.unit,seg,state.answers),token=++loadToken;loadingKey=key;
+ $("local-status").textContent="PDFを取り込んでいます…";
+ try{
+   if(!(/\.pdf$/i.test(f.name)||f.type==="application/pdf"))throw Error("PDFファイルを選んでください");
+   const url=pdfUrl(state.unit,seg,state.answers),expected=url.split("/").pop().replace(".pdf","").toLowerCase();
+   if(!f.name.toLowerCase().includes(expected)&&!confirm("選んだファイル名がこの教材と異なります。このPDFを登録しますか？")){loadingKey="";return;}
+   const buffer=await f.arrayBuffer();
+   try{await toDB(key,buffer);}catch(err){$("local-status").textContent="端末への保存はできませんでしたが、今回の表示は可能です。";}
+   if(token===loadToken){loadingKey="";await loadLocal(buffer,key,token);}
+ }catch(err){loadingKey="";$("local-status").textContent="取り込みに失敗："+String(err.message||err);}
+ e.target.value="";
+});
+$("change-pdf").onclick=()=>{$("local-pdf").click();};
+window.addEventListener("resize",()=>{if(pdfDocument&&activeDocKey===fileKey(state.unit,readSegment(),state.answers))drawPage(state.page-readSegment().start+1);});
 $("go").onclick=()=>move(state.unit,$("page").value);
 $("page").addEventListener("keydown",e=>{if(e.key==="Enter"){$("go").click();$("page").blur();}});
 $("prev").onclick=()=>move(state.unit,state.page-1);$("next").onclick=()=>move(state.unit,state.page+1);
