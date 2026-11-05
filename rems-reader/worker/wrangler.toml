@@ -1,0 +1,5 @@
+# R.E.M.S. Reader 専用の中継サーバー（Cloudflare Workers）
+# Cloudflare の「Import a repository」でこのフォルダ（rems-reader/worker）を指定するとデプロイされます。
+name = "rems-proxy"
+main = "index.js"
+compatibility_date = "2025-01-01"

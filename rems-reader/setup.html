@@ -33,18 +33,28 @@ input[type=url]{width:100%;border:1px solid var(--line);border-radius:10px;paddi
   <p><a class="btn sub" href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener noreferrer">Cloudflareを開く ↗</a></p>
   <p class="note">メールアドレスとパスワードで登録します（クレジットカード不要）。登録済みならログインするだけです。</p></section>
 
- <section class="step"><h2><span class="n">2</span>Workerを作る</h2>
+ <section class="step"><h2><span class="n">2</span>GitHubから取り込む（貼り付け不要）</h2>
   <ol>
    <li>ホーム画面の <b class="ui">Create app</b>（または メニュー ≡ → <b class="ui">Workers &amp; Pages</b> → <b class="ui">Create</b>）</li>
-   <li>テンプレートから <b class="ui">Start with Hello World!</b> を選ぶ（フォルダやGitHubの項目は使いません）</li>
-   <li>名前を <b class="ui">rems-proxy</b> にして <b class="ui">デプロイ / Deploy</b></li>
+   <li><b class="ui">Import a repository</b>（Gitリポジトリを取り込む）を選ぶ</li>
+   <li><b class="ui">GitHub</b> を連携（初回だけGitHubのログイン・許可画面が出ます）</li>
+   <li>リポジトリ <b class="ui">kouheim1979/study</b> を選ぶ</li>
+   <li>設定画面で次のとおり入力して <b class="ui">Deploy</b>：
+    <ul>
+     <li>Project name：<b class="ui">rems-proxy</b></li>
+     <li>Build command：空欄のまま</li>
+     <li>Deploy command：<b class="ui">npx wrangler deploy</b>（最初から入っていればそのまま）</li>
+     <li>Root directory / Path（「Advanced settings」内にあることも）：<b class="ui">rems-reader/worker</b></li>
+    </ul></li>
   </ol>
-  <p class="note">画面の名前は時期によって少し違うことがあります。</p></section>
+  <p><button class="btn sub" type="button" data-copy="rems-proxy">「rems-proxy」をコピー</button> <button class="btn sub" type="button" data-copy="rems-reader/worker">「rems-reader/worker」をコピー</button></p>
+  <p class="note">1行だけの欄なので、長押し→ペーストで入ります。画面の名前は時期によって少し違うことがあります。</p></section>
 
- <section class="step"><h2><span class="n">3</span>プログラムを貼り付ける</h2>
-  <p>下のボタンでコピー →（Cloudflareで）<b class="ui">コードを編集 / Edit code</b> → 中身を全部消して貼り付け → <b class="ui">デプロイ / Deploy</b></p>
+ <section class="step"><h2><span class="n">3</span>（GitHub連携できない場合だけ）手で貼り付ける</h2>
+  <details><summary style="font-size:.86rem;font-weight:700;cursor:pointer">開く</summary>
+  <p><b class="ui">Create app</b> → <b class="ui">Start with Hello World!</b> → 名前 <b class="ui">rems-proxy</b> で Deploy → <b class="ui">Edit code</b> で中身を全部消して下のプログラムを貼り付け → Deploy。iPhoneでは貼り付けにくいので、パソコンがあればそちらがおすすめです。</p>
   <p><button class="btn" id="copy" type="button">プログラムをコピー</button> <span id="copied" class="note"></span></p>
-  <pre id="code">読み込み中…</pre>
+  <pre id="code">読み込み中…</pre></details>
   <p class="note">このプログラムはQQEnglishのR.E.M.S.教材PDFだけを取得し、あなたのリーダー（kouheim1979.github.io）にだけ渡します。他の用途には使えません。</p></section>
 
  <section class="step"><h2><span class="n">4</span>URLを貼って完了</h2>
@@ -62,7 +72,8 @@ const save=o=>{try{localStorage.setItem(KEY,JSON.stringify(o));return true;}catc
 const $=id=>document.getElementById(id);
 const TEST="https://www.qqeng.com/blog2/wordpress/wp-content/uploads/2024/01/REMS_Book1_A1-A5_pp1-78.pdf";
 let code="";
-fetch("cloudflare-worker.js",{cache:"no-store"}).then(r=>r.text()).then(t=>{code=t;$("code").textContent=t;}).catch(()=>{$("code").textContent="読み込めませんでした。ページを再読み込みしてください。";});
+fetch("worker/index.js",{cache:"no-store"}).then(r=>r.text()).then(t=>{code=t;$("code").textContent=t;}).catch(()=>{$("code").textContent="読み込めませんでした。ページを再読み込みしてください。";});
+document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{const t=b.dataset.copy;try{await navigator.clipboard.writeText(t);}catch(e){prompt("コピーしてください",t);return;}const o=b.textContent;b.textContent="✓ コピーしました";setTimeout(()=>{b.textContent=o;},1500);});
 $("copy").onclick=async()=>{
  if(!code)return;
  try{await navigator.clipboard.writeText(code);}
