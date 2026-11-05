@@ -7,7 +7,7 @@ const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
 const source=html.match(/<script id="kouhei-diagnostics">([\s\S]*?)<\/script>/)[1];
 const context=vm.createContext({setTimeout,clearTimeout,Uint32Array});
 vm.runInContext(source,context);
-const D=vm.runInContext('KouheiDiagnostics',context);
+const D=vm.runInContext('StudyDiagnostics',context);
 
 test('journal preserves the last unfinished step across a page restart',()=>{
   let value;
@@ -78,7 +78,7 @@ test('the UI blocks empty-result sharing and enables it after the actual diagnos
   const elements=new Map(),trace=D.journal({getItem:()=>null,setItem(){}});
   let copied;
   const ui=vm.createContext({
-    KouheiDiagnostics:D,trace,SAFE_LOCAL:true,MOBILE_LOCAL:true,restartRequired:false,state:{model:'Qwen2.5-0.5B-Instruct-q4f16_1-MLC'},
+    StudyDiagnostics:D,trace,SAFE_LOCAL:true,MOBILE_LOCAL:true,restartRequired:false,state:{model:'Qwen2.5-0.5B-Instruct-q4f16_1-MLC'},
     window:{isSecureContext:true},
     navigator:{userAgent:'test',platform:'test',clipboard:{writeText:async text=>{copied=JSON.parse(text);}}},
     $:id=>{if(!elements.has(id))elements.set(id,{textContent:'',value:'',disabled:false});return elements.get(id);}
