@@ -15,7 +15,7 @@ GitHub Pages: https://kouheim1979.github.io/study/
 | [eiken3-mensetsu](eiken3-mensetsu/) | 英検3級 面接ルーム（二次試験の面接練習） | 英語 |
 | [zenken-moshi-lab](zenken-moshi-lab/) | 成績ラボ（単元分析・全県模試） | その他 |
 
-そのほか、`eigo-ai`（えいごヒマつぶしクエスト用のVercel AIバックエンド）と `kouhei-ai`（相談室）が同居しています。
+そのほか、英語練習用のAIバックエンドと、ローカルAI相談室のコードが同居しています。
 
 `Turn-method` は元のリポジトリの4月18日版（ターンメソッド本体）をコピーし、崩れていたCSSを修正したものです（元のリポジトリは残しています）。ことば・地理などのクイズ系は [games](https://github.com/kouheim1979/games) にあります。
 
