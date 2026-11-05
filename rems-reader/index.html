@@ -79,7 +79,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
 <body>
 <header class="top">
  <div class="topnav"><a class="back" href="../">← まなびBOX に戻る</a><span class="flag">Study tools / English</span></div>
- <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05g（ワンタップ版）</span></div>
+ <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05h（ワンタップ版）</span></div>
 </header>
 <main class="main">
  <section class="return" id="return"><div><small>YOUR READING PROGRESS</small><strong id="return-text">前回のつづきから</strong></div><a class="primary" id="continue" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">つづきから読む →</a></section>
@@ -296,7 +296,7 @@ function render(){
  $("progress").style.width=(state.page/maxPage(u)*100)+"%";
  $("prev").disabled=state.page<=1;$("next").disabled=state.page>=maxPage(u);
  const currentUrl=pdfUrl(u,seg,state.answers);const anchored=currentUrl+"#page="+offset+"&view=FitH";
- $("open-pdf").href=anchored;$("download-pdf").href=currentUrl;$("pdf-fallback").href=anchored;
+ $("open-pdf").href=anchored;$("download-pdf").href=currentUrl;if($("download-pdf").dataset.manual&&$("download-pdf").dataset.manual!==fileKey(u,seg,state.answers)){delete $("download-pdf").dataset.manual;$("download-pdf").textContent="↓ PDFを保存";}$("pdf-fallback").href=anchored;
  updateLocalReader();
 
  const isStarred=(saved.bookmarks||[]).some(x=>x.unit===u&&x.page===state.page);$("bookmark").textContent=isStarred?"★ しおり済":"☆ しおり";$("bookmark").setAttribute("aria-pressed",String(isStarred));
@@ -331,16 +331,22 @@ $("continue").addEventListener("click",ev=>{ev.preventDefault();const x=saved.la
 function saveBlob(data,name){const url=URL.createObjectURL(new Blob([data],{type:"application/pdf"}));const a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 $("download-pdf").addEventListener("click",async ev=>{
  const seg=readSegment(),key=fileKey(state.unit,seg,state.answers),url=pdfUrl(state.unit,seg,state.answers),name=url.split("/").pop(),el=ev.currentTarget;
- if(corsBlocked&&!(pdfDocument&&activeDocKey===key))return; /* 直接ダウンロード不可: 新しいタブで開き、共有→「ファイルに保存」 */
- ev.preventDefault();const label=el.textContent;el.textContent="保存中…";
+ if(el.dataset.manual===key)return; /* 自動保存に失敗済み: 公式PDFを開いて共有→「ファイルに保存」 */
+ ev.preventDefault();if(el.dataset.busy)return;el.dataset.busy="1";const label="↓ PDFを保存";el.textContent="保存中…";
  try{
    let data;
    if(pdfDocument&&activeDocKey===key)data=await pdfDocument.getData();
-   else{const r=await fetch(url);if(!r.ok)throw Error("HTTP "+r.status);data=new Uint8Array(await r.arrayBuffer());}
+   if(!data){const saved=await fromDB(key);if(saved)data=new Uint8Array(saved);}
+   if(!data&&!corsBlocked){try{const r=await fetch(url);if(!r.ok)throw Error("HTTP "+r.status);data=new Uint8Array(await r.arrayBuffer());}catch(e){corsBlocked=true;}}
+   if(!data){relayLog.length=0;data=await fetchViaRelay(url,(got,total)=>{el.textContent="保存中… "+(total?Math.round(got/total*100)+"%":(got/1048576).toFixed(1)+"MB");});}
    saveBlob(data,name);
    try{await toDB(key,data.buffer.slice(data.byteOffset,data.byteOffset+data.byteLength));}catch(e){}
    el.textContent="✓ 保存しました";setTimeout(()=>{el.textContent=label;},2500);
- }catch(e){corsBlocked=true;el.textContent=label;window.open(url,"_blank","noopener");}
+   if(!(pdfDocument&&activeDocKey===key)){relaysDown=false;embedKey="";updateLocalReader();}
+ }catch(e){
+   el.dataset.manual=key;el.textContent="↗ 開いて手動で保存";
+   alert("自動で保存できませんでした。\nもう一度ボタンを押すと公式PDFが開くので、共有ボタン→「ファイルに保存」で保存してください。"+(relayLog.length?"\n\n("+relayLog.join(" / ")+")":""));
+ }finally{delete el.dataset.busy;}
 });
 $("open-pdf").addEventListener("click",ev=>{ev.preventDefault();showFrame();});
 document.addEventListener("keydown",e=>{if(["INPUT","TEXTAREA"].includes(document.activeElement?.tagName)||e.altKey||e.metaKey||e.ctrlKey)return;if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();});
