@@ -8,7 +8,7 @@ const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const source = html.match(/<script id="kouhei-core">([\s\S]*?)<\/script>/)[1];
 const context = vm.createContext({ crypto: webcrypto, URL });
 vm.runInContext(source, context);
-const C = vm.runInContext('KouheiCore', context);
+const C = vm.runInContext('StudyCore', context);
 
 test('the Japanese lightweight model has a short context and does not receive Qwen3 thinking markers',()=>{
   const state=C.newState(),chat=state.chats[0];
