@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ff8a3d">
+<meta name="description" content="QQEnglishのキッズ教材（Magic Phonics・Smart Juniors・Time to Talkなど）を、この画面の中で1ページずつ読める個人向けビューア。">
+<title>Kids Reader | まなびBOX</title>
+<style>
+:root{--bg:#fff8ef;--ink:#2b2a35;--muted:#7a7486;--line:#f0e3d2;--card:#fff;--accent:#ff8a3d;--accent-ink:#c2560f;--sky:#3aa7e8;--grass:#41b36b;--shadow:0 6px 22px rgba(160,90,20,.10)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body,*{touch-action:manipulation}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Maru Gothic ProN","Rounded Mplus 1c",system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;line-height:1.5}
+button,input,a{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:4px solid #ffd166;outline-offset:2px}
+[hidden]{display:none!important}
+
+.top{background:linear-gradient(120deg,#ff8a3d,#ffb238);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 12px}
+.top-in{max-width:1100px;margin:auto;display:flex;align-items:center;gap:10px}
+.back{color:#fff;text-decoration:none;font-size:.8rem;opacity:.9;white-space:nowrap}
+.brand{flex:1;text-align:center;font-weight:900;font-size:1.2rem;letter-spacing:.01em}
+.home{border:0;background:rgba(255,255,255,.25);color:#fff;border-radius:12px;padding:7px 11px;font-weight:800;font-size:.85rem}
+
+main{max-width:1100px;margin:auto;padding:12px 10px 56px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+h2.step{font-size:1.02rem;margin:4px 4px 10px;display:flex;align-items:center;gap:8px}
+h2.step .n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:.85rem}
+
+/* シリーズ */
+.series{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px}
+.s-card{border:3px solid transparent;border-radius:20px;padding:14px 12px;text-align:left;min-height:118px;display:flex;flex-direction:column;gap:3px;color:#fff;box-shadow:var(--shadow)}
+.s-card .e{font-size:1.9rem;line-height:1}
+.s-card b{font-size:1rem;line-height:1.25}
+.s-card small{font-size:.74rem;opacity:.95}
+.s-card .tag{align-self:flex-start;margin-top:auto;background:rgba(255,255,255,.3);border-radius:99px;padding:1px 8px;font-size:.68rem;font-weight:800}
+.s-card[aria-pressed=true]{border-color:#2b2a35}
+
+/* レベル・レッスン */
+.pick{padding:14px;margin-top:12px}
+.levels{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.lv{border:2px solid var(--line);background:#fffaf3;border-radius:14px;padding:9px 14px;font-weight:800;font-size:.92rem;min-height:46px}
+.lv[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px}
+.ls{border:2px solid var(--line);background:#fff;border-radius:16px;min-height:64px;padding:6px 4px;font-weight:900;font-size:1.15rem;position:relative;line-height:1.15}
+.ls small{display:block;font-size:.62rem;font-weight:700;color:var(--muted)}
+.ls.wide{grid-column:span 2;font-size:.86rem}
+.ls[aria-pressed=true]{background:#fff1e3;border-color:var(--accent);color:var(--accent-ink)}
+.ls .saved{position:absolute;top:3px;right:5px;font-size:.62rem;color:var(--grass)}
+
+/* リーダー */
+.reader{overflow:hidden;margin-top:12px}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:2px solid var(--line)}
+.bar h1{flex:1;font-size:1rem;margin:0;line-height:1.3;min-width:0}
+.bar h1 small{display:block;font-size:.74rem;color:var(--muted);font-weight:600}
+.pg{font-weight:900;font-size:1rem;background:#fff1e3;color:var(--accent-ink);border-radius:12px;padding:6px 11px;white-space:nowrap}
+.view{position:relative;background:#fdf1e2;min-height:52vh}
+.msg{padding:46px 20px;text-align:center;color:#6d6478}
+.msg h3{font-size:1.02rem;margin:12px 0 6px;color:var(--ink)}
+.msg p{font-size:.86rem;margin:0 auto;max-width:420px;line-height:1.7}
+.spin{width:34px;height:34px;border:4px solid #ffe0c2;border-top-color:var(--accent);border-radius:50%;margin:auto;animation:r 1s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+#pages,#imgwrap{padding:8px}
+#canvas,#pageimg{display:block;margin:auto;max-width:100%;height:auto;background:#fff;border-radius:6px;box-shadow:0 2px 10px #0002}
+#pageimg{min-height:240px;transition:opacity .15s}#pageimg.loading{opacity:.35}
+#frame{display:block;width:100%;height:min(76vh,1000px);border:0;background:#fff}
+.navs{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.big{border:0;border-radius:18px;min-height:62px;font-size:1.15rem;font-weight:900;color:#fff;background:var(--sky);box-shadow:0 4px 0 #2a83b8}
+.big.next{background:var(--grass);box-shadow:0 4px 0 #2f8a51}
+.big:active{transform:translateY(3px);box-shadow:none}
+.big:disabled{opacity:.35;transform:none}
+.foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:0 12px 12px}
+.mode{font-size:.74rem;color:var(--muted);flex:1 1 100%}
+.act{border:2px solid var(--line);background:#fff;border-radius:12px;padding:7px 11px;font-size:.8rem;font-weight:800;text-decoration:none;cursor:pointer;white-space:nowrap}
+.side{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.box{padding:13px}
+.box h3{font-size:.88rem;margin:0 0 8px}
+.list{display:flex;flex-wrap:wrap;gap:6px}
+.list button{border:2px solid var(--line);background:#fffaf3;border-radius:12px;padding:6px 10px;font-size:.8rem;font-weight:800}
+.list .x{border:0;background:transparent;color:#b5523b;padding:6px 4px}
+.empty,.note{font-size:.76rem;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:.72rem;padding:16px 8px}
+footer a{color:inherit}
+@media(max-width:700px){.side{grid-template-columns:1fr}.s-card{min-height:104px;padding:12px 10px}.series{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+ <a class="back" href="../">← まなびBOX</a>
+ <div class="brand">🎒 Kids Reader</div>
+ <button class="home" id="to-top" type="button">えらぶ</button>
+</div></header>
+
+<main>
+ <section id="choose">
+  <h2 class="step"><span class="n">1</span>きょうざいを えらぼう</h2>
+  <div class="series" id="series"><p class="note">よみこみ中…</p></div>
+  <div class="card pick" id="pick" hidden>
+   <h2 class="step"><span class="n">2</span>レベル</h2>
+   <div class="levels" id="levels"></div>
+   <h2 class="step"><span class="n">3</span>レッスン</h2>
+   <div class="lessons" id="lessons"></div>
+  </div>
+ </section>
+
+ <section class="card reader" id="reader" hidden aria-label="教材を読む">
+  <div class="bar"><h1 id="title">—</h1><span class="pg" id="pg">1</span></div>
+  <div class="view" id="view">
+   <div class="msg" id="msg"><div class="spin"></div><h3 id="msg-h">よみこみ中…</h3><p id="msg-p"></p></div>
+   <div id="pages" hidden><canvas id="canvas" aria-label="教材ページ"></canvas></div>
+   <div id="imgwrap" hidden><img id="pageimg" alt="教材ページ" decoding="async"></div>
+   <iframe id="frame" title="QQEnglish キッズ教材" hidden></iframe>
+  </div>
+  <div class="navs"><button class="big" id="prev" type="button">◀ まえ</button><button class="big next" id="next" type="button">つぎ ▶</button></div>
+  <div class="foot">
+   <div class="mode" id="mode">　</div>
+   <button class="act" id="reload" type="button">再読み込み</button>
+   <button class="act" id="save" type="button">↓ PDFを保存</button>
+   <a class="act" id="official" target="_blank" rel="noopener noreferrer">公式PDF ↗</a>
+  </div>
+ </section>
+
+ <div class="side">
+  <section class="card box"><h3>⭐ さいきん よんだ</h3><div class="list" id="recent"></div></section>
+  <section class="card box"><h3>📦 たんまつに保存ずみ <span class="empty" id="lib-n"></span></h3><div class="list" id="lib"></div>
+   <p class="note" style="margin:8px 0 0" id="worker-note"></p></section>
+ </div>
+ <footer>非公式の個人用ビューア · 教材の著作権はQQEnglishに帰属します（PDFは再配布していません）· 出典 <a href="https://www.qqeng.com/blog2/text-download/" target="_blank" rel="noopener noreferrer">QQEnglish 教材ダウンロード</a></footer>
+</main>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const PDFJS="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+const IOS=/iP(hone|od|ad)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+
+/* ===== シリーズの見た目 ===== */
+const LOOK={
+ "Magic Phonics":{e:"🔤",c:"#ff6b6b",d:"フォニックス・音とつづり"},
+ "We Sing We Learn":{e:"🎵",c:"#f06595",d:"うたで まなぶ"},
+ "Smart Kids":{e:"🧸",c:"#fcc419",d:"はじめての英語"},
+ "Smart Juniors":{e:"🚀",c:"#4dabf7",d:"小学生の総合英語"},
+ "Time to Talk":{e:"💬",c:"#20c997",d:"かいわ・スピーキング"},
+ "Write Source -writing for kids-":{e:"✏️",c:"#845ef7",d:"ライティング",n:"Write Source"},
+ "Reading for Kids":{e:"📚",c:"#ff922b",d:"リーディング"},
+ "Time to Read":{e:"📖",c:"#5c7cfa",d:"リーディング（中高生）"}
+};
+const ORDER=Object.keys(LOOK);
+const lvRank=l=>{const m=/^(Pre-Starter|Starter|Book|Level-Up)\s*([A-Z0-9]*)(〜)?/.exec(l)||[];const base={"Pre-Starter":0,"Starter":1,"Book":2,"Level-Up":3}[m[1]]??4;const n=/^\d+$/.test(m[2]||"")?+m[2]:(m[2]||"").charCodeAt(0)||0;return(m[3]?9000:0)+base*100+n;};
+const lessonNo=s=>{const m=/Lesson\s*(\d+)/i.exec(s);return m?+m[1]:null;};
+
+/* ===== データ（CSV） ===== */
+function parseCSV(t){const rows=[];let row=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}else if(c==='"')q=true;else if(c===","){row.push(f);f="";}else if(c==="\n"){row.push(f);rows.push(row);row=[];f="";}else if(c!=="\r")f+=c;}if(f||row.length){row.push(f);rows.push(row);}return rows;}
+let ITEMS=[],BY_ID=new Map(),TREE=new Map();
+async function loadData(){
+ const t=await (await fetch("data/qqeng-kids-pdfs.csv",{cache:"no-cache"})).text();
+ const [head,...rows]=parseCSV(t.replace(/^﻿/,""));const ix=k=>head.indexOf(k);
+ ITEMS=rows.filter(r=>r.length>=5&&/^https:\/\/www\.qqeng\.com\/.+\.pdf(\?|$)/i.test(r[ix("url")])).map(r=>{
+  const url=r[ix("url")],id=url.split("/").pop().replace(/\.pdf.*$/i,"");
+  return{id,url,series:r[ix("series")],level:r[ix("level")]||"—",lessons:r[ix("lessons")]||"",type:r[ix("pdf_type")]||"lesson"};});
+ BY_ID=new Map(ITEMS.map(x=>[x.id,x]));TREE=new Map();
+ for(const x of ITEMS){if(!TREE.has(x.series))TREE.set(x.series,new Map());const L=TREE.get(x.series);if(!L.has(x.level))L.set(x.level,[]);L.get(x.level).push(x);}
+ for(const L of TREE.values())for(const arr of L.values())arr.sort((a,b)=>(a.type==="lesson"?0:a.type==="sample"?1:2)-(b.type==="lesson"?0:b.type==="sample"?1:2)||(lessonNo(a.lessons)??999)-(lessonNo(b.lessons)??999));
+}
+const seriesName=s=>LOOK[s]?.n||s;
+const levelsOf=s=>[...(TREE.get(s)?.keys()||[])].sort((a,b)=>lvRank(a)-lvRank(b));
+const lessonLabel=x=>x.type==="syllabus"?"📋 レッスン一覧":x.type==="sample"?(lessonNo(x.lessons)?"Lesson "+lessonNo(x.lessons)+"（サンプル）":"サンプル"):(x.lessons||"Lesson");
+
+/* ===== 保存（localStorage / IndexedDB） ===== */
+const KEY="kids-reader-v1";
+let store={last:null,recent:[],sel:{}};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&typeof s==="object")store={...store,...s};}catch(e){}
+if(!Array.isArray(store.recent))store.recent=[];if(!store.sel||typeof store.sel!=="object")store.sel={};
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}};
+/* 自分専用サーバー（R.E.M.S. Readerで設定したものを共用） */
+let WORKER="";try{const r=JSON.parse(localStorage.getItem("rems-reader-v3")||"{}");if(typeof r.worker==="string"&&/^https:\/\/[^\s"<>]+$/.test(r.worker))WORKER=r.worker.replace(/\/+$/,"");}catch(e){}
+
+let dbp=null;
+function db(){return dbp||(dbp=new Promise((ok,ng)=>{if(!("indexedDB"in window))return ng(Error("no idb"));const r=indexedDB.open("kids-reader-pdfs",1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains("files"))r.result.createObjectStore("files");};r.onsuccess=()=>ok(r.result);r.onerror=()=>ng(r.error);}));}
+async function idb(mode,fn){const d=await db();return new Promise((ok,ng)=>{const t=d.transaction("files",mode);const q=fn(t.objectStore("files"));t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>ng(t.error);});}
+const dbGet=k=>idb("readonly",s=>s.get(k)).catch(()=>null);
+const dbPut=(k,v)=>idb("readwrite",s=>s.put(v,k));
+const dbDel=k=>idb("readwrite",s=>s.delete(k));
+const dbKeys=()=>idb("readonly",s=>s.getAllKeys()).catch(()=>[]);
+const toBuffer=u8=>u8.buffer.slice(u8.byteOffset,u8.byteOffset+u8.byteLength);
+
+/* ===== PDF.js ===== */
+let pdfjsP=null;
+function pdfjs(){return pdfjsP||(pdfjsP=new Promise((ok,ng)=>{const s=document.createElement("script");s.src=PDFJS+"pdf.min.js";s.onload=()=>{if(!window.pdfjsLib)return ng(Error("PDF.js"));pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+"pdf.worker.min.js";ok(pdfjsLib);};s.onerror=()=>{pdfjsP=null;ng(Error("PDF表示エンジンを読み込めません"));};document.head.append(s);}));}
+const docs=new Map();
+function keepDoc(k,d){docs.delete(k);docs.set(k,d);while(docs.size>2){const[a,b]=docs.entries().next().value;docs.delete(a);b.destroy();}}
+async function docFromData(k,buf){const lib=await pdfjs();const d=await lib.getDocument({data:new Uint8Array(buf)}).promise;keepDoc(k,d);return d;}
+
+/* ===== 取得（自分専用サーバー経由） ===== */
+let workerError="";const busy=new Map();
+async function fetchStream(u,onProgress){
+ const c=new AbortController(),t=setTimeout(()=>c.abort(),60000);
+ try{const r=await fetch(u,{signal:c.signal});if(!r.ok)throw Error("HTTP "+r.status);
+  const total=+r.headers.get("content-length")||0;let got=0;const parts=[];const rd=r.body.getReader();
+  for(;;){const{done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;onProgress?.(got,total);}
+  const b=new Uint8Array(got);let o=0;for(const x of parts){b.set(x,o);o+=x.length;}
+  if(String.fromCharCode(...b.subarray(0,5))!=="%PDF-")throw Error("PDF以外の応答");return b;}
+ catch(e){throw e.name==="AbortError"?Error("時間切れ"):e;}finally{clearTimeout(t);}
+}
+function download(x,onProgress){
+ if(!WORKER)return Promise.reject(Error("no worker"));
+ if(busy.has(x.id))return busy.get(x.id);
+ const p=fetchStream(WORKER+"?url="+encodeURIComponent(x.url),onProgress).then(async b=>{workerError="";await dbPut(x.id,toBuffer(b)).catch(()=>{});renderLib();return b;})
+  .catch(e=>{workerError=String(e.message||e);renderWorker();throw e;}).finally(()=>busy.delete(x.id));
+ busy.set(x.id,p);return p;
+}
+
+/* ===== 表示 ===== */
+let state={id:"",page:1},token=0,current={id:"",mode:""},renderTask=null,lastPage=new Map(),imgBad=new Set(),gTimer=0,gTries=0,useNative=!IOS;
+function view(w){for(const k of["msg","pages","imgwrap","frame"])$(k).hidden=k!==w;}
+function message(h,p,spin=true){$("msg-h").textContent=h;$("msg-p").textContent=p||"";$("msg").querySelector(".spin").hidden=!spin;view("msg");}
+function setMode(t){$("mode").textContent=t;}
+function total(){const d=docs.get(state.id);return d?d.numPages:(lastPage.get(state.id)||0);}
+
+async function show(){
+ const x=BY_ID.get(state.id);if(!x)return;
+ const t=++token;updateBar();
+ $("official").href=x.url;
+ let doc=docs.get(x.id);
+ if(!doc){
+  if(current.id!==x.id)message("よみこみ中…","");
+  const buf=await dbGet(x.id);if(t!==token)return;
+  if(buf){try{doc=await docFromData(x.id,buf);}catch(e){await dbDel(x.id).catch(()=>{});}if(t!==token)return;}
+ }
+ if(!doc&&WORKER&&!workerError){
+  message("きょうざいを よみこみ中…","はじめの1回だけ。つぎからは すぐ ひらけます。");
+  try{const b=await download(x,(g,tt)=>{if(t===token)$("msg-p").textContent="ダウンロード中… "+(tt?Math.round(g/tt*100)+"%":(g/1048576).toFixed(1)+" MB");});
+   if(t!==token)return;doc=await docFromData(x.id,toBuffer(b));if(t!==token)return;}catch(e){if(t!==token)return;}
+ }
+ if(doc){current={id:x.id,mode:"pdf"};if(state.page>doc.numPages)state.page=doc.numPages;updateBar();setMode("たんまつに保存ずみ · スワイプでも ページを めくれます");return drawPage(doc,state.page,t);}
+ if(!imgBad.has(x.url))return showImage(x);
+ showFrame(x);
+}
+async function drawPage(doc,n,t){
+ view("pages");
+ try{const pg=await doc.getPage(n);if(t!==token)return;
+  const w=Math.max(260,$("view").clientWidth-16),vp=pg.getViewport({scale:w/pg.getViewport({scale:1}).width});
+  const dpr=Math.min(window.devicePixelRatio||1,3),c=$("canvas"),ctx=c.getContext("2d");
+  renderTask?.cancel();
+  c.width=Math.floor(vp.width*dpr);c.height=Math.floor(vp.height*dpr);c.style.width=vp.width+"px";c.style.height=vp.height+"px";
+  renderTask=pg.render({canvasContext:ctx,viewport:vp,transform:dpr!==1?[dpr,0,0,dpr,0,0]:null});await renderTask.promise;renderTask=null;
+  if(n<doc.numPages)doc.getPage(n+1).catch(()=>{});
+ }catch(e){if(e?.name!=="RenderingCancelledException"&&t===token)message("ページを ひょうじ できませんでした",String(e.message||e),false);}
+}
+/* 画像表示（wsrv.nl がPDFの指定ページを画像に変換） */
+function imgUrl(url,n){const w=Math.min(1600,Math.ceil(Math.max(320,$("view").clientWidth-16)*Math.min(window.devicePixelRatio||1,2)/200)*200);return"https://wsrv.nl/?url="+encodeURIComponent(url)+"&page="+(n-1)+"&w="+w+"&output=webp&q=85";}
+function showImage(x){
+ const im=$("pageimg"),src=imgUrl(x.url,state.page);current={id:x.id,mode:"img",url:x.url,page:state.page};view("imgwrap");
+ setMode("がぞう ひょうじ · スワイプでも ページを めくれます");
+ if(im.dataset.src!==src){im.classList.add("loading");im.dataset.src=src;im.src=src;}
+ const L=lastPage.get(x.id);if(!L||state.page<L)new Image().src=imgUrl(x.url,state.page+1);
+}
+$("pageimg").addEventListener("load",()=>$("pageimg").classList.remove("loading"));
+$("pageimg").addEventListener("error",()=>{
+ const im=$("pageimg");if(!im.dataset.src||current.mode!=="img")return;im.classList.remove("loading");im.dataset.src="";
+ if(current.page>1){lastPage.set(current.id,current.page-1);state.page=current.page-1;record();return show();} /* 最後のページを越えた */
+ imgBad.add(current.url);show();
+});
+function showFrame(x){
+ const src=useNative?x.url+"#page="+state.page+"&view=FitH":"https://docs.google.com/gview?embedded=true&url="+encodeURIComponent(x.url);
+ const f=$("frame");if(f.dataset.base!==src.split("#")[0]){f.dataset.base=src.split("#")[0];gTries=0;loadFrame(src);}
+ current={id:x.id,mode:"frame"};view("frame");
+ setMode(useNative?"ブラウザ表示 · 白いときは「再読み込み」":"Google表示 · ページは スクロールして さがしてね");
+}
+function loadFrame(src){const f=$("frame");f.src=src;clearTimeout(gTimer);if(!useNative&&gTries<3)gTimer=setTimeout(()=>{gTries++;loadFrame(src);},10000);}
+$("frame").addEventListener("load",()=>clearTimeout(gTimer));
+
+/* ===== 画面 ===== */
+function el(tag,cls,html,attrs={}){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let cached=new Set(),selSeries="",selLevel="";
+function renderSeries(){
+ const box=$("series");box.replaceChildren();
+ for(const s of[...TREE.keys()].sort((a,b)=>(ORDER.indexOf(a)+99)%99-(ORDER.indexOf(b)+99)%99)){
+  const lk=LOOK[s]||{e:"📘",c:"#868e96",d:""};const items=[...TREE.get(s).values()].flat();const nLesson=items.filter(x=>x.type==="lesson").length;
+  const b=el("button","s-card","<span class='e'>"+lk.e+"</span><b>"+esc(seriesName(s))+"</b><small>"+esc(lk.d)+"</small><span class='tag'>"+(nLesson?nLesson+" レッスン":"サンプルのみ")+"</span>",{type:"button","aria-pressed":String(s===selSeries)});
+  b.style.background=lk.c;b.onclick=()=>pickSeries(s,true);box.append(b);
+ }
+}
+function pickSeries(s,scroll){
+ selSeries=s;const lvs=levelsOf(s);selLevel=store.sel[s]&&lvs.includes(store.sel[s])?store.sel[s]:lvs.find(l=>!l.includes("〜"))||lvs[0];
+ renderSeries();renderPick();$("pick").hidden=false;if(scroll)$("pick").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderPick(){
+ const lv=$("levels");lv.replaceChildren(...levelsOf(selSeries).map(l=>{const b=el("button","lv",esc(l.includes("〜")?"📋 "+l+" 全体":l),{type:"button","aria-pressed":String(l===selLevel)});b.onclick=()=>{selLevel=l;store.sel[selSeries]=l;persist();renderPick();};return b;}));
+ const ls=$("lessons");ls.replaceChildren(...(TREE.get(selSeries)?.get(selLevel)||[]).map(x=>{
+  const no=lessonNo(x.lessons),wide=x.type!=="lesson"||no==null;
+  const b=el("button","ls"+(wide?" wide":""),(cached.has(x.id)?"<span class='saved'>●</span>":"")+(wide?esc(lessonLabel(x)):no+"<small>Lesson</small>"),{type:"button","aria-pressed":String(x.id===state.id),"aria-label":seriesName(x.series)+" "+x.level+" "+lessonLabel(x)});
+  b.onclick=()=>open(x.id,1,true);return b;}));
+}
+function updateBar(){
+ const x=BY_ID.get(state.id);if(!x)return;const T=total();
+ $("title").innerHTML=esc(lessonLabel(x))+"<small>"+esc(seriesName(x.series))+" · "+esc(x.level)+"</small>";
+ $("pg").textContent=state.page+(T?" / "+T:"");
+ $("prev").disabled=state.page<=1&&!neighbor(-1);
+ const atEnd=T&&state.page>=T;$("next").textContent=atEnd?(neighbor(1)?"つぎのレッスン ▶":"おしまい"):"つぎ ▶";$("next").disabled=atEnd&&!neighbor(1);
+ $("prev").textContent=state.page<=1&&neighbor(-1)?"◀ まえのレッスン":"◀ まえ";
+}
+function neighbor(d){const x=BY_ID.get(state.id);if(!x)return null;const arr=TREE.get(x.series).get(x.level);const i=arr.indexOf(x)+d;return arr[i]&&arr[i].type===x.type?arr[i]:null;}
+function record(){
+ const x=BY_ID.get(state.id);if(!x)return;
+ store.last={id:state.id,page:state.page};store.recent=[{id:state.id,page:state.page},...store.recent.filter(r=>r.id!==state.id)].slice(0,8);persist();
+ history.replaceState(null,"","#"+state.id+"/"+state.page);
+ renderRecent();
+}
+function open(id,page=1,scroll){
+ const x=BY_ID.get(id);if(!x)return;
+ const changed=id!==state.id;state={id,page:Math.max(1,page|0||1)};
+ if(changed&&(x.series!==selSeries||x.level!==selLevel)){selSeries=x.series;selLevel=x.level;store.sel[selSeries]=selLevel;renderSeries();$("pick").hidden=false;}
+ renderPick();$("reader").hidden=false;record();show();
+ if(scroll)$("reader").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function go(d){
+ const T=total();
+ if(d>0&&T&&state.page>=T){const n=neighbor(1);if(n)open(n.id,1);return;}
+ if(d<0&&state.page<=1){const p=neighbor(-1);if(p)open(p.id,lastPage.get(p.id)||docs.get(p.id)?.numPages||1);return;}
+ state.page+=d;record();show();
+}
+function renderRecent(){
+ const box=$("recent");box.replaceChildren();
+ const rs=store.recent.filter(r=>BY_ID.has(r.id));
+ if(!rs.length)return box.append(el("span","empty","まだ ないよ"));
+ for(const r of rs){const x=BY_ID.get(r.id);const b=el("button","",(LOOK[x.series]?.e||"📘")+" "+esc(seriesName(x.series))+" "+esc(x.level.replace("Book ","B"))+" "+esc(lessonNo(x.lessons)?"L"+lessonNo(x.lessons):lessonLabel(x))+" p."+r.page,{type:"button"});b.onclick=()=>open(r.id,r.page,true);box.append(b);}
+}
+async function renderLib(){
+ const keys=(await dbKeys()).filter(k=>BY_ID.has(k));cached=new Set(keys);
+ $("lib-n").textContent=keys.length?"（"+keys.length+"件）":"";
+ const box=$("lib");box.replaceChildren();
+ if(!keys.length)box.append(el("span","empty","まだ ないよ（ひらいた きょうざいは 自動で保存）"));
+ for(const k of keys){const x=BY_ID.get(k);const b=el("button","",esc(seriesName(x.series))+" "+esc(x.level.replace("Book ","B"))+" "+esc(lessonNo(x.lessons)?"L"+lessonNo(x.lessons):lessonLabel(x)),{type:"button"});b.onclick=()=>open(k,1,true);
+  const del=el("button","x","×",{type:"button","aria-label":"たんまつから けす"});del.onclick=async()=>{if(!confirm("この きょうざいを たんまつから けしますか？"))return;await dbDel(k);docs.get(k)?.destroy();docs.delete(k);renderLib();if(state.id===k)show();};
+  box.append(b,del);}
+ if(!$("pick").hidden)renderPick();
+}
+function renderWorker(){
+ $("worker-note").innerHTML=WORKER?(workerError?"⚠️ 自分専用サーバーに つながりません（"+esc(workerError)+"）。がぞう表示で ひらきます。":"✓ 自分専用サーバーで くっきり表示・保存できます。"):"自分専用サーバーを <a href='../rems-reader/setup.html'>せってい</a> すると、くっきり表示・保存できます（R.E.M.S. Readerと共通）。";
+}
+
+/* ===== 操作 ===== */
+$("prev").onclick=()=>go(-1);$("next").onclick=()=>go(1);
+$("to-top").onclick=()=>$("choose").scrollIntoView({behavior:"smooth"});
+$("reload").onclick=()=>{
+ if(current.mode==="img"){$("pageimg").dataset.src="";return show();}
+ if(current.mode==="frame"){if(useNative){useNative=false;$("frame").dataset.base="";}gTries=0;return show();}
+ workerError="";docs.get(state.id)?.destroy();docs.delete(state.id);show();
+};
+$("save").onclick=async()=>{
+ const b=$("save"),x=BY_ID.get(state.id);if(!x||b.dataset.busy)return;b.dataset.busy="1";
+ try{let data=docs.get(x.id)?await docs.get(x.id).getData():null;if(!data){const s=await dbGet(x.id);if(s)data=new Uint8Array(s);}
+  if(!data){b.textContent="取得中…";data=await download(x,(g,t)=>{b.textContent="取得中 "+(t?Math.round(g/t*100)+"%":(g/1048576).toFixed(1)+"MB");});}
+  const u=URL.createObjectURL(new Blob([data],{type:"application/pdf"}));const a=document.createElement("a");a.href=u;a.download=x.id+".pdf";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
+  b.textContent="✓ 保存しました";if(current.id===x.id&&current.mode!=="pdf")show();
+ }catch(e){b.textContent="↓ PDFを保存";if(confirm("自動で 保存できませんでした。\n公式PDFを ひらくので、共有ボタン→「ファイルに保存」で 保存してください。"))window.open(x.url,"_blank","noopener");}
+ finally{delete b.dataset.busy;setTimeout(()=>{if(!b.dataset.busy)b.textContent="↓ PDFを保存";},2500);}
+};
+document.addEventListener("keydown",e=>{if(e.target.closest("input")||e.altKey||e.metaKey||e.ctrlKey||$("reader").hidden)return;if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);});
+let sx=0,sy=0,st=0;
+$("view").addEventListener("touchstart",e=>{if(e.touches.length!==1){sx=NaN;return;}sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now();},{passive:true});
+$("view").addEventListener("touchend",e=>{const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(!(Math.abs(dx)>60&&Math.abs(dy)<50&&Date.now()-st<600))return;if(window.visualViewport&&visualViewport.scale>1.05)return;go(dx<0?1:-1);},{passive:true});
+let rz=0;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(current.mode==="pdf"||current.mode==="img")show();},200);});
+window.addEventListener("hashchange",()=>{const m=/^#([A-Za-z0-9_.\-]+)\/(\d+)$/.exec(location.hash);if(m&&BY_ID.has(m[1])&&(m[1]!==state.id||+m[2]!==state.page))open(m[1],+m[2]);});
+
+(async()=>{
+ try{await loadData();}catch(e){$("series").innerHTML="<p class='note'>きょうざい一覧を よみこめませんでした。再読み込みしてください。</p>";return;}
+ renderWorker();renderSeries();renderRecent();
+ const m=/^#([A-Za-z0-9_.\-]+)\/(\d+)$/.exec(decodeURIComponent(location.hash));
+ const start=m&&BY_ID.has(m[1])?{id:m[1],page:+m[2]}:(store.last&&BY_ID.has(store.last.id)?store.last:null);
+ if(start)open(start.id,start.page,false);else pickSeries(ORDER.find(s=>TREE.has(s))||[...TREE.keys()][0],false);
+ renderLib();
+})();
+</script>
+</body>
+</html>

@@ -1,10 +1,16 @@
-// R.E.M.S. Reader 専用の中継サーバー（Cloudflare Workers 用）
-// QQEnglish公式サイトの R.E.M.S. 教材PDFだけを取得し、あなたのリーダー画面にだけ渡します。
+// R.E.M.S. Reader / Kids Reader 専用の中継サーバー（Cloudflare Workers 用）
+// QQEnglish公式サイトの教材PDF（R.E.M.S.・キッズ教材）だけを取得し、あなたのリーダー画面にだけ渡します。
 // それ以外のURLや他のサイトからの利用は拒否します。
 
 const ALLOWED_ORIGINS = ["https://kouheim1979.github.io"];
-const PDF_PREFIX = "https://www.qqeng.com/blog2/wordpress/wp-content/uploads/";
-const PDF_NAME = /\/REMS_Book[1-5]_[A-T]\d+-[A-T]\d+_pp\d+-\d+(_answer)?\.pdf$/;
+const PDF_HOST = "www.qqeng.com";
+const PDF_DIR = /^\/blog2\/wordpress\/wp-content\/uploads\/\d{4}\/\d{2}\/[A-Za-z0-9_.\-]+\.pdf$/;
+
+function isAllowed(target) {
+  let u;
+  try { u = new URL(target); } catch { return false; }
+  return u.protocol === "https:" && u.hostname === PDF_HOST && !u.username && !u.port && PDF_DIR.test(u.pathname);
+}
 
 export default {
   async fetch(request, env, ctx) {
@@ -22,7 +28,7 @@ export default {
 
     const target = new URL(request.url).searchParams.get("url") || "";
     if (!target) return new Response("R.E.M.S. Reader proxy: OK", { headers: { ...cors, "Content-Type": "text/plain; charset=utf-8" } });
-    if (!target.startsWith(PDF_PREFIX) || !PDF_NAME.test(target)) {
+    if (!isAllowed(target)) {
       return new Response("forbidden", { status: 403, headers: cors });
     }
 
