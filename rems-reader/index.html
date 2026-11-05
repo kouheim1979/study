@@ -60,6 +60,13 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
 .embed-bar div{display:flex;gap:6px;flex-wrap:wrap}
 .embed-bar a,.embed-bar label{font-size:.78rem;font-weight:800;text-decoration:none;border:1px solid #a9c9be;background:#fff;color:#106b65;padding:7px 10px;border-radius:9px;cursor:pointer;white-space:nowrap}
 @media(max-width:500px){#embed-wrap iframe{height:72vh}}
+#ios-wrap{padding:22px 16px;text-align:center}
+#ios-wrap h3{font-size:1.02rem;margin:0 0 6px}
+#ios-wrap>p{font-size:.82rem;color:#5a7270;margin:0 auto 14px;max-width:440px;line-height:1.65}
+.ios-step{display:block;max-width:420px;margin:0 auto 10px;padding:13px 14px;border-radius:12px;border:1px solid #a9c9be;background:#fff;color:#106b65;font-weight:800;text-decoration:none;cursor:pointer;text-align:left}
+.ios-step small{display:block;font-weight:600;color:#5a7270;font-size:.76rem;margin-top:3px}
+.ios-step.primary{background:var(--accent);border-color:var(--accent);color:#fff}.ios-step.primary small{color:#d8f1ec}
+#ios-wrap .ios-skip{font-size:.78rem;color:#147974}
 #resume-label{color:#fff}
 .return button{white-space:nowrap}
 .pdf-actions #open-pdf{font-size:.94rem}
@@ -72,7 +79,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
 <body>
 <header class="top">
  <div class="topnav"><a class="back" href="../">← まなびBOX に戻る</a><span class="flag">Study tools / English</span></div>
- <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05d（画面内表示版）</span></div>
+ <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05e（画面内表示版）</span></div>
 </header>
 <main class="main">
  <section class="return" id="return"><div><small>YOUR READING PROGRESS</small><strong id="return-text">前回のつづきから</strong></div><a class="primary" id="continue" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">つづきから読む →</a></section>
@@ -105,6 +112,13 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
      <div id="embed-wrap" hidden>
        <iframe id="pdf-embed" title="QQEnglish R.E.M.S. 公式PDF"></iframe>
        <div class="embed-bar"><span id="embed-reason">表示されない・ページが合わない場合</span><div><a id="embed-open">このタブで開く</a><label for="local-pdf">保存したPDFを選択</label></div></div>
+     </div>
+     <div id="ios-wrap" hidden>
+       <h3>iPhoneでは公式PDFをこの枠に直接表示できません</h3>
+       <p>QQEnglish公式サイトの設定とSafariの仕様によるものです。下の2ステップで、この枠の中で読めるようになります（教材ごとに最初の1回だけ）。</p>
+       <a class="ios-step primary" id="ios-save" target="_blank" rel="noopener noreferrer">① 公式PDFを開いて保存<small>開いたら 共有ボタン（□↑）→「ファイルに保存」</small></a>
+       <label class="ios-step" for="local-pdf">② 保存したPDFを選択<small>「ファイル」から①のPDFを選ぶと、この枠に表示されます</small></label>
+       <a class="ios-skip" id="ios-open">保存せずに見る（このタブで開く）</a>
      </div>
      <div id="canvas-wrap" hidden>
        <canvas id="pdf-canvas" aria-label="保存したPDFの現在ページ"></canvas>
@@ -171,11 +185,14 @@ function ensurePdfJS(){if(window.pdfjsLib)return Promise.resolve();if(pdfJsLoadi
  pdfJsLoading=new Promise((resolve,reject)=>{const el=document.createElement("script");el.src=CDN+"pdf.min.js";el.onload=()=>{if(!window.pdfjsLib){reject(Error("PDF描画エンジンが読み込めません"));return;}pdfjsLib.GlobalWorkerOptions.workerSrc=CDN+"pdf.worker.min.js";resolve();};el.onerror=()=>reject(Error("PDF表示ライブラリを読み込めません。ネットワークをご確認ください。"));document.head.append(el);});
  return pdfJsLoading;}
 let corsBlocked=false, embedKey="";
-function showView(mode){$("reading-actions").hidden=mode!=="loading";$("canvas-wrap").hidden=mode!=="canvas";$("embed-wrap").hidden=mode!=="embed";}
+const isIOS=/iP(hone|od|ad)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+function showView(mode){$("reading-actions").hidden=mode!=="loading";$("ios-wrap").hidden=mode!=="ios";$("canvas-wrap").hidden=mode!=="canvas";$("embed-wrap").hidden=mode!=="embed";}
 function showLocal(yes){showView(yes?"canvas":"loading");}
 function showFrame(){$("frame").scrollIntoView({behavior:"smooth",block:"start"});}
 function showEmbed(key){const seg=readSegment(),url=pdfUrl(state.unit,seg,state.answers)+"#page="+(state.page-seg.start+1)+"&view=FitH",f=$("pdf-embed");
- if(f.dataset.src!==url){f.dataset.src=url;f.src=url;}$("embed-open").href=url;embedKey=key;showView("embed");}
+ $("embed-open").href=url;$("ios-save").href=pdfUrl(state.unit,seg,state.answers);$("ios-open").href=url;embedKey=key;
+ if(isIOS){showView("ios");return;}
+ if(f.dataset.src!==url){f.dataset.src=url;f.src=url;}showView("embed");}
 function drawPage(offset){if(!pdfDocument||!activeDocKey)return;const key=activeDocKey,seq=++renderRequest;
  drawQueue=drawQueue.catch(()=>{}).then(async()=>{
    if(seq!==renderRequest||activeDocKey!==key||!pdfDocument)return;
