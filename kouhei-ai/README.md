@@ -1,6 +1,6 @@
-# Kouhei AI
+# AI相談室
 
-Kouheiさん向けの単体HTMLチャットアプリ。
+個人向けの単体HTMLチャットアプリ。
 
 **開く → https://kouheim1979.github.io/study/kouhei-ai/**
 
