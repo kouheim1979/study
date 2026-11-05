@@ -37,7 +37,7 @@ test('gateway verifies origin and token, validates input, and keeps the provider
   assert.equal(upstream.model, 'test-model');
   assert.deepEqual(upstream.input, [{ role: 'user', content: '相談' }]);
   const page = await (await fetch(url.replace('/api/chat', '/'))).text();
-  assert.ok(page.includes('Kouhei AI'));
+  assert.ok(page.includes('AI相談室'));
   assert.ok(!page.includes('test-provider-key'));
 });
 
