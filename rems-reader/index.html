@@ -79,7 +79,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
 <body>
 <header class="top">
  <div class="topnav"><a class="back" href="../">← まなびBOX に戻る</a><span class="flag">Study tools / English</span></div>
- <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05f（ワンタップ版）</span></div>
+ <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05g（ワンタップ版）</span></div>
 </header>
 <main class="main">
  <section class="return" id="return"><div><small>YOUR READING PROGRESS</small><strong id="return-text">前回のつづきから</strong></div><a class="primary" id="continue" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">つづきから読む →</a></section>
@@ -119,6 +119,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
        <a class="ios-step primary" id="ios-save" target="_blank" rel="noopener noreferrer">① 公式PDFを開いて保存<small>開いたら 共有ボタン（□↑）→「ファイルに保存」</small></a>
        <label class="ios-step" for="local-pdf">② 保存したPDFを選択<small>「ファイル」から①のPDFを選ぶと、この枠に表示されます</small></label>
        <a class="ios-skip" id="ios-open">保存せずに見る（このタブで開く）</a>
+       <p id="relay-log" style="font-size:.7rem;color:#8a9a97;margin:12px 0 0;word-break:break-all"></p>
      </div>
      <div id="canvas-wrap" hidden>
        <canvas id="pdf-canvas" aria-label="保存したPDFの現在ページ"></canvas>
@@ -186,7 +187,8 @@ function ensurePdfJS(){if(window.pdfjsLib)return Promise.resolve();if(pdfJsLoadi
  return pdfJsLoading;}
 let corsBlocked=false, embedKey="", relaysDown=false;
 /* 公式サイトは他サイトからの読み込みを許可していないため、公開中継サービス経由で取得する（順に試行）。 */
-const RELAYS=[u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),u=>"https://api.codetabs.com/v1/proxy?quest="+u,u=>"https://corsproxy.io/?url="+encodeURIComponent(u)];
+const RELAYS=[u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),u=>"https://api.codetabs.com/v1/proxy?quest="+u,u=>"https://corsproxy.io/?url="+encodeURIComponent(u),u=>"https://api.cors.lol/?url="+encodeURIComponent(u)];
+const relayLog=[];
 async function fetchViaRelay(url,onProgress){
  for(const make of RELAYS){
    const ctrl=new AbortController();let timer;const arm=()=>{clearTimeout(timer);timer=setTimeout(()=>ctrl.abort(),20000);};
@@ -198,7 +200,7 @@ async function fetchViaRelay(url,onProgress){
      const buf=new Uint8Array(got);let o=0;for(const c of chunks){buf.set(c,o);o+=c.length;}
      if(String.fromCharCode(...buf.subarray(0,5))!=="%PDF-")throw Error("PDFではない応答");
      return buf;
-   }catch(e){clearTimeout(timer);console.warn("relay failed",e);}
+   }catch(e){clearTimeout(timer);relayLog.push(new URL(make(url)).hostname+": "+(e.name==="AbortError"?"時間切れ":String(e.message||e)));console.warn("relay failed",e);}
  }
  throw Error("中継サービスから取得できませんでした");
 }
@@ -208,6 +210,7 @@ function showLocal(yes){showView(yes?"canvas":"loading");}
 function showFrame(){$("frame").scrollIntoView({behavior:"smooth",block:"start"});}
 function showEmbed(key){const seg=readSegment(),url=pdfUrl(state.unit,seg,state.answers)+"#page="+(state.page-seg.start+1)+"&view=FitH",f=$("pdf-embed");
  $("embed-open").href=url;$("ios-save").href=pdfUrl(state.unit,seg,state.answers);$("ios-open").href=url;embedKey=key;
+ $("relay-log").textContent=relayLog.length?"自動取得の結果: "+relayLog.join(" / "):"";
  if(isIOS){showView("ios");return;}
  if(f.dataset.src!==url){f.dataset.src=url;f.src=url;}showView("embed");}
 function drawPage(offset){if(!pdfDocument||!activeDocKey)return;const key=activeDocKey,seq=++renderRequest;
