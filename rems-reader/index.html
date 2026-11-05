@@ -72,7 +72,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
 <body>
 <header class="top">
  <div class="topnav"><a class="back" href="../">← まなびBOX に戻る</a><span class="flag">Study tools / English</span></div>
- <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div></div>
+ <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05d（画面内表示版）</span></div>
 </header>
 <main class="main">
  <section class="return" id="return"><div><small>YOUR READING PROGRESS</small><strong id="return-text">前回のつづきから</strong></div><a class="primary" id="continue" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">つづきから読む →</a></section>
@@ -104,7 +104,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
      </div>
      <div id="embed-wrap" hidden>
        <iframe id="pdf-embed" title="QQEnglish R.E.M.S. 公式PDF"></iframe>
-       <div class="embed-bar"><span>表示されない・ページが合わない場合</span><div><a id="embed-open">このタブで開く</a><label for="local-pdf">保存したPDFを選択</label></div></div>
+       <div class="embed-bar"><span id="embed-reason">表示されない・ページが合わない場合</span><div><a id="embed-open">このタブで開く</a><label for="local-pdf">保存したPDFを選択</label></div></div>
      </div>
      <div id="canvas-wrap" hidden>
        <canvas id="pdf-canvas" aria-label="保存したPDFの現在ページ"></canvas>
@@ -223,7 +223,7 @@ async function updateLocalReader(){
      const doc=await pdfjsLib.getDocument({url:pdfUrl(state.unit,seg,state.answers),disableAutoFetch:true}).promise;
      if(token!==loadToken){doc.destroy();return;}
      loadingKey="";pdfDocument=doc;activeDocKey=key;showView("canvas");drawPage(state.page-readSegment().start+1);return;
-   }catch(e){if(token!==loadToken)return;corsBlocked=true;}
+   }catch(e){if(token!==loadToken)return;corsBlocked=true;console.warn("PDF.js load failed",e);$("embed-reason").textContent="公式サイトが画面内読み込みを許可していないため簡易表示中。白い場合は「保存したPDFを選択」を使ってください";}
  }
  loadingKey="";showEmbed(key);
 }
