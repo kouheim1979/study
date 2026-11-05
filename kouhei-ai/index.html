@@ -65,7 +65,7 @@
 <noscript>このアプリを使うにはJavaScriptを有効にしてください。</noscript>
 <script id="kouhei-core">
 'use strict';
-const KouheiCore=(()=>{
+const StudyCore=(()=>{
   const VERSION=1, LIGHT_MODEL='Qwen2.5-0.5B-Instruct-q4f16_1-MLC', QWEN35_MODEL='Qwen3.5-0.8B-q4f16_1-MLC', MOBILE_MODELS=[LIGHT_MODEL,'Qwen3-0.6B-q4f16_1-MLC',QWEN35_MODEL], MODELS=[...MOBILE_MODELS,'Qwen3-1.7B-q4f16_1-MLC'];
   const compactModel=(model,mobile=false)=>mobile||model===LIGHT_MODEL||model===QWEN35_MODEL;
   const uid=()=>crypto.randomUUID();
@@ -104,7 +104,7 @@ const KouheiCore=(()=>{
 })();
 </script>
 <script id="kouhei-diagnostics">
-const KouheiDiagnostics=(()=>{
+const StudyDiagnostics=(()=>{
   const VERSION='1.1.0',SMOKE_MODEL='SmolLM2-135M-Instruct-q0f16-MLC';
   const validCode=value=>typeof value==='string'&&/^[a-z0-9-]{1,70}$/.test(value);
   function cleanResult(value){
@@ -212,14 +212,14 @@ const KouheiDiagnostics=(()=>{
 </script>
 
 <script type="module">
-const C=KouheiCore,$=id=>document.getElementById(id),STORAGE='kouhei-ai-v1';
+const C=StudyCore,$=id=>document.getElementById(id),STORAGE='kouhei-ai-v1';
 const MOBILE_LOCAL=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)||new URL(location.href).searchParams.get('lowmem')==='1';
 const SAFE_LOCAL=new URL(location.href).searchParams.get('safe')==='1';
 const RECOVERY_MESSAGE='現在はGPU診断用の画面です。AIの設定にある「AIの起動テスト画面へ」で切り替えられます。';
 const RUNTIMES=['https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.85/lib/index.js','https://esm.sh/@mlc-ai/web-llm@0.2.85?bundle'];
 let runtimePromise=null,diagnosticBusy=false,restartRequired=false;
 let diagnosticStorage;try{diagnosticStorage=localStorage;}catch{diagnosticStorage={getItem:()=>null,setItem:()=>{throw new Error('Storage unavailable');}};}
-const trace=KouheiDiagnostics.journal(diagnosticStorage);trace.record('page-open');
+const trace=StudyDiagnostics.journal(diagnosticStorage);trace.record('page-open');
 let state=C.newState(),engine=null,loadedModel='',loading=false,loadVersion=0,busy=false,aborter=null,sessionToken='',toastTimer,confirmResolve=null;
 try{const saved=localStorage.getItem(STORAGE);if(saved)state=C.normalizeState(JSON.parse(saved));}catch(e){$('storageNotice').hidden=false;$('storageNotice').textContent='保存データを読み込めませんでした。自動上書きを止めています。「保存・バックアップ」から復元できます。';}
 if(MOBILE_LOCAL){if(!C.MOBILE_MODELS.includes(state.model))state.model=C.LIGHT_MODEL;if(!SAFE_LOCAL&&!state.endpoint)state.engine='local';}
@@ -264,7 +264,7 @@ function renderMessages(){$('messages').replaceChildren();$('welcome').hidden=ch
 function render(){renderHistory();renderMessages();$('chatTitle').textContent=chat().title;$('greeting').textContent=state.profile.name+'さん、';$('knowledgeCount').textContent=state.documents.length?String(state.documents.length):'';document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===chat().mode)));renderStatus();}
 function scrollBottom(){const el=$('chatScroll');el.scrollTop=el.scrollHeight;}
 function setBusy(value){busy=value;$('sendButton').classList.toggle('stop',value);$('sendButton').setAttribute('aria-label',value?'回答を中止':'送信');$('sendButton').querySelector('span').textContent=value?'中止':'送信';$('prompt').readOnly=value;document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=value);}
-function diagnosticsReport(){const journal=trace.snapshot();return {appVersion:KouheiDiagnostics.VERSION,runtimeVersion:'0.2.85',userAgent:navigator.userAgent,platform:navigator.platform,secureContext:window.isSecureContext,recoveryMode:SAFE_LOCAL,mobileMode:MOBILE_LOCAL,restartRequired,selectedModel:state.model,startup:journal.startup,diagnosticState:journal.diagnostic.status,result:journal.diagnostic.result,journal};}
+function diagnosticsReport(){const journal=trace.snapshot();return {appVersion:StudyDiagnostics.VERSION,runtimeVersion:'0.2.85',userAgent:navigator.userAgent,platform:navigator.platform,secureContext:window.isSecureContext,recoveryMode:SAFE_LOCAL,mobileMode:MOBILE_LOCAL,restartRequired,selectedModel:state.model,startup:journal.startup,diagnosticState:journal.diagnostic.status,result:journal.diagnostic.result,journal};}
 function renderDiagnostics(){
   const journal=trace.snapshot(),d=journal.diagnostic;
   const stages={'diagnostic-start':'診断を開始','gpu-adapter':'GPUの対応を確認','gpu-device':'GPUの利用を開始','gpu-buffers':'小さな作業領域を準備','gpu-shader':'計算プログラムを準備','gpu-compute':'4個の整数を計算','gpu-readback':'計算結果を取得','gpu-passed':'計算結果を確認'};
@@ -291,7 +291,7 @@ async function runDiagnostics(source='button'){
   if(!guard()){trace.record('diagnostic-blocked-busy');$('diagnosticResult').textContent='別の処理が実行中のため診断を開始できません。処理の完了後に再診断してください。';return;}
   diagnosticBusy=true;trace.beginDiagnostic();$('copyDiagnosticsStatus').textContent='';renderEngine();
   try{
-    const result=await KouheiDiagnostics.probeGPU(window.isSecureContext?navigator.gpu:null,code=>{trace.stepDiagnostic(code);renderDiagnostics();});
+    const result=await StudyDiagnostics.probeGPU(window.isSecureContext?navigator.gpu:null,code=>{trace.stepDiagnostic(code);renderDiagnostics();});
     trace.finishDiagnostic(result);
   }catch(e){trace.finishDiagnostic({ok:false,reason:e.message==='GPU_TIMEOUT'?'gpu-timeout':e.message==='GPU_RESULT_MISMATCH'?'gpu-result-mismatch':'gpu-test-error',errorName:e.name});}
   finally{diagnosticBusy=false;renderEngine();}
@@ -339,7 +339,7 @@ async function withDeadline(promise,ms,message){
 }
 function startupProgress(p,mine){
   if(mine!==loadVersion)return;
-  const code=KouheiDiagnostics.progressStage(p);
+  const code=StudyDiagnostics.progressStage(p);
   if(trace.snapshot().active?.code!==code)trace.step(code);
   $('progress').value=Number.isFinite(p.progress)?p.progress:0;
   $('progressText').textContent=p.text||'モデルを読み込んでいます…';
@@ -379,7 +379,7 @@ async function runStartupTest(){
   if(SAFE_LOCAL){showEngineError(new Error(RECOVERY_MESSAGE));return;}
   if(restartRequired){showEngineError(new Error('先にページを開き直してください。'));return;}
   if(!guard())return;
-  const mine=++loadVersion;loading=true;trace.startStartup('smoke',KouheiDiagnostics.SMOKE_MODEL);$('engineError').hidden=true;renderEngine();
+  const mine=++loadVersion;loading=true;trace.startStartup('smoke',StudyDiagnostics.SMOKE_MODEL);$('engineError').hidden=true;renderEngine();
   $('progress').value=0;$('progressText').textContent='小型AIの起動テストを始めます…';
   let created;
   try{
@@ -395,7 +395,7 @@ async function runStartupTest(){
     const lib=await getRuntime();if(mine!==loadVersion)return;
     trace.step('engine-construct');created=new lib.MLCEngine({initProgressCallback:p=>startupProgress(p,mine)});engine=created;
     trace.step('model-reload');renderDiagnostics();
-    await reloadForSession(created,KouheiDiagnostics.SMOKE_MODEL,{context_window_size:1024},mine);
+    await reloadForSession(created,StudyDiagnostics.SMOKE_MODEL,{context_window_size:1024},mine);
     if(mine!==loadVersion)return;
     trace.step('smoke-generation');$('progressText').textContent='小型AIで短い回答を確認しています…';renderDiagnostics();
     const answer=await withDeadline(created.chat.completions.create({messages:[{role:'user',content:'Say hello in one short sentence.'}],max_tokens:16,temperature:0,stream:false}),60000,'起動テストの回答が時間内に完了しませんでした。');
@@ -480,7 +480,7 @@ window.addEventListener('unhandledrejection',()=>{trace.step('unhandled-rejectio
 trace.record('ui-ready');render();
 if(new URL(location.href).searchParams.has('diagnostics')||new URL(location.href).searchParams.has('startup')){
   openDialog('engineDialog');
-  if(new URL(location.href).searchParams.has('diagnostics')&&KouheiDiagnostics.shouldAutoRun(trace.snapshot().diagnostic)){
+  if(new URL(location.href).searchParams.has('diagnostics')&&StudyDiagnostics.shouldAutoRun(trace.snapshot().diagnostic)){
     $('diagnosticResult').textContent='自動診断を開始します…';
     setTimeout(()=>runDiagnostics('auto'),100);
   }
