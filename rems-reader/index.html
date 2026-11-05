@@ -99,7 +99,7 @@ footer a{color:inherit}
 <header class="top"><div class="top-in">
  <a class="back" href="../">← まなびBOX</a>
  <div class="brand">R.E.M.S. <span>Reader</span></div>
- <span class="ver">v3.1</span>
+ <span class="ver">v3.2</span>
 </div></header>
 
 <main class="main">
@@ -138,6 +138,9 @@ footer a{color:inherit}
  <div class="side">
   <section class="card box"><h3>最近読んだレッスン</h3><div class="list" id="recent"></div></section>
   <section class="card box"><h3>しおり</h3><div class="list" id="marks"></div></section>
+  <section class="card box"><h3>自分専用サーバー（Cloudflare）</h3>
+   <p class="note" id="worker-state">未設定</p>
+   <div class="list" style="margin-top:8px"><a class="act" href="setup.html">設定する</a><button class="act" id="worker-test" type="button" hidden>接続テスト</button></div></section>
   <section class="card box"><h3>端末に保存済みの教材 <span class="empty" id="lib-n"></span></h3><div class="list" id="lib"></div>
    <p class="note" style="margin-top:8px">保存済みの教材は通信なしで、ページ単位ですぐに表示されます。</p></section>
   <p class="note">教材の著作権はQQEnglishに帰属します。このアプリは公式PDFを表示するだけで、PDFを再配布していません。</p>
@@ -209,6 +212,7 @@ try{
 for(const k of["recent","marks"])if(!Array.isArray(store[k]))store[k]=[];
 store.recent=store.recent.filter(x=>validUnit(x?.unit));store.marks=store.marks.filter(x=>validUnit(x?.unit));
 if(!store.byUnit||typeof store.byUnit!=="object")store.byUnit={};
+store.worker=typeof store.worker==="string"&&/^https:\/\/[^\s"<>]+$/.test(store.worker)?store.worker.replace(/\/+$/,""):"";
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}};
 
 let state={unit:validUnit(store.last?.unit)?store.last.unit:"A",page:1,ans:!!store.last?.ans};
@@ -247,10 +251,26 @@ function fetchRelay(url,onProgress){
   finally{clearTimeout(t);}};
  return Promise.any(RELAYS.map(one)).catch(()=>{throw Error("取得できませんでした");});
 }
-/* 公式PDFを取得（直接→中継）。成功したら端末に保存 */
+/* 自分専用サーバー（Cloudflare Worker） */
+let workerError="";
+async function fetchStream(u,onProgress){
+ const c=new AbortController(),t=setTimeout(()=>c.abort(),60000);
+ try{const r=await fetch(u,{signal:c.signal});if(!r.ok)throw Error("HTTP "+r.status);
+  const total=+r.headers.get("content-length")||0;let got=0;const parts=[];const rd=r.body.getReader();
+  for(;;){const{done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;onProgress?.(got,total);}
+  const b=new Uint8Array(got);let o=0;for(const x of parts){b.set(x,o);o+=x.length;}
+  if(String.fromCharCode(...b.subarray(0,5))!=="%PDF-")throw Error("PDF以外の応答");return b;}
+ catch(e){throw e.name==="AbortError"?Error("時間切れ"):e;}finally{clearTimeout(t);}
+}
+function renderWorker(){
+ const el=$("worker-state");if(!el)return;$("worker-test").hidden=!store.worker;
+ el.innerHTML=store.worker?(workerError?"⚠️ 接続できません："+workerError.replace(/[<>&]/g,""):"✓ 使用中")+"<br><span style=\"word-break:break-all\">"+store.worker.replace(/[<>&"]/g,"")+"</span>":"未設定（設定すると全教材がページ単位でくっきり表示・保存されます）";
+}
+/* 公式PDFを取得（自分専用サーバー→直接→公開中継）。成功したら端末に保存 */
 function download(key,url,onProgress){
  if(relayBusy.has(key))return relayBusy.get(key);
  const p=(async()=>{
+  if(store.worker){try{const b=await fetchStream(store.worker+"?url="+encodeURIComponent(url),onProgress);await dbPut(key,toBuffer(b)).catch(()=>{});renderLib();return b;}catch(e){workerError=String(e.message||e);renderWorker();}}
   if(!directBlocked){try{const r=await fetch(url);if(!r.ok)throw Error("HTTP "+r.status);const b=new Uint8Array(await r.arrayBuffer());await dbPut(key,toBuffer(b)).catch(()=>{});return b;}catch(e){directBlocked=true;}}
   if(relayDown()&&!onProgress)throw Error("中継停止中");
   try{const b=await fetchRelay(url,onProgress);relayDownAt=0;await dbPut(key,toBuffer(b)).catch(()=>{});renderLib();return b;}
@@ -278,6 +298,12 @@ async function show(){
  }
  if(doc){current={key,mode:"pdf"};setMode("<b>端末に保存済み</b> · スワイプでもページ移動できます");return drawPage(doc,offset,t);}
  /* 3) 未保存：すぐに埋め込み表示し、裏で取得して保存できたら切替 */
+ if(store.worker&&!workerError){
+  message("教材を取得中…","初回のみ。取得した教材は端末に保存され、次回からすぐ開きます。");
+  try{const b=await download(key,url,(g,tt)=>{if(t===token)$("msg-p").textContent="ダウンロード中… "+(tt?Math.round(g/tt*100)+"%":(g/1048576).toFixed(1)+" MB");});
+   if(t!==token)return;await docFromData(key,toBuffer(b));if(t===token)show();return;}
+  catch(e){if(t!==token)return;}
+ }
  if(!imgBad.has(url))showImage(key,url,offset,s.end-s.start+1);else showFrame(key,url,offset);
  download(key,url).then(async b=>{if(t!==token&&current.key!==key)return;try{await docFromData(key,toBuffer(b));}catch(e){return;}if(current.key===key)show();}).catch(()=>{});
 }
@@ -367,6 +393,13 @@ function go(unit,page,ans=state.ans){
 }
 
 /* ===== 操作 ===== */
+$("worker-test").onclick=async()=>{
+ const b=$("worker-test");b.textContent="テスト中…";
+ const s=segOf(state.unit,state.page);
+ try{const r=await fetch(store.worker+"?url="+encodeURIComponent(pdfUrl(state.unit,s,state.ans)),{method:"HEAD"});if(!r.ok)throw Error("HTTP "+r.status);workerError="";b.textContent="✓ OK";show();}
+ catch(e){workerError=String(e.message||e);b.textContent="接続テスト";}
+ renderWorker();
+};
 $("prev").onclick=()=>go(state.unit,state.page-1);
 $("next").onclick=()=>go(state.unit,state.page+1);
 $("page").addEventListener("change",()=>go(state.unit,$("page").value));
@@ -414,6 +447,7 @@ $("file").addEventListener("change",async e=>{
  catch(err){message("読み込めませんでした",String(err.message||err),false);}
 });
 
+renderWorker();
 go(state.unit,state.page,state.ans);
 renderLib();
 </script>
