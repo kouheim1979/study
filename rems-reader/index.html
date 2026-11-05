@@ -79,7 +79,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
 <body>
 <header class="top">
  <div class="topnav"><a class="back" href="../">← まなびBOX に戻る</a><span class="flag">Study tools / English</span></div>
- <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05h（ワンタップ版）</span></div>
+ <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05i（Googleビューア版）</span></div>
 </header>
 <main class="main">
  <section class="return" id="return"><div><small>YOUR READING PROGRESS</small><strong id="return-text">前回のつづきから</strong></div><a class="primary" id="continue" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">つづきから読む →</a></section>
@@ -111,7 +111,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
      </div>
      <div id="embed-wrap" hidden>
        <iframe id="pdf-embed" title="QQEnglish R.E.M.S. 公式PDF"></iframe>
-       <div class="embed-bar"><span id="embed-reason">表示されない・ページが合わない場合</span><div><a id="embed-open">このタブで開く</a><label for="local-pdf">保存したPDFを選択</label></div></div>
+       <div class="embed-bar"><span id="embed-reason">表示されない・ページが合わない場合</span><div><a id="embed-reload" href="#" role="button">再読み込み</a><a id="embed-switch" href="#" role="button">切替</a><a id="embed-open">このタブで開く</a></div></div>
      </div>
      <div id="ios-wrap" hidden>
        <h3>iPhoneでは公式PDFをこの枠に直接表示できません</h3>
@@ -190,29 +190,30 @@ let corsBlocked=false, embedKey="", relaysDown=false;
 const RELAYS=[u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),u=>"https://api.codetabs.com/v1/proxy?quest="+u,u=>"https://corsproxy.io/?url="+encodeURIComponent(u),u=>"https://api.cors.lol/?url="+encodeURIComponent(u)];
 const relayLog=[];
 async function fetchViaRelay(url,onProgress){
- for(const make of RELAYS){
-   const ctrl=new AbortController();let timer;const arm=()=>{clearTimeout(timer);timer=setTimeout(()=>ctrl.abort(),20000);};
-   try{
-     arm();const r=await fetch(make(url),{signal:ctrl.signal});if(!r.ok)throw Error("HTTP "+r.status);
-     const total=+r.headers.get("content-length")||0,reader=r.body.getReader(),chunks=[];let got=0;
-     for(;;){const {done,value}=await reader.read();if(done)break;arm();chunks.push(value);got+=value.length;onProgress(got,total);}
-     clearTimeout(timer);
-     const buf=new Uint8Array(got);let o=0;for(const c of chunks){buf.set(c,o);o+=c.length;}
-     if(String.fromCharCode(...buf.subarray(0,5))!=="%PDF-")throw Error("PDFではない応答");
-     return buf;
-   }catch(e){clearTimeout(timer);relayLog.push(new URL(make(url)).hostname+": "+(e.name==="AbortError"?"時間切れ":String(e.message||e)));console.warn("relay failed",e);}
- }
- throw Error("中継サービスから取得できませんでした");
+ relayLog.length=0;
+ const one=async make=>{const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),15000);
+   try{const r=await fetch(make(url),{signal:ctrl.signal});if(!r.ok)throw Error("HTTP "+r.status);
+     const buf=new Uint8Array(await r.arrayBuffer());
+     if(String.fromCharCode(...buf.subarray(0,5))!=="%PDF-")throw Error("PDFではない応答");return buf;}
+   catch(e){relayLog.push(new URL(make(url)).hostname+": "+(e.name==="AbortError"?"時間切れ":String(e.message||e)));throw e;}
+   finally{clearTimeout(timer);}};
+ try{return await Promise.any(RELAYS.map(one));}catch(e){throw Error("中継サービスから取得できませんでした");}
 }
 const isIOS=/iP(hone|od|ad)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 function showView(mode){$("reading-actions").hidden=mode!=="loading";$("ios-wrap").hidden=mode!=="ios";$("canvas-wrap").hidden=mode!=="canvas";$("embed-wrap").hidden=mode!=="embed";}
 function showLocal(yes){showView(yes?"canvas":"loading");}
 function showFrame(){$("frame").scrollIntoView({behavior:"smooth",block:"start"});}
-function showEmbed(key){const seg=readSegment(),url=pdfUrl(state.unit,seg,state.answers)+"#page="+(state.page-seg.start+1)+"&view=FitH",f=$("pdf-embed");
- $("embed-open").href=url;$("ios-save").href=pdfUrl(state.unit,seg,state.answers);$("ios-open").href=url;embedKey=key;
+let useGoogle=isIOS, gTimer=0, gTries=0;
+function setEmbedSrc(src){const f=$("pdf-embed");f.dataset.src=src;f.src=src;clearTimeout(gTimer);
+ if(useGoogle&&gTries<3)gTimer=setTimeout(()=>{gTries++;setEmbedSrc(src);},9000);} /* Googleビューアは稀に応答しないので再試行 */
+function showEmbed(key){const seg=readSegment(),offset=state.page-seg.start+1,pdf=pdfUrl(state.unit,seg,state.answers),url=pdf+"#page="+offset+"&view=FitH",f=$("pdf-embed");
+ $("embed-open").href=url;$("ios-save").href=pdf;$("ios-open").href=url;embedKey=key;
  $("relay-log").textContent=relayLog.length?"自動取得の結果: "+relayLog.join(" / "):"";
- if(isIOS){showView("ios");return;}
- if(f.dataset.src!==url){f.dataset.src=url;f.src=url;}showView("embed");}
+ $("embed-switch").textContent=useGoogle?"通常表示に切替":"Googleビューアで表示";
+ $("embed-reason").textContent=useGoogle?"PDF内 "+offset+" ページ目までスクロールしてください":"表示されない場合は「Googleビューアで表示」";
+ const src=useGoogle?"https://docs.google.com/gview?embedded=true&url="+encodeURIComponent(pdf):url;
+ if(useGoogle?f.dataset.src!==src:f.dataset.src!==src){gTries=0;setEmbedSrc(src);}
+ showView("embed");}
 function drawPage(offset){if(!pdfDocument||!activeDocKey)return;const key=activeDocKey,seq=++renderRequest;
  drawQueue=drawQueue.catch(()=>{}).then(async()=>{
    if(seq!==renderRequest||activeDocKey!==key||!pdfDocument)return;
@@ -262,16 +263,13 @@ async function updateLocalReader(){
      loadingKey="";pdfDocument=doc;activeDocKey=key;showView("canvas");drawPage(state.page-readSegment().start+1);return;
    }catch(e){if(token!==loadToken)return;corsBlocked=true;console.warn("PDF.js load failed",e);$("embed-reason").textContent="公式サイトが画面内読み込みを許可していないため簡易表示中。白い場合は「保存したPDFを選択」を使ってください";}
  }
- if(!relaysDown){
-   $("ra-title").textContent="公式PDFを取得中…";$("ra-text").textContent="初回だけ数秒かかります。取得したPDFは端末に保存され、次回からすぐ開きます。";
-   try{
-     const buf=await fetchViaRelay(pdfUrl(state.unit,seg,state.answers),(got,total)=>{if(token===loadToken)$("ra-text").textContent="ダウンロード中… "+(total?Math.round(got/total*100)+"%":(got/1048576).toFixed(1)+" MB");});
-     if(token!==loadToken)return;
-     try{await toDB(key,buf.buffer);}catch(e){}
-     loadingKey="";await loadLocal(buf.buffer,key,token);return;
-   }catch(e){if(token!==loadToken)return;relaysDown=true;}
- }
  loadingKey="";showEmbed(key);
+ if(!relaysDown){ /* 裏で取得できたら、端末に保存して高画質のページ表示に切り替える */
+   fetchViaRelay(pdfUrl(state.unit,seg,state.answers),()=>{}).then(async buf=>{
+     try{await toDB(key,buf.buffer);}catch(e){}
+     if(token===loadToken&&embedKey===key)await loadLocal(buf.buffer,key,token);
+   }).catch(()=>{relaysDown=true;});
+ }
 }
 
 let state={unit:validUnit(saved.last?.unit)?saved.last.unit:"A",page:187,answers:!!saved.last?.answers};
@@ -320,6 +318,9 @@ $("local-pdf").addEventListener("change",async e=>{
  }catch(err){loadingKey="";$("ra-text").textContent="取り込みに失敗："+String(err.message||err);}
  e.target.value="";
 });
+$("pdf-embed").addEventListener("load",()=>clearTimeout(gTimer));
+$("embed-reload").onclick=e=>{e.preventDefault();gTries=0;setEmbedSrc($("pdf-embed").dataset.src);};
+$("embed-switch").onclick=e=>{e.preventDefault();useGoogle=!useGoogle;showEmbed(embedKey);};
 $("change-pdf").onclick=()=>{$("local-pdf").click();};
 window.addEventListener("resize",()=>{if(pdfDocument&&activeDocKey===fileKey(state.unit,readSegment(),state.answers))drawPage(state.page-readSegment().start+1);});
 $("go").onclick=()=>move(state.unit,$("page").value);
