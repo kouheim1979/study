@@ -70,11 +70,11 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
  <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div></div>
 </header>
 <main class="main">
- <section class="return" id="return"><div><small>YOUR READING PROGRESS</small><strong id="return-text">前回のつづきから</strong></div><a class="primary" id="continue" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">つづきから読む ↗</a></section>
+ <section class="return" id="return"><div><small>YOUR READING PROGRESS</small><strong id="return-text">前回のつづきから</strong></div><a class="primary" id="continue" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">つづきから読む →</a></section>
  <div class="layout">
   <aside class="catalog panel" aria-label="教材一覧">
     <div class="selection"><div><p class="heading">01 / BOOK</p><div id="books" class="books"></div></div><div><p class="heading">02 / UNIT</p><div id="units" class="units"></div></div></div>
-    <p class="heading">03 / LESSON &amp; PAGES</p><span class="one-tap-note">レッスンを押すと公式PDFが1タップで開きます</span>
+    <p class="heading">03 / LESSON &amp; PAGES</p><span class="one-tap-note">レッスンを押すと公式PDFがこの画面のまま開きます（戻るでここに戻れます）</span>
     <div id="segments" class="seg-box"></div>
     <div class="tip">各教材の著作権はQQEnglishに帰属します。このアプリは公式PDFへのリンクを表示し、PDFそのものは再配布していません。</div>
   </aside>
@@ -82,13 +82,13 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
    <div class="reader-top"><div><p class="heading">NOW READING</p><h2 id="reader-title" class="reader-title">Book 1 · Unit A</h2><p id="reader-subtitle" class="subtitle">Lesson 11–14</p></div><div class="mode" role="group" aria-label="解答表示"><button type="button" id="no-answer" aria-pressed="true">問題のみ</button><button type="button" id="answer" aria-pressed="false">解答付き</button></div></div>
    <div class="controls"><button class="round" id="prev" type="button" aria-label="1ページ前">← 前へ</button><div class="jump"><input id="page" type="number" min="1" inputmode="numeric" aria-label="教材の通しページ"><span id="total">/ 258</span><button id="go" type="button">移動</button></div><button class="round" id="next" type="button">次へ →</button><button class="round star" id="bookmark" type="button" aria-pressed="false">☆ しおり</button></div>
    <div class="pagebar"><span id="page-text">Unit A · p.187</span><span id="file-text">PDF内 11ページ目</span></div><div class="meter"><div id="progress"></div></div>
-   <div class="pdf-actions"><a class="primary" id="open-pdf" target="_blank" rel="noopener noreferrer">↗ このページを1タップで読む</a><a id="download-pdf" target="_blank" rel="noopener noreferrer">↓ PDFを保存</a><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
+   <div class="pdf-actions"><a class="primary" id="open-pdf">📖 このページを読む</a><a id="download-pdf" download>↓ PDFを保存</a><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
    <div class="frame" id="frame">
      <div class="reading-actions" id="reading-actions">
        <div class="doc-icon" aria-hidden="true">📖</div>
        <h3>ワンタップで教材を開く</h3>
-       <p>レッスンの選択、または下のボタンだけで公式PDFが開きます。保存・ファイル選択は必要ありません。</p>
-       <a class="primary big-link" id="pdf-fallback" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">↗ このページのPDFを開く</a>
+       <p>レッスンの選択、または下のボタンで公式PDFが同じタブで開きます。読み終わったらブラウザの「戻る」でこの画面に戻れます。</p>
+       <a class="primary big-link" id="pdf-fallback" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">📖 このページのPDFを開く</a>
        <div class="local-reader" aria-hidden="true">
          <p><strong>アプリ内で1ページずつ読みたい場合</strong></p>
          <p>上の「PDFを保存」からiPhoneの「ファイル」に保存したPDFを選択すると、この画面に直接描画します。選んだPDFは、この端末に保存され次回も開けます。</p>
@@ -103,7 +103,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
        <button id="change-pdf" type="button">別のPDFを読み込む</button>
      </div>
    </div>
-   <p class="reader-how">レッスンを1回タップするだけでQQEnglish公式PDFを開けます。PDF内のページ番号は上の「PDF内 ○ページ目」を参考にしてください。端末のPDFビューアによっては指定ページへ自動移動しない場合があります。</p>
+   <p class="reader-how">レッスンを1回タップするとQQEnglish公式PDFが別タブではなくこの画面で開きます。PDF内のページ番号は上の「PDF内 ○ページ目」を参考にしてください。端末のPDFビューアによっては指定ページへ自動移動しない場合があります。</p>
    <div class="shelf"><div class="mini"><h3>最近開いたページ</h3><div id="recent" class="quick"></div></div><div class="mini"><h3>保存したしおり</h3><div id="bookmarks" class="quick"></div></div></div>
   </section>
  </div>
@@ -217,7 +217,7 @@ function render(){
  const u=state.unit;const b=bookOf(u);const segs=parse(u);const seg=segs.find(s=>state.page>=s.start&&state.page<=s.end)||segs[0];const offset=state.page-seg.start+1;
  $("books").replaceChildren(...BOOKS.map((v,i)=>{const e=btn("B"+(i+1),()=>{const unit=v[0];move(unit,saved.byUnit[unit]||1);},"book");e.setAttribute("aria-pressed",String(i+1===b));e.setAttribute("aria-label","Book "+(i+1));return e;}));
  $("units").replaceChildren(...BOOKS[b-1].split("").map(unit=>{const e=btn(unit,()=>move(unit,saved.byUnit[unit]||1),"unit");e.setAttribute("aria-pressed",String(unit===u));e.setAttribute("aria-label","Unit "+unit);return e;}));
- $("segments").replaceChildren(...segs.map(s=>{const e=document.createElement("a");e.className="seg"+(seg===s?" active":"");e.href=pdfUrl(u,s,state.answers)+"#page=1";e.target="_blank";e.rel="noopener noreferrer";e.setAttribute("aria-label","Lesson "+s.ls+"–"+s.le+"を公式PDFで開く");e.addEventListener("click",()=>{state={unit:u,page:s.start,answers:state.answers};record();history.replaceState(null,"","#"+state.unit+"/"+state.page+"/"+(state.answers?1:0));setTimeout(render,0);});const left=document.createElement("div"),heading=document.createElement("strong"),pages=document.createElement("span"),arrow=document.createElement("span");heading.textContent="Lesson "+String(s.ls).padStart(2,"0")+"–"+String(s.le).padStart(2,"0");pages.textContent="pp. "+s.start+"–"+s.end;arrow.className="arrow";arrow.textContent="↗";left.append(heading,pages);e.append(left,arrow);return e;}));
+ $("segments").replaceChildren(...segs.map(s=>{const e=document.createElement("a");e.className="seg"+(seg===s?" active":"");e.href=pdfUrl(u,s,state.answers)+"#page=1";e.setAttribute("aria-label","Lesson "+s.ls+"–"+s.le+"を公式PDFで開く");e.addEventListener("click",()=>{state={unit:u,page:s.start,answers:state.answers};record();history.replaceState(null,"","#"+state.unit+"/"+state.page+"/"+(state.answers?1:0));setTimeout(render,0);});const left=document.createElement("div"),heading=document.createElement("strong"),pages=document.createElement("span"),arrow=document.createElement("span");heading.textContent="Lesson "+String(s.ls).padStart(2,"0")+"–"+String(s.le).padStart(2,"0");pages.textContent="pp. "+s.start+"–"+s.end;arrow.className="arrow";arrow.textContent="→";left.append(heading,pages);e.append(left,arrow);return e;}));
  $("reader-title").textContent="Book "+b+" · Unit "+u;
  $("reader-subtitle").textContent="Lesson "+String(seg.ls).padStart(2,"0")+"–"+String(seg.le).padStart(2,"0")+" / pp. "+seg.start+"–"+seg.end;
  $("no-answer").setAttribute("aria-pressed",String(!state.answers));
