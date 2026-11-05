@@ -29,10 +29,10 @@ function fixture({ reload = async () => {}, importFailure = false, safe = false,
   vm.runInContext(html.match(/<script id="kouhei-core">([\s\S]*?)<\/script>/)[1],context);
   vm.runInContext(html.match(/<script id="kouhei-diagnostics">([\s\S]*?)<\/script>/)[1],context);
   vm.runInContext(`
-    const trace=KouheiDiagnostics.journal({getItem:()=>null,setItem(){}});const RUNTIMES=['primary','fallback'];const SAFE_LOCAL=${safe},MOBILE_LOCAL=${mobile};const RECOVERY_MESSAGE='端末内AIを停止しています';
+    const trace=StudyDiagnostics.journal({getItem:()=>null,setItem(){}});const RUNTIMES=['primary','fallback'];const SAFE_LOCAL=${safe},MOBILE_LOCAL=${mobile};const RECOVERY_MESSAGE='端末内AIを停止しています';
     let runtimePromise=null,engine=null,loadedModel='',loadVersion=0,loading=false,restartRequired=false;
-    const state={model:${JSON.stringify(model)}},C=KouheiCore;
-    if(${smokePassed}){trace.startStartup('smoke',KouheiDiagnostics.SMOKE_MODEL);trace.finishStartup('complete');}
+    const state={model:${JSON.stringify(model)}},C=StudyCore;
+    if(${smokePassed}){trace.startStartup('smoke',StudyDiagnostics.SMOKE_MODEL);trace.finishStartup('complete');}
     const guard=()=>!loading,renderEngine=()=>{},renderDiagnostics=()=>{},toast=()=>{};
     const showEngineError=e=>{$('engineError').textContent=e.message;$('engineError').hidden=false;};
     ${source}
