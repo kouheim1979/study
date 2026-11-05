@@ -6,6 +6,7 @@ GitHub Pages: https://kouheim1979.github.io/study/
 
 | フォルダ | タイトル | 分野 |
 |---|---|---|
+| [rems-reader](rems-reader/) | R.E.M.S. Reader（QQEnglish公式PDF教材ビューア） | 英語 |
 | [toeic](toeic/) | TOEIC形式 英語トレーナー | 英語 |
 | [pattern-pocket](pattern-pocket/) | Pattern Pocket（キッズ版あり） | 英語 |
 | [soundbeat](soundbeat/) | SoundBeat | 英語 |
