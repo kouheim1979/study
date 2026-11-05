@@ -87,7 +87,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
    <div class="reader-top"><div><p class="heading">NOW READING</p><h2 id="reader-title" class="reader-title">Book 1 · Unit A</h2><p id="reader-subtitle" class="subtitle">Lesson 11–14</p></div><div class="mode" role="group" aria-label="解答表示"><button type="button" id="no-answer" aria-pressed="true">問題のみ</button><button type="button" id="answer" aria-pressed="false">解答付き</button></div></div>
    <div class="controls"><button class="round" id="prev" type="button" aria-label="1ページ前">← 前へ</button><div class="jump"><input id="page" type="number" min="1" inputmode="numeric" aria-label="教材の通しページ"><span id="total">/ 258</span><button id="go" type="button">移動</button></div><button class="round" id="next" type="button">次へ →</button><button class="round star" id="bookmark" type="button" aria-pressed="false">☆ しおり</button></div>
    <div class="pagebar"><span id="page-text">Unit A · p.187</span><span id="file-text">PDF内 11ページ目</span></div><div class="meter"><div id="progress"></div></div>
-   <div class="pdf-actions"><a class="primary" id="open-pdf">📖 この画面で読む</a><a id="download-pdf" download>↓ PDFを保存</a><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
+   <div class="pdf-actions"><a class="primary" id="open-pdf">📖 この画面で読む</a><a id="download-pdf" target="_blank" rel="noopener noreferrer">↓ PDFを保存</a><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
    <div class="frame" id="frame">
      <div class="reading-actions" id="reading-actions">
        <div class="doc-icon" aria-hidden="true">📖</div>
@@ -282,6 +282,20 @@ $("prev").onclick=()=>move(state.unit,state.page-1);$("next").onclick=()=>move(s
 $("no-answer").onclick=()=>move(state.unit,state.page,false);$("answer").onclick=()=>move(state.unit,state.page,true);
 $("bookmark").onclick=()=>{const p={unit:state.unit,page:state.page};const exists=saved.bookmarks.some(x=>x.unit===p.unit&&x.page===p.page);saved.bookmarks=exists?saved.bookmarks.filter(x=>x.unit!==p.unit||x.page!==p.page):[p,...saved.bookmarks].slice(0,30);record();render();};
 $("continue").addEventListener("click",ev=>{ev.preventDefault();const x=saved.last;move(x.unit,x.page,x.answers);showFrame();});
+function saveBlob(data,name){const url=URL.createObjectURL(new Blob([data],{type:"application/pdf"}));const a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+$("download-pdf").addEventListener("click",async ev=>{
+ const seg=readSegment(),key=fileKey(state.unit,seg,state.answers),url=pdfUrl(state.unit,seg,state.answers),name=url.split("/").pop(),el=ev.currentTarget;
+ if(corsBlocked&&!(pdfDocument&&activeDocKey===key))return; /* 直接ダウンロード不可: 新しいタブで開き、共有→「ファイルに保存」 */
+ ev.preventDefault();const label=el.textContent;el.textContent="保存中…";
+ try{
+   let data;
+   if(pdfDocument&&activeDocKey===key)data=await pdfDocument.getData();
+   else{const r=await fetch(url);if(!r.ok)throw Error("HTTP "+r.status);data=new Uint8Array(await r.arrayBuffer());}
+   saveBlob(data,name);
+   try{await toDB(key,data.buffer.slice(data.byteOffset,data.byteOffset+data.byteLength));}catch(e){}
+   el.textContent="✓ 保存しました";setTimeout(()=>{el.textContent=label;},2500);
+ }catch(e){corsBlocked=true;el.textContent=label;window.open(url,"_blank","noopener");}
+});
 $("open-pdf").addEventListener("click",ev=>{ev.preventDefault();showFrame();});
 document.addEventListener("keydown",e=>{if(["INPUT","TEXTAREA"].includes(document.activeElement?.tagName)||e.altKey||e.metaKey||e.ctrlKey)return;if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();});
 window.addEventListener("hashchange",()=>{const m=decodeURIComponent(location.hash.slice(1)).match(/^([A-T])\/(\d+)\/([01])$/);if(m)move(m[1],m[2],m[3]==="1");});
