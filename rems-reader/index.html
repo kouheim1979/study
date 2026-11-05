@@ -21,7 +21,7 @@ button,input,a{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-v
 .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:17px 0 10px}.round{border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px 14px;min-height:43px;font-weight:700}.round:disabled{opacity:.35;cursor:default}.jump{display:flex;align-items:center;gap:5px;padding:5px 8px 5px 12px;background:#f5f7f5;border:1px solid var(--line);border-radius:11px}.jump input{border:0;outline:0;width:65px;background:transparent;font-weight:750;text-align:center;font-size:1rem}.jump span{color:var(--muted);font-size:.82rem;white-space:nowrap}.jump button{border:0;background:#d9eae4;border-radius:8px;font-size:.78rem;font-weight:800;padding:8px 10px}.star{margin-left:auto}.star[aria-pressed=true]{border-color:#e1bc64;background:#fff6db;color:#98650d}
 .pagebar{display:flex;justify-content:space-between;color:var(--muted);font-size:.81rem;margin:8px 0 11px;gap:8px}.meter{height:5px;background:#edf1ed;border-radius:5px;overflow:hidden;margin-bottom:16px}.meter>div{height:100%;background:var(--accent);width:0;transition:width .25s}
 .pdf-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.pdf-actions a{text-decoration:none;font-weight:700;font-size:.86rem;border-radius:11px;padding:10px 14px;border:1px solid var(--line);background:#fff}.pdf-actions .primary{border-color:var(--accent);background:var(--accent);color:#fff}
-.frame{height:min(68vh,850px);min-height:490px;border:1px solid #d4dddb;border-radius:12px;overflow:hidden;background:#e5e7e7}.frame iframe{width:100%;height:100%;display:block;border:0;background:#eceeed}.notice{font-size:.81rem;color:var(--muted);margin:11px 0 0}.notice a{color:#147974}
+.frame{position:relative;height:min(68vh,850px);min-height:490px;border:1px solid #d4dddb;border-radius:12px;overflow:hidden;background:#fff}.frame iframe{width:100%;height:100%;display:block;border:0;background:#fff}.preview-help{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:9px 12px;background:#f5fcf9;display:flex;align-items:center;gap:8px;justify-content:space-between;border-top:1px solid #dae8e1;font-size:.76rem;color:#426b65}.preview-help a{font-size:.78rem;font-weight:800;text-decoration:none;background:#117e79;color:#fff;padding:8px 11px;border-radius:9px;white-space:nowrap}.frame.loading:before{content:"公式教材を読み込み中…";position:absolute;left:0;right:0;top:28%;color:#667d7b;font-size:.92rem;text-align:center}.frame.loading iframe{visibility:hidden}.viewmode{background:white;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.8rem;color:var(--dark);font-weight:800}.viewmode:hover{background:var(--soft)}.notice{font-size:.81rem;color:var(--muted);margin:11px 0 0}.notice a{color:#147974}
 .shelf{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.mini{border:1px solid var(--line);border-radius:14px;padding:14px;background:white}.mini h3{font-size:.87rem;margin:0 0 8px}.quick{display:flex;gap:7px;flex-wrap:wrap}.quick button{border:1px solid var(--line);background:#f8faf8;border-radius:9px;padding:7px 11px;font-weight:700;font-size:.85rem}.empty{font-size:.82rem;color:var(--muted)}
 footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}footer a{color:inherit}
 @media(max-width:790px){.layout{grid-template-columns:1fr}.panel{padding:15px}.selection{display:grid;grid-template-columns:1fr 1fr;gap:15px}.selection>div{min-width:0}.units{margin-bottom:0}.seg-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:7px}.seg{margin:0}.tip{margin-top:12px}.reader{order:2}.catalog{order:1}.frame{height:55vh;min-height:360px}}
@@ -46,9 +46,9 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
    <div class="reader-top"><div><p class="heading">NOW READING</p><h2 id="reader-title" class="reader-title">Book 1 · Unit A</h2><p id="reader-subtitle" class="subtitle">Lesson 11–14</p></div><div class="mode" role="group" aria-label="解答表示"><button type="button" id="no-answer" aria-pressed="true">問題のみ</button><button type="button" id="answer" aria-pressed="false">解答付き</button></div></div>
    <div class="controls"><button class="round" id="prev" type="button" aria-label="1ページ前">← 前へ</button><div class="jump"><input id="page" type="number" min="1" inputmode="numeric" aria-label="教材の通しページ"><span id="total">/ 258</span><button id="go" type="button">移動</button></div><button class="round" id="next" type="button">次へ →</button><button class="round star" id="bookmark" type="button" aria-pressed="false">☆ しおり</button></div>
    <div class="pagebar"><span id="page-text">Unit A · p.187</span><span id="file-text">PDF内 11ページ目</span></div><div class="meter"><div id="progress"></div></div>
-   <div class="pdf-actions"><a class="primary" id="open-pdf" target="_blank" rel="noopener noreferrer">↗ PDFを大きく開く</a><a id="download-pdf" target="_blank" rel="noopener noreferrer">↓ 公式PDFを保存</a><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
-   <div class="frame"><iframe id="pdf" title="QQEnglish R.E.M.S. PDF教材" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
-   <p class="notice">iPhoneで埋め込みPDFが小さい・表示されない場合は、上の「PDFを大きく開く」を使ってください。ページ移動は端末のPDFビューアによって対応が異なります。ネット接続が必要です。</p>
+   <div class="pdf-actions"><a class="primary" id="open-pdf" target="_blank" rel="noopener noreferrer">↗ SafariでPDFを開く</a><a id="download-pdf" target="_blank" rel="noopener noreferrer">↓ 公式PDFを保存</a><button id="switch-viewer" class="viewmode" type="button">表示方式を切替</button><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
+   <div class="frame loading" id="frame"><iframe id="pdf" title="QQEnglish R.E.M.S. PDF教材" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="preview-help"><span id="preview-label">ページが表示されない場合は、PDFを直接開いてください</span><a id="pdf-fallback" target="_blank" rel="noopener noreferrer">PDFを直接開く ↗</a></div></div>
+   <p class="notice" id="notice">iPhoneではGoogleドキュメントによるプレビューを使用します。ページ指定が反映されない場合は、PDFを直接開いてPDF内のページ番号を指定してください。プレビューが表示されない場合も直接開く機能が使えます。ネット接続が必要です。</p>
    <div class="shelf"><div class="mini"><h3>最近開いたページ</h3><div id="recent" class="quick"></div></div><div class="mini"><h3>保存したしおり</h3><div id="bookmarks" class="quick"></div></div></div>
   </section>
  </div>
@@ -90,6 +90,9 @@ let saved={last:{unit:"A",page:187,answers:false},byUnit:{},recent:[],bookmarks:
 try {const s=JSON.parse(localStorage.getItem(KEY)); if(s && typeof s==="object")saved={...saved,...s};}catch(e){}
 const validUnit=u=>typeof u==="string" && Object.hasOwn(SPEC,u);
 const safePage=(u,p)=>Math.max(1,Math.min(maxPage(u),Math.floor(Number(p)||1)));
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+let viewerMode=isIOS?"google":"native";
+let frameTimeout;
 let state={unit:validUnit(saved.last?.unit)?saved.last.unit:"A",page:187,answers:!!saved.last?.answers};
 state.page=safePage(state.unit,saved.last?.page);
 const hash=decodeURIComponent(location.hash.slice(1)).match(/^([A-T])\/(\d+)\/([01])$/);
@@ -113,12 +116,26 @@ function render(){
  $("progress").style.width=(state.page/maxPage(u)*100)+"%";
  $("prev").disabled=state.page<=1;$("next").disabled=state.page>=maxPage(u);
  const currentUrl=pdfUrl(u,seg,state.answers);const anchored=currentUrl+"#page="+offset+"&view=FitH";
- $("open-pdf").href=anchored;$("download-pdf").href=currentUrl;
- if($("pdf").dataset.url!==anchored){$("pdf").src=anchored;$("pdf").dataset.url=anchored;}
+ $("open-pdf").href=anchored;$("download-pdf").href=currentUrl;$("pdf-fallback").href=anchored;
+ $("switch-viewer").textContent=viewerMode==="google"?"通常のPDF表示に切替":"iPhone向け表示に切替";
+ const previewUrl=viewerMode==="google"
+   ?"https://docs.google.com/gview?embedded=true&url="+encodeURIComponent(currentUrl)+"#:0.page."+(offset-1)
+   :anchored;
+ if($("pdf").dataset.url!==previewUrl){
+   $("frame").classList.add("loading");
+   $("preview-label").textContent="読み込めない場合はPDFを直接開く";
+   $("pdf").src=previewUrl;$("pdf").dataset.url=previewUrl;
+   clearTimeout(frameTimeout);
+   frameTimeout=setTimeout(()=>$("frame").classList.remove("loading"),9000);
+ }
+
  const isStarred=(saved.bookmarks||[]).some(x=>x.unit===u&&x.page===state.page);$("bookmark").textContent=isStarred?"★ しおり済":"☆ しおり";$("bookmark").setAttribute("aria-pressed",String(isStarred));
  $("return-text").textContent="Book "+bookOf(saved.last.unit)+" · Unit "+saved.last.unit+" / p."+saved.last.page+" から再開";
  showRecent(saved.recent,"recent","まだありません");showRecent(saved.bookmarks,"bookmarks","☆ しおりボタンで保存");
 }
+$("pdf").addEventListener("load",()=>{clearTimeout(frameTimeout);$("frame").classList.remove("loading");});
+$("pdf").addEventListener("error",()=>{$("frame").classList.remove("loading");$("preview-label").textContent="埋め込み表示に失敗しました。直接開くを使ってください";});
+$("switch-viewer").onclick=()=>{viewerMode=viewerMode==="google"?"native":"google";$("pdf").dataset.url="";render();};
 $("go").onclick=()=>move(state.unit,$("page").value);
 $("page").addEventListener("keydown",e=>{if(e.key==="Enter"){$("go").click();$("page").blur();}});
 $("prev").onclick=()=>move(state.unit,state.page-1);$("next").onclick=()=>move(state.unit,state.page+1);
