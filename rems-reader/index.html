@@ -79,7 +79,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
 <body>
 <header class="top">
  <div class="topnav"><a class="back" href="../">← まなびBOX に戻る</a><span class="flag">Study tools / English</span></div>
- <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05e（画面内表示版）</span></div>
+ <div class="hero"><div><h1>R.E.M.S. <span style="color:#a1dbd0">Reader</span></h1><p>QQEnglish公式教材を、読みたいページからすぐに。</p></div><div class="hero-tag">BOOK 1–5 &nbsp; · &nbsp; UNIT A–T</div><span id="app-ver" style="font-size:.7rem;color:#a0dcd2">ver 2026-11-05f（ワンタップ版）</span></div>
 </header>
 <main class="main">
  <section class="return" id="return"><div><small>YOUR READING PROGRESS</small><strong id="return-text">前回のつづきから</strong></div><a class="primary" id="continue" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">つづきから読む →</a></section>
@@ -184,7 +184,24 @@ async function toDB(key,data){const db=await openDB();return new Promise((resolv
 function ensurePdfJS(){if(window.pdfjsLib)return Promise.resolve();if(pdfJsLoading)return pdfJsLoading;
  pdfJsLoading=new Promise((resolve,reject)=>{const el=document.createElement("script");el.src=CDN+"pdf.min.js";el.onload=()=>{if(!window.pdfjsLib){reject(Error("PDF描画エンジンが読み込めません"));return;}pdfjsLib.GlobalWorkerOptions.workerSrc=CDN+"pdf.worker.min.js";resolve();};el.onerror=()=>reject(Error("PDF表示ライブラリを読み込めません。ネットワークをご確認ください。"));document.head.append(el);});
  return pdfJsLoading;}
-let corsBlocked=false, embedKey="";
+let corsBlocked=false, embedKey="", relaysDown=false;
+/* 公式サイトは他サイトからの読み込みを許可していないため、公開中継サービス経由で取得する（順に試行）。 */
+const RELAYS=[u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),u=>"https://api.codetabs.com/v1/proxy?quest="+u,u=>"https://corsproxy.io/?url="+encodeURIComponent(u)];
+async function fetchViaRelay(url,onProgress){
+ for(const make of RELAYS){
+   const ctrl=new AbortController();let timer;const arm=()=>{clearTimeout(timer);timer=setTimeout(()=>ctrl.abort(),20000);};
+   try{
+     arm();const r=await fetch(make(url),{signal:ctrl.signal});if(!r.ok)throw Error("HTTP "+r.status);
+     const total=+r.headers.get("content-length")||0,reader=r.body.getReader(),chunks=[];let got=0;
+     for(;;){const {done,value}=await reader.read();if(done)break;arm();chunks.push(value);got+=value.length;onProgress(got,total);}
+     clearTimeout(timer);
+     const buf=new Uint8Array(got);let o=0;for(const c of chunks){buf.set(c,o);o+=c.length;}
+     if(String.fromCharCode(...buf.subarray(0,5))!=="%PDF-")throw Error("PDFではない応答");
+     return buf;
+   }catch(e){clearTimeout(timer);console.warn("relay failed",e);}
+ }
+ throw Error("中継サービスから取得できませんでした");
+}
 const isIOS=/iP(hone|od|ad)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 function showView(mode){$("reading-actions").hidden=mode!=="loading";$("ios-wrap").hidden=mode!=="ios";$("canvas-wrap").hidden=mode!=="canvas";$("embed-wrap").hidden=mode!=="embed";}
 function showLocal(yes){showView(yes?"canvas":"loading");}
@@ -241,6 +258,15 @@ async function updateLocalReader(){
      if(token!==loadToken){doc.destroy();return;}
      loadingKey="";pdfDocument=doc;activeDocKey=key;showView("canvas");drawPage(state.page-readSegment().start+1);return;
    }catch(e){if(token!==loadToken)return;corsBlocked=true;console.warn("PDF.js load failed",e);$("embed-reason").textContent="公式サイトが画面内読み込みを許可していないため簡易表示中。白い場合は「保存したPDFを選択」を使ってください";}
+ }
+ if(!relaysDown){
+   $("ra-title").textContent="公式PDFを取得中…";$("ra-text").textContent="初回だけ数秒かかります。取得したPDFは端末に保存され、次回からすぐ開きます。";
+   try{
+     const buf=await fetchViaRelay(pdfUrl(state.unit,seg,state.answers),(got,total)=>{if(token===loadToken)$("ra-text").textContent="ダウンロード中… "+(total?Math.round(got/total*100)+"%":(got/1048576).toFixed(1)+" MB");});
+     if(token!==loadToken)return;
+     try{await toDB(key,buf.buffer);}catch(e){}
+     loadingKey="";await loadLocal(buf.buffer,key,token);return;
+   }catch(e){if(token!==loadToken)return;relaysDown=true;}
  }
  loadingKey="";showEmbed(key);
 }
