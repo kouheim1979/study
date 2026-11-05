@@ -55,6 +55,11 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
 .seg.active{border-left:4px solid var(--accent)}
 .one-tap-note{display:block;font-size:.75rem;color:#2e786c;margin:-4px 0 15px}
 .local-reader{display:none}
+#embed-wrap iframe{width:100%;height:min(80vh,1000px);border:0;display:block;background:#fff;border-radius:14px 14px 0 0}
+.embed-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:9px 12px;font-size:.78rem;color:#426b65;background:#f5fcf9;border-top:1px solid #dae8e1;border-radius:0 0 14px 14px}
+.embed-bar div{display:flex;gap:6px;flex-wrap:wrap}
+.embed-bar a,.embed-bar label{font-size:.78rem;font-weight:800;text-decoration:none;border:1px solid #a9c9be;background:#fff;color:#106b65;padding:7px 10px;border-radius:9px;cursor:pointer;white-space:nowrap}
+@media(max-width:500px){#embed-wrap iframe{height:72vh}}
 #resume-label{color:#fff}
 .return button{white-space:nowrap}
 .pdf-actions #open-pdf{font-size:.94rem}
@@ -74,7 +79,7 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
  <div class="layout">
   <aside class="catalog panel" aria-label="教材一覧">
     <div class="selection"><div><p class="heading">01 / BOOK</p><div id="books" class="books"></div></div><div><p class="heading">02 / UNIT</p><div id="units" class="units"></div></div></div>
-    <p class="heading">03 / LESSON &amp; PAGES</p><span class="one-tap-note">レッスンを押すと公式PDFがこの画面のまま開きます（戻るでここに戻れます）</span>
+    <p class="heading">03 / LESSON &amp; PAGES</p><span class="one-tap-note">レッスンを押すとこの画面の中に公式PDFを表示します</span>
     <div id="segments" class="seg-box"></div>
     <div class="tip">各教材の著作権はQQEnglishに帰属します。このアプリは公式PDFへのリンクを表示し、PDFそのものは再配布していません。</div>
   </aside>
@@ -82,13 +87,13 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
    <div class="reader-top"><div><p class="heading">NOW READING</p><h2 id="reader-title" class="reader-title">Book 1 · Unit A</h2><p id="reader-subtitle" class="subtitle">Lesson 11–14</p></div><div class="mode" role="group" aria-label="解答表示"><button type="button" id="no-answer" aria-pressed="true">問題のみ</button><button type="button" id="answer" aria-pressed="false">解答付き</button></div></div>
    <div class="controls"><button class="round" id="prev" type="button" aria-label="1ページ前">← 前へ</button><div class="jump"><input id="page" type="number" min="1" inputmode="numeric" aria-label="教材の通しページ"><span id="total">/ 258</span><button id="go" type="button">移動</button></div><button class="round" id="next" type="button">次へ →</button><button class="round star" id="bookmark" type="button" aria-pressed="false">☆ しおり</button></div>
    <div class="pagebar"><span id="page-text">Unit A · p.187</span><span id="file-text">PDF内 11ページ目</span></div><div class="meter"><div id="progress"></div></div>
-   <div class="pdf-actions"><a class="primary" id="open-pdf">📖 このページを読む</a><a id="download-pdf" download>↓ PDFを保存</a><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
+   <div class="pdf-actions"><a class="primary" id="open-pdf">📖 この画面で読む</a><a id="download-pdf" download>↓ PDFを保存</a><a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish公式一覧</a></div>
    <div class="frame" id="frame">
      <div class="reading-actions" id="reading-actions">
        <div class="doc-icon" aria-hidden="true">📖</div>
-       <h3>ワンタップで教材を開く</h3>
-       <p>レッスンの選択、または下のボタンで公式PDFが同じタブで開きます。読み終わったらブラウザの「戻る」でこの画面に戻れます。</p>
-       <a class="primary big-link" id="pdf-fallback" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">📖 このページのPDFを開く</a>
+       <h3 id="ra-title">公式PDFを読み込み中…</h3>
+       <p id="ra-text">この画面の中に教材を表示します。少しお待ちください。</p>
+       <a class="primary big-link" id="pdf-fallback" href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/">このタブでPDFを開く</a>
        <div class="local-reader" aria-hidden="true">
          <p><strong>アプリ内で1ページずつ読みたい場合</strong></p>
          <p>上の「PDFを保存」からiPhoneの「ファイル」に保存したPDFを選択すると、この画面に直接描画します。選んだPDFは、この端末に保存され次回も開けます。</p>
@@ -97,13 +102,17 @@ footer{text-align:center;color:var(--muted);font-size:.75rem;padding:25px 10px}f
          <p id="local-status" role="status" aria-live="polite"></p>
        </div>
      </div>
+     <div id="embed-wrap" hidden>
+       <iframe id="pdf-embed" title="QQEnglish R.E.M.S. 公式PDF"></iframe>
+       <div class="embed-bar"><span>表示されない・ページが合わない場合</span><div><a id="embed-open">このタブで開く</a><label for="local-pdf">保存したPDFを選択</label></div></div>
+     </div>
      <div id="canvas-wrap" hidden>
        <canvas id="pdf-canvas" aria-label="保存したPDFの現在ページ"></canvas>
        <p id="canvas-status" role="status"></p>
        <button id="change-pdf" type="button">別のPDFを読み込む</button>
      </div>
    </div>
-   <p class="reader-how">レッスンを1回タップするとQQEnglish公式PDFが別タブではなくこの画面で開きます。PDF内のページ番号は上の「PDF内 ○ページ目」を参考にしてください。端末のPDFビューアによっては指定ページへ自動移動しない場合があります。</p>
+   <p class="reader-how">QQEnglish公式PDFをこの画面の中に表示します。「前へ／次へ」でページを移動できます。うまく表示されない端末では、「PDFを保存」で保存したPDFを「保存したPDFを選択」から読み込むと、この画面で1ページずつ表示できます（次回からは自動で表示）。</p>
    <div class="shelf"><div class="mini"><h3>最近開いたページ</h3><div id="recent" class="quick"></div></div><div class="mini"><h3>保存したしおり</h3><div id="bookmarks" class="quick"></div></div></div>
   </section>
  </div>
@@ -161,7 +170,12 @@ async function toDB(key,data){const db=await openDB();return new Promise((resolv
 function ensurePdfJS(){if(window.pdfjsLib)return Promise.resolve();if(pdfJsLoading)return pdfJsLoading;
  pdfJsLoading=new Promise((resolve,reject)=>{const el=document.createElement("script");el.src=CDN+"pdf.min.js";el.onload=()=>{if(!window.pdfjsLib){reject(Error("PDF描画エンジンが読み込めません"));return;}pdfjsLib.GlobalWorkerOptions.workerSrc=CDN+"pdf.worker.min.js";resolve();};el.onerror=()=>reject(Error("PDF表示ライブラリを読み込めません。ネットワークをご確認ください。"));document.head.append(el);});
  return pdfJsLoading;}
-function showLocal(yes){$("reading-actions").hidden=!!yes;$("canvas-wrap").hidden=!yes;}
+let corsBlocked=false, embedKey="";
+function showView(mode){$("reading-actions").hidden=mode!=="loading";$("canvas-wrap").hidden=mode!=="canvas";$("embed-wrap").hidden=mode!=="embed";}
+function showLocal(yes){showView(yes?"canvas":"loading");}
+function showFrame(){$("frame").scrollIntoView({behavior:"smooth",block:"start"});}
+function showEmbed(key){const seg=readSegment(),url=pdfUrl(state.unit,seg,state.answers)+"#page="+(state.page-seg.start+1)+"&view=FitH",f=$("pdf-embed");
+ if(f.dataset.src!==url){f.dataset.src=url;f.src=url;}$("embed-open").href=url;embedKey=key;showView("embed");}
 function drawPage(offset){if(!pdfDocument||!activeDocKey)return;const key=activeDocKey,seq=++renderRequest;
  drawQueue=drawQueue.catch(()=>{}).then(async()=>{
    if(seq!==renderRequest||activeDocKey!==key||!pdfDocument)return;
@@ -183,26 +197,35 @@ function drawPage(offset){if(!pdfDocument||!activeDocKey)return;const key=active
  }).catch(e=>{$("canvas-status").textContent="描画できませんでした："+String(e.message||e);});}
 async function loadLocal(data,key,token){
  try{
-   $("local-status").textContent="PDFを準備しています…";
+   $("ra-text").textContent="PDFを準備しています…";
    await ensurePdfJS();
    if(token!==loadToken)return;
    const doc=await pdfjsLib.getDocument({data:new Uint8Array(data.slice(0))}).promise;
    if(token!==loadToken){doc.destroy();return;}
    pdfDocument=doc;activeDocKey=key;showLocal(true);
-   $("local-status").textContent="";
+   $("ra-text").textContent="この画面の中に教材を表示します。少しお待ちください。";
    drawPage(state.page-readSegment().start+1);
- }catch(e){if(token===loadToken){showLocal(false);$("local-status").textContent="読み込みに失敗しました："+String(e.message||e);}}}
+ }catch(e){if(token===loadToken){showView("loading");$("ra-title").textContent="読み込みに失敗しました";$("ra-text").textContent="読み込みに失敗しました："+String(e.message||e);}}}
 async function updateLocalReader(){
  const seg=readSegment(),key=fileKey(state.unit,seg,state.answers);
- if(activeDocKey===key&&pdfDocument){showLocal(true);drawPage(state.page-seg.start+1);return;}
+ if(activeDocKey===key&&pdfDocument){showView("canvas");drawPage(state.page-seg.start+1);return;}
+ if(corsBlocked&&embedKey===key&&!loadingKey){showEmbed(key);return;}
  if(loadingKey===key)return;
- activeDocKey="";pdfDocument=null;showLocal(false);++renderRequest;
- loadingKey=key;const token=++loadToken;$("local-status").textContent="この教材の保存済PDFを確認中…";
+ activeDocKey="";pdfDocument=null;++renderRequest;embedKey="";
+ $("ra-title").textContent="公式PDFを読み込み中…";showView("loading");
+ loadingKey=key;const token=++loadToken;
  const savedPdf=await fromDB(key);
  if(token!==loadToken)return;
- loadingKey="";
- if(savedPdf)await loadLocal(savedPdf,key,token);
- else $("local-status").textContent="この教材はまだ端末に保存されていません。";
+ if(savedPdf){loadingKey="";await loadLocal(savedPdf,key,token);return;}
+ if(!corsBlocked){
+   try{
+     await ensurePdfJS();if(token!==loadToken)return;
+     const doc=await pdfjsLib.getDocument({url:pdfUrl(state.unit,seg,state.answers),disableAutoFetch:true}).promise;
+     if(token!==loadToken){doc.destroy();return;}
+     loadingKey="";pdfDocument=doc;activeDocKey=key;showView("canvas");drawPage(state.page-readSegment().start+1);return;
+   }catch(e){if(token!==loadToken)return;corsBlocked=true;}
+ }
+ loadingKey="";showEmbed(key);
 }
 
 let state={unit:validUnit(saved.last?.unit)?saved.last.unit:"A",page:187,answers:!!saved.last?.answers};
@@ -212,12 +235,12 @@ if(hash){state={unit:hash[1],page:safePage(hash[1],hash[2]),answers:hash[3]==="1
 const btn=(label,onClick,klass)=>{const el=document.createElement("button");el.type="button";el.textContent=label;if(klass)el.className=klass;el.addEventListener("click",onClick);return el;};
 function record(){saved.last={...state};saved.byUnit[state.unit]=state.page;const k=state.unit+":"+state.page;saved.recent=[{unit:state.unit,page:state.page},...(saved.recent||[]).filter(v=>v.unit+":"+v.page!==k)].slice(0,7);try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){}}
 function move(unit,page,answers=state.answers){if(!validUnit(unit))return;state={unit,page:safePage(unit,page),answers:!!answers};record();render();history.replaceState(null,"","#"+state.unit+"/"+state.page+"/"+(state.answers?1:0));}
-function showRecent(items,target,empty){const parent=$(target);parent.replaceChildren();if(!items?.length){const el=document.createElement("span");el.className="empty";el.textContent=empty;parent.append(el);return;}items.slice(0,8).forEach(x=>{if(!validUnit(x.unit))return;const seg=parse(x.unit).find(v=>x.page>=v.start&&x.page<=v.end);if(!seg)return;const a=document.createElement("a");a.href=pdfUrl(x.unit,seg,!!state.answers)+"#page="+(x.page-seg.start+1);a.textContent=x.unit+" · p."+x.page;a.addEventListener("click",()=>{state={unit:x.unit,page:x.page,answers:state.answers};record();history.replaceState(null,"","#"+state.unit+"/"+state.page+"/"+(state.answers?1:0));setTimeout(render,0);});parent.append(a);});}
+function showRecent(items,target,empty){const parent=$(target);parent.replaceChildren();if(!items?.length){const el=document.createElement("span");el.className="empty";el.textContent=empty;parent.append(el);return;}items.slice(0,8).forEach(x=>{if(!validUnit(x.unit))return;const seg=parse(x.unit).find(v=>x.page>=v.start&&x.page<=v.end);if(!seg)return;const a=document.createElement("a");a.href=pdfUrl(x.unit,seg,!!state.answers)+"#page="+(x.page-seg.start+1);a.textContent=x.unit+" · p."+x.page;a.addEventListener("click",ev=>{ev.preventDefault();move(x.unit,x.page);showFrame();});parent.append(a);});}
 function render(){
  const u=state.unit;const b=bookOf(u);const segs=parse(u);const seg=segs.find(s=>state.page>=s.start&&state.page<=s.end)||segs[0];const offset=state.page-seg.start+1;
  $("books").replaceChildren(...BOOKS.map((v,i)=>{const e=btn("B"+(i+1),()=>{const unit=v[0];move(unit,saved.byUnit[unit]||1);},"book");e.setAttribute("aria-pressed",String(i+1===b));e.setAttribute("aria-label","Book "+(i+1));return e;}));
  $("units").replaceChildren(...BOOKS[b-1].split("").map(unit=>{const e=btn(unit,()=>move(unit,saved.byUnit[unit]||1),"unit");e.setAttribute("aria-pressed",String(unit===u));e.setAttribute("aria-label","Unit "+unit);return e;}));
- $("segments").replaceChildren(...segs.map(s=>{const e=document.createElement("a");e.className="seg"+(seg===s?" active":"");e.href=pdfUrl(u,s,state.answers)+"#page=1";e.setAttribute("aria-label","Lesson "+s.ls+"–"+s.le+"を公式PDFで開く");e.addEventListener("click",()=>{state={unit:u,page:s.start,answers:state.answers};record();history.replaceState(null,"","#"+state.unit+"/"+state.page+"/"+(state.answers?1:0));setTimeout(render,0);});const left=document.createElement("div"),heading=document.createElement("strong"),pages=document.createElement("span"),arrow=document.createElement("span");heading.textContent="Lesson "+String(s.ls).padStart(2,"0")+"–"+String(s.le).padStart(2,"0");pages.textContent="pp. "+s.start+"–"+s.end;arrow.className="arrow";arrow.textContent="→";left.append(heading,pages);e.append(left,arrow);return e;}));
+ $("segments").replaceChildren(...segs.map(s=>{const e=document.createElement("a");e.className="seg"+(seg===s?" active":"");e.href=pdfUrl(u,s,state.answers)+"#page=1";e.setAttribute("aria-label","Lesson "+s.ls+"–"+s.le+"を公式PDFで開く");e.addEventListener("click",ev=>{ev.preventDefault();move(u,s.start);showFrame();});const left=document.createElement("div"),heading=document.createElement("strong"),pages=document.createElement("span"),arrow=document.createElement("span");heading.textContent="Lesson "+String(s.ls).padStart(2,"0")+"–"+String(s.le).padStart(2,"0");pages.textContent="pp. "+s.start+"–"+s.end;arrow.className="arrow";arrow.textContent="→";left.append(heading,pages);e.append(left,arrow);return e;}));
  $("reader-title").textContent="Book "+b+" · Unit "+u;
  $("reader-subtitle").textContent="Lesson "+String(seg.ls).padStart(2,"0")+"–"+String(seg.le).padStart(2,"0")+" / pp. "+seg.start+"–"+seg.end;
  $("no-answer").setAttribute("aria-pressed",String(!state.answers));
@@ -240,15 +263,15 @@ function render(){
 $("local-pdf").addEventListener("change",async e=>{
  const f=e.target.files?.[0];if(!f)return;
  const seg=readSegment(),key=fileKey(state.unit,seg,state.answers),token=++loadToken;loadingKey=key;
- $("local-status").textContent="PDFを取り込んでいます…";
+ $("ra-title").textContent="保存したPDFを開いています…";showView("loading"); $("ra-text").textContent="PDFを取り込んでいます…";
  try{
    if(!(/\.pdf$/i.test(f.name)||f.type==="application/pdf"))throw Error("PDFファイルを選んでください");
    const url=pdfUrl(state.unit,seg,state.answers),expected=url.split("/").pop().replace(".pdf","").toLowerCase();
    if(!f.name.toLowerCase().includes(expected)&&!confirm("選んだファイル名がこの教材と異なります。このPDFを登録しますか？")){loadingKey="";return;}
    const buffer=await f.arrayBuffer();
-   try{await toDB(key,buffer);}catch(err){$("local-status").textContent="端末への保存はできませんでしたが、今回の表示は可能です。";}
+   try{await toDB(key,buffer);}catch(err){$("ra-text").textContent="端末への保存はできませんでしたが、今回の表示は可能です。";}
    if(token===loadToken){loadingKey="";await loadLocal(buffer,key,token);}
- }catch(err){loadingKey="";$("local-status").textContent="取り込みに失敗："+String(err.message||err);}
+ }catch(err){loadingKey="";$("ra-text").textContent="取り込みに失敗："+String(err.message||err);}
  e.target.value="";
 });
 $("change-pdf").onclick=()=>{$("local-pdf").click();};
@@ -258,7 +281,8 @@ $("page").addEventListener("keydown",e=>{if(e.key==="Enter"){$("go").click();$("
 $("prev").onclick=()=>move(state.unit,state.page-1);$("next").onclick=()=>move(state.unit,state.page+1);
 $("no-answer").onclick=()=>move(state.unit,state.page,false);$("answer").onclick=()=>move(state.unit,state.page,true);
 $("bookmark").onclick=()=>{const p={unit:state.unit,page:state.page};const exists=saved.bookmarks.some(x=>x.unit===p.unit&&x.page===p.page);saved.bookmarks=exists?saved.bookmarks.filter(x=>x.unit!==p.unit||x.page!==p.page):[p,...saved.bookmarks].slice(0,30);record();render();};
-$("continue").addEventListener("click",()=>{const x=saved.last;move(x.unit,x.page,x.answers);});
+$("continue").addEventListener("click",ev=>{ev.preventDefault();const x=saved.last;move(x.unit,x.page,x.answers);showFrame();});
+$("open-pdf").addEventListener("click",ev=>{ev.preventDefault();showFrame();});
 document.addEventListener("keydown",e=>{if(["INPUT","TEXTAREA"].includes(document.activeElement?.tagName)||e.altKey||e.metaKey||e.ctrlKey)return;if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();});
 window.addEventListener("hashchange",()=>{const m=decodeURIComponent(location.hash.slice(1)).match(/^([A-T])\/(\d+)\/([01])$/);if(m)move(m[1],m[2],m[3]==="1");});
 record();render();
