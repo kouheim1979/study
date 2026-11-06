@@ -112,6 +112,7 @@ body.noscroll{overflow:hidden}
 .fs-close{top:max(10px,env(safe-area-inset-top));left:10px;border-radius:12px;padding:9px 13px;font-size:.9rem}
 .fs-pg{top:max(12px,env(safe-area-inset-top));right:12px;border-radius:10px;padding:6px 10px;font-size:.85rem;pointer-events:none}
 .fs-nav{bottom:max(14px,env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;font-size:1.3rem;opacity:.8}
+.fs-auto{position:absolute;z-index:3;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);border:0;border-radius:12px;padding:9px 12px;font-size:.78rem;font-weight:800;color:#fff;background:rgba(0,0,0,.55);white-space:nowrap}.fs-auto[aria-pressed=false]{opacity:.6}
 .fs-nav.l{left:12px}.fs-nav.r{right:12px}
 .fs-nav:disabled{opacity:.25}
 </style>
@@ -135,7 +136,7 @@ body.noscroll{overflow:hidden}
   </div>
   <div class="meter"><i id="meter"></i></div>
   <div class="view" id="view">
-   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button></div>
+   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><button class="fs-auto" id="fs-auto" type="button" aria-pressed="true">自動で大きく: ON</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button></div>
 
    <div class="msg" id="msg"><div class="spin"></div><h2 id="msg-h">読み込み中…</h2><p id="msg-p"></p></div>
    <div id="pages" hidden><canvas id="canvas" aria-label="教材ページ"></canvas></div>
@@ -377,7 +378,7 @@ function render(){
  const u=state.unit,b=bookOf(u),s=segOf(u,state.page),offset=state.page-s.start+1;
  $("books").replaceChildren(...BOOKS.map((v,i)=>chip("chip","B"+(i+1),i+1===b,()=>go(v[0],store.byUnit[v[0]]||1),"Book "+(i+1))));
  $("units").replaceChildren(...BOOKS[b-1].split("").map(x=>chip("chip",x,x===u,()=>go(x,store.byUnit[x]||1),"Unit "+x)));
- $("segs").replaceChildren(...segs(u).map(x=>chip("chip seg",(cachedKeys.has(docKey(u,x,state.ans))?'<span class="dot">● 保存済</span>':"")+"<b>"+lessonName(x)+"</b><small>pp. "+x.start+"–"+x.end+"</small>",x===s,()=>go(u,x.start))));
+ $("segs").replaceChildren(...segs(u).map(x=>chip("chip seg",(cachedKeys.has(docKey(u,x,state.ans))?'<span class="dot">● 保存済</span>':"")+"<b>"+lessonName(x)+"</b><small>pp. "+x.start+"–"+x.end+"</small>",x===s,()=>{go(u,x.start);autoBig();})));
  $("q").setAttribute("aria-pressed",String(!state.ans));$("a").setAttribute("aria-pressed",String(state.ans));
  $("title").textContent="Book "+b+" · Unit "+u+(state.ans?" · 解答付き":"");
  $("sub").textContent=lessonName(s)+" · PDF "+offset+"/"+(s.end-s.start+1);
@@ -393,7 +394,7 @@ function render(){
 function list(id,items,label,empty,removable){
  const el=$(id);el.replaceChildren();
  if(!items.length){const e=document.createElement("span");e.className="empty";e.textContent=empty;return el.append(e);}
- for(const x of items.slice(0,12)){el.append(chip("",label(x),false,()=>go(x.unit,x.page,x.ans??state.ans)));
+ for(const x of items.slice(0,12)){el.append(chip("",label(x),false,()=>{go(x.unit,x.page,x.ans??state.ans);autoBig();}));
   if(removable){const r=chip("x","×",false,()=>{store.marks=store.marks.filter(m=>m!==x);persist();render();},"しおりを削除");el.append(r);}}
 }
 async function renderLib(){
@@ -402,7 +403,7 @@ async function renderLib(){
  const el=$("lib");el.replaceChildren();
  if(!keys.length){const e=document.createElement("span");e.className="empty";e.textContent="まだありません（開いた教材は自動で保存されます）";el.append(e);}
  for(const k of keys.sort()){const[,u,ls,le,kind]=k.split("-");const sg=segs(u).find(x=>x.ls==ls&&x.le==le);if(!sg)continue;
-  el.append(chip("",u+" L"+pad(ls)+"–"+pad(le)+(kind==="answers"?" 解答":""),false,()=>go(u,sg.start,kind==="answers")));
+  el.append(chip("",u+" L"+pad(ls)+"–"+pad(le)+(kind==="answers"?" 解答":""),false,()=>{go(u,sg.start,kind==="answers");autoBig();}));
   el.append(chip("x","×",false,async()=>{if(!confirm("この教材を端末から削除しますか？"))return;await dbDel(k);docs.get(k)?.destroy();docs.delete(k);await renderLib();render();},"端末から削除"));}
  /* レッスン一覧の「保存済」表示を更新 */
  const u=state.unit;[...$("segs").children].forEach((b,i)=>{const x=segs(u)[i];const has=cachedKeys.has(docKey(u,x,state.ans));const d=b.querySelector(".dot");if(has&&!d)b.insertAdjacentHTML("afterbegin",'<span class="dot">● 保存済</span>');if(!has&&d)d.remove();});
@@ -470,6 +471,13 @@ $("fs-close").onclick=()=>setFull(false);
 $("fs-prev").onclick=()=>{$("prev").click();fsSync();};
 $("fs-next").onclick=()=>{$("next").click();fsSync();};
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&full)setFull(false);});
+/* 自動で大きく（教材を開いたら全画面・向き自動）。設定は両リーダー共通 */
+const autoOn=()=>{try{return localStorage.getItem("reader-auto-full")!=="0";}catch(e){return true;}};
+function autoBig(){if(autoOn()&&!full)setFull(true);}
+function syncAuto(){$("fs-auto").textContent="自動で大きく: "+(autoOn()?"ON":"OFF");$("fs-auto").setAttribute("aria-pressed",String(autoOn()));}
+$("fs-auto").onclick=()=>{try{localStorage.setItem("reader-auto-full",autoOn()?"0":"1");}catch(e){}syncAuto();};
+syncAuto();
+
 window.visualViewport?.addEventListener("resize",()=>{if(full){clearTimeout(rz);rz=setTimeout(()=>show(),150);}});
 window.addEventListener("hashchange",()=>{const h=fromHash();if(h&&(h.unit!==state.unit||h.page!==state.page||h.ans!==state.ans))go(h.unit,h.page,h.ans);});
 
@@ -501,6 +509,7 @@ $("file").addEventListener("change",async e=>{
 
 renderWorker();
 go(state.unit,state.page,state.ans);
+autoBig();
 renderLib();
 </script>
 </body>

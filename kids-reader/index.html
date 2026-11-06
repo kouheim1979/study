@@ -100,6 +100,7 @@ body.noscroll{overflow:hidden}
 .fs-close{top:max(10px,env(safe-area-inset-top));left:10px;border-radius:12px;padding:9px 13px;font-size:.9rem}
 .fs-pg{top:max(12px,env(safe-area-inset-top));right:12px;border-radius:10px;padding:6px 10px;font-size:.85rem;pointer-events:none}
 .fs-nav{bottom:max(14px,env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;font-size:1.3rem;opacity:.8}
+.fs-auto{position:absolute;z-index:3;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);border:0;border-radius:12px;padding:9px 12px;font-size:.78rem;font-weight:800;color:#fff;background:rgba(0,0,0,.55);white-space:nowrap}.fs-auto[aria-pressed=false]{opacity:.6}
 .fs-nav.l{left:12px}.fs-nav.r{right:12px}
 .fs-nav:disabled{opacity:.25}
 </style>
@@ -126,7 +127,7 @@ body.noscroll{overflow:hidden}
  <section class="card reader" id="reader" hidden aria-label="教材を読む">
   <div class="bar"><h1 id="title">—</h1><span class="pg" id="pg">1</span><button class="fs-open" id="fs-open" type="button">⛶ 大きく</button></div>
   <div class="view" id="view">
-   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button></div>
+   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><button class="fs-auto" id="fs-auto" type="button" aria-pressed="true">自動で大きく: ON</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button></div>
 
    <div class="msg" id="msg"><div class="spin"></div><h3 id="msg-h">よみこみ中…</h3><p id="msg-p"></p></div>
    <div id="pages" hidden><canvas id="canvas" aria-label="教材ページ"></canvas></div>
@@ -336,7 +337,9 @@ function open(id,page=1,scroll){
  const x=BY_ID.get(id);if(!x)return;
  const changed=id!==state.id;state={id,page:Math.max(1,page|0||1)};
  if(changed&&(x.series!==selSeries||x.level!==selLevel)){selSeries=x.series;selLevel=x.level;store.sel[selSeries]=selLevel;renderSeries();$("pick").hidden=false;}
- renderPick();$("reader").hidden=false;record();show();
+ renderPick();$("reader").hidden=false;record();
+ if(typeof autoBig==="function"&&autoOn()&&!full){setFull(true);return;}
+ show();
  if(scroll)$("reader").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function go(d){
@@ -408,10 +411,17 @@ function setFull(on){
 }
 function fsSync(){$("fs-pg").textContent=FS_PAGE();$("fs-prev").disabled=$("prev").disabled;$("fs-next").disabled=$("next").disabled;}
 $("fs-open").onclick=()=>setFull(true);
-$("fs-close").onclick=()=>setFull(false);
+$("fs-close").onclick=()=>{setFull(false);$("choose").scrollIntoView({block:"start"});};
 $("fs-prev").onclick=()=>{$("prev").click();fsSync();};
 $("fs-next").onclick=()=>{$("next").click();fsSync();};
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&full)setFull(false);});
+/* 自動で大きく（教材を開いたら全画面・向き自動）。設定は両リーダー共通 */
+const autoOn=()=>{try{return localStorage.getItem("reader-auto-full")!=="0";}catch(e){return true;}};
+function autoBig(){if(autoOn()&&!full)setFull(true);}
+function syncAuto(){$("fs-auto").textContent="自動で大きく: "+(autoOn()?"ON":"OFF");$("fs-auto").setAttribute("aria-pressed",String(autoOn()));}
+$("fs-auto").onclick=()=>{try{localStorage.setItem("reader-auto-full",autoOn()?"0":"1");}catch(e){}syncAuto();};
+syncAuto();
+
 window.visualViewport?.addEventListener("resize",()=>{if(full){clearTimeout(rz);rz=setTimeout(()=>show(),150);}});
 window.addEventListener("hashchange",()=>{const m=/^#([A-Za-z0-9_.\-]+)\/(\d+)$/.exec(location.hash);if(m&&BY_ID.has(m[1])&&(m[1]!==state.id||+m[2]!==state.page))open(m[1],+m[2]);});
 
