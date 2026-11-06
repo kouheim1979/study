@@ -83,6 +83,25 @@ h2.step .n{display:inline-grid;place-items:center;width:28px;height:28px;border-
 footer{text-align:center;color:var(--muted);font-size:.72rem;padding:16px 8px}
 footer a{color:inherit}
 @media(max-width:700px){.side{grid-template-columns:1fr}.s-card{min-height:104px;padding:12px 10px}.series{grid-template-columns:1fr 1fr}}
+
+/* ===== 大きく表示（全画面・向き自動） ===== */
+.fs-open{border:2px solid var(--line);background:#fff;border-radius:12px;min-height:42px;padding:0 12px;font-weight:800;font-size:.86rem;white-space:nowrap}
+.fs-ui{display:none}
+body.noscroll{overflow:hidden}
+#view.full{position:fixed;z-index:60;left:0;top:0;width:100vw;height:100vh;min-height:0;margin:0;background:#1b1a20;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#view.full .fs-ui{display:block}
+#view.full.scrolly{overflow-y:auto;align-items:flex-start;-webkit-overflow-scrolling:touch}#view.full.scrolly>#pages,#view.full.scrolly>#imgwrap{height:auto;min-height:100%;align-items:flex-start}#view.full.scrolly .fs-ui>*{position:fixed}
+#view.full>#pages,#view.full>#imgwrap{padding:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+#view.full #canvas,#view.full #pageimg{box-shadow:none;border-radius:0;max-width:none;max-height:none;min-height:0;margin:0}
+#view.full #frame{height:100%}
+#view.full .msg{color:#ddd}#view.full .msg h2,#view.full .msg h3{color:#fff}
+#view.full .hint{display:none}
+.fs-close,.fs-pg,.fs-nav{position:absolute;z-index:3;border:0;color:#fff;background:rgba(0,0,0,.55);font-weight:800}
+.fs-close{top:max(10px,env(safe-area-inset-top));left:10px;border-radius:12px;padding:9px 13px;font-size:.9rem}
+.fs-pg{top:max(12px,env(safe-area-inset-top));right:12px;border-radius:10px;padding:6px 10px;font-size:.85rem;pointer-events:none}
+.fs-nav{bottom:max(14px,env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;font-size:1.3rem;opacity:.8}
+.fs-nav.l{left:12px}.fs-nav.r{right:12px}
+.fs-nav:disabled{opacity:.25}
 </style>
 </head>
 <body>
@@ -105,8 +124,10 @@ footer a{color:inherit}
  </section>
 
  <section class="card reader" id="reader" hidden aria-label="教材を読む">
-  <div class="bar"><h1 id="title">—</h1><span class="pg" id="pg">1</span></div>
+  <div class="bar"><h1 id="title">—</h1><span class="pg" id="pg">1</span><button class="fs-open" id="fs-open" type="button">⛶ 大きく</button></div>
   <div class="view" id="view">
+   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button></div>
+
    <div class="msg" id="msg"><div class="spin"></div><h3 id="msg-h">よみこみ中…</h3><p id="msg-p"></p></div>
    <div id="pages" hidden><canvas id="canvas" aria-label="教材ページ"></canvas></div>
    <div id="imgwrap" hidden><img id="pageimg" alt="教材ページ" decoding="async"></div>
@@ -214,7 +235,7 @@ function download(x,onProgress){
 /* ===== 表示 ===== */
 let state={id:"",page:1},token=0,current={id:"",mode:""},renderTask=null,lastPage=new Map(),imgBad=new Set(),gTimer=0,gTries=0,useNative=!IOS;
 function view(w){for(const k of["msg","pages","imgwrap","frame"])$(k).hidden=k!==w;}
-function message(h,p,spin=true){$("msg-h").textContent=h;$("msg-p").textContent=p||"";$("msg").querySelector(".spin").hidden=!spin;view("msg");}
+function message(h,p,spin=true){if(full)layoutFull(1,1.414);$("msg-h").textContent=h;$("msg-p").textContent=p||"";$("msg").querySelector(".spin").hidden=!spin;view("msg");}
 function setMode(t){$("mode").textContent=t;}
 function total(){const d=docs.get(state.id);return d?d.numPages:(lastPage.get(state.id)||0);}
 
@@ -240,7 +261,7 @@ async function show(){
 async function drawPage(doc,n,t){
  view("pages");
  try{const pg=await doc.getPage(n);if(t!==token)return;
-  const w=Math.max(260,$("view").clientWidth-16),vp=pg.getViewport({scale:w/pg.getViewport({scale:1}).width});
+  const base=pg.getViewport({scale:1}),vp=pg.getViewport({scale:fitScale(base.width,base.height)});
   const dpr=Math.min(window.devicePixelRatio||1,3),c=$("canvas"),ctx=c.getContext("2d");
   renderTask?.cancel();
   c.width=Math.floor(vp.width*dpr);c.height=Math.floor(vp.height*dpr);c.style.width=vp.width+"px";c.style.height=vp.height+"px";
@@ -249,23 +270,24 @@ async function drawPage(doc,n,t){
  }catch(e){if(e?.name!=="RenderingCancelledException"&&t===token)message("ページを ひょうじ できませんでした",String(e.message||e),false);}
 }
 /* 画像表示（wsrv.nl がPDFの指定ページを画像に変換） */
-function imgUrl(url,n){const w=Math.min(1600,Math.ceil(Math.max(320,$("view").clientWidth-16)*Math.min(window.devicePixelRatio||1,2)/200)*200);return"https://wsrv.nl/?url="+encodeURIComponent(url)+"&page="+(n-1)+"&w="+w+"&output=webp&q=85";}
+function imgUrl(url,n){const w=Math.min(1600,Math.ceil(Math.max(320,full?Math.max(screenWH().w,screenWH().h):$("view").clientWidth-16)*Math.min(window.devicePixelRatio||1,2)/200)*200);return"https://wsrv.nl/?url="+encodeURIComponent(url)+"&page="+(n-1)+"&w="+w+"&output=webp&q=85";}
 function showImage(x){
  const im=$("pageimg"),src=imgUrl(x.url,state.page);current={id:x.id,mode:"img",url:x.url,page:state.page};view("imgwrap");
  setMode("がぞう ひょうじ · スワイプでも ページを めくれます");
  if(im.dataset.src!==src){im.classList.add("loading");im.dataset.src=src;im.src=src;}
  const L=lastPage.get(x.id);if(!L||state.page<L)new Image().src=imgUrl(x.url,state.page+1);
 }
-$("pageimg").addEventListener("load",()=>$("pageimg").classList.remove("loading"));
+$("pageimg").addEventListener("load",()=>{$("pageimg").classList.remove("loading");sizeImg();});
 $("pageimg").addEventListener("error",()=>{
  const im=$("pageimg");if(!im.dataset.src||current.mode!=="img")return;im.classList.remove("loading");im.dataset.src="";
  if(current.page>1){lastPage.set(current.id,current.page-1);state.page=current.page-1;record();return show();} /* 最後のページを越えた */
  imgBad.add(current.url);show();
 });
+function showFrameFull(){if(full)layoutFull(1,1);}
 function showFrame(x){
  const src=useNative?x.url+"#page="+state.page+"&view=FitH":"https://docs.google.com/gview?embedded=true&url="+encodeURIComponent(x.url);
  const f=$("frame");if(f.dataset.base!==src.split("#")[0]){f.dataset.base=src.split("#")[0];gTries=0;loadFrame(src);}
- current={id:x.id,mode:"frame"};view("frame");
+ current={id:x.id,mode:"frame"};view("frame");showFrameFull();
  setMode(useNative?"ブラウザ表示 · 白いときは「再読み込み」":"Google表示 · ページは スクロールして さがしてね");
 }
 function loadFrame(src){const f=$("frame");f.src=src;clearTimeout(gTimer);if(!useNative&&gTries<3)gTimer=setTimeout(()=>{gTries++;loadFrame(src);},10000);}
@@ -301,6 +323,7 @@ function updateBar(){
  $("prev").disabled=state.page<=1&&!neighbor(-1);
  const atEnd=T&&state.page>=T;$("next").textContent=atEnd?(neighbor(1)?"つぎのレッスン ▶":"おしまい"):"つぎ ▶";$("next").disabled=atEnd&&!neighbor(1);
  $("prev").textContent=state.page<=1&&neighbor(-1)?"◀ まえのレッスン":"◀ まえ";
+ if(typeof fsSync==="function")fsSync();
 }
 function neighbor(d){const x=BY_ID.get(state.id);if(!x)return null;const arr=TREE.get(x.series).get(x.level);const i=arr.indexOf(x)+d;return arr[i]&&arr[i].type===x.type?arr[i]:null;}
 function record(){
@@ -362,8 +385,34 @@ $("save").onclick=async()=>{
 document.addEventListener("keydown",e=>{if(e.target.closest("input")||e.altKey||e.metaKey||e.ctrlKey||$("reader").hidden)return;if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);});
 let sx=0,sy=0,st=0;
 $("view").addEventListener("touchstart",e=>{if(e.touches.length!==1){sx=NaN;return;}sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now();},{passive:true});
-$("view").addEventListener("touchend",e=>{const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(!(Math.abs(dx)>60&&Math.abs(dy)<50&&Date.now()-st<600))return;if(window.visualViewport&&visualViewport.scale>1.05)return;go(dx<0?1:-1);},{passive:true});
+$("view").addEventListener("touchend",e=>{const t=e.changedTouches[0];let dx=t.clientX-sx,dy=t.clientY-sy;if(full&&fullRot)[dx,dy]=[dy,-dx];if(!(Math.abs(dx)>60&&Math.abs(dy)<50&&Date.now()-st<600))return;if(window.visualViewport&&visualViewport.scale>1.05)return;go(dx<0?1:-1);},{passive:true});
 let rz=0;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(current.mode==="pdf"||current.mode==="img")show();},200);});
+const FS_PAGE=()=>$("pg").textContent;
+/* ===== 大きく表示：画面いっぱい。横長ページは縦持ちなら90度回して表示 ===== */
+let full=false,fullRot=false;
+function screenWH(){const v=window.visualViewport;return{w:Math.round(v?v.width:innerWidth),h:Math.round(v?v.height:innerHeight)};}
+function layoutFull(pw,ph){
+ const{w,h}=screenWH(),v=$("view");
+ /* 横長ページ×縦持ち → 90度回転。縦長ページ×横持ち → 横幅いっぱい＋縦スクロール */
+ fullRot=pw>ph*1.05&&h>w*1.05&&Math.min(h/pw,w/ph)>Math.min(w/pw,h/ph)*1.1;
+ const scroll=!fullRot&&ph>pw*1.05&&w>h*1.05;v.classList.toggle("scrolly",scroll);
+ Object.assign(v.style,fullRot?{width:h+"px",height:w+"px",left:w+"px",top:"0px",transformOrigin:"0 0",transform:"rotate(90deg)"}:{width:w+"px",height:h+"px",left:"0px",top:"0px",transform:""});
+ return fullRot?{W:h,H:w}:scroll?{W:w,H:Infinity}:{W:w,H:h};
+}
+function fitScale(pw,ph){if(!full)return Math.max(260,$("view").clientWidth-16)/pw;const b=layoutFull(pw,ph);return Math.min(b.W/pw,b.H/ph);}
+function sizeImg(){const im=$("pageimg");if(!full||!im.naturalWidth){im.style.width=im.style.height="";return;}const s=fitScale(im.naturalWidth,im.naturalHeight);im.style.width=Math.floor(im.naturalWidth*s)+"px";im.style.height=Math.floor(im.naturalHeight*s)+"px";}
+function setFull(on){
+ full=on;const v=$("view");v.classList.toggle("full",on);document.body.classList.toggle("noscroll",on);
+ if(on)layoutFull(1,1.414);else{v.style.cssText="";v.classList.remove("scrolly");fullRot=false;$("pageimg").style.width=$("pageimg").style.height="";}
+ fsSync();show();
+}
+function fsSync(){$("fs-pg").textContent=FS_PAGE();$("fs-prev").disabled=$("prev").disabled;$("fs-next").disabled=$("next").disabled;}
+$("fs-open").onclick=()=>setFull(true);
+$("fs-close").onclick=()=>setFull(false);
+$("fs-prev").onclick=()=>{$("prev").click();fsSync();};
+$("fs-next").onclick=()=>{$("next").click();fsSync();};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&full)setFull(false);});
+window.visualViewport?.addEventListener("resize",()=>{if(full){clearTimeout(rz);rz=setTimeout(()=>show(),150);}});
 window.addEventListener("hashchange",()=>{const m=/^#([A-Za-z0-9_.\-]+)\/(\d+)$/.exec(location.hash);if(m&&BY_ID.has(m[1])&&(m[1]!==state.id||+m[2]!==state.page))open(m[1],+m[2]);});
 
 (async()=>{

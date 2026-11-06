@@ -95,6 +95,25 @@ footer a{color:inherit}
  .view{min-height:50vh}
  #frame{height:72vh}
 }
+
+/* ===== 大きく表示（全画面・向き自動） ===== */
+.fs-open{border:2px solid var(--line);background:#fff;border-radius:12px;min-height:42px;padding:0 12px;font-weight:800;font-size:.86rem;white-space:nowrap}
+.fs-ui{display:none}
+body.noscroll{overflow:hidden}
+#view.full{position:fixed;z-index:60;left:0;top:0;width:100vw;height:100vh;min-height:0;margin:0;background:#1b1a20;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#view.full .fs-ui{display:block}
+#view.full.scrolly{overflow-y:auto;align-items:flex-start;-webkit-overflow-scrolling:touch}#view.full.scrolly>#pages,#view.full.scrolly>#imgwrap{height:auto;min-height:100%;align-items:flex-start}#view.full.scrolly .fs-ui>*{position:fixed}
+#view.full>#pages,#view.full>#imgwrap{padding:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+#view.full #canvas,#view.full #pageimg{box-shadow:none;border-radius:0;max-width:none;max-height:none;min-height:0;margin:0}
+#view.full #frame{height:100%}
+#view.full .msg{color:#ddd}#view.full .msg h2,#view.full .msg h3{color:#fff}
+#view.full .hint{display:none}
+.fs-close,.fs-pg,.fs-nav{position:absolute;z-index:3;border:0;color:#fff;background:rgba(0,0,0,.55);font-weight:800}
+.fs-close{top:max(10px,env(safe-area-inset-top));left:10px;border-radius:12px;padding:9px 13px;font-size:.9rem}
+.fs-pg{top:max(12px,env(safe-area-inset-top));right:12px;border-radius:10px;padding:6px 10px;font-size:.85rem;pointer-events:none}
+.fs-nav{bottom:max(14px,env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;font-size:1.3rem;opacity:.8}
+.fs-nav.l{left:12px}.fs-nav.r{right:12px}
+.fs-nav:disabled{opacity:.25}
 </style>
 </head>
 <body>
@@ -111,10 +130,13 @@ footer a{color:inherit}
    <button class="nav" id="prev" type="button" aria-label="前のページ">←</button>
    <label class="pageno"><input id="page" type="number" inputmode="numeric" min="1" aria-label="ページ番号"><span id="total">/ 258</span></label>
    <button class="nav" id="next" type="button" aria-label="次のページ">→</button>
+   <button class="fs-open" id="fs-open" type="button">⛶ 大きく</button>
    <button class="nav star" id="star" type="button" aria-pressed="false">☆</button>
   </div>
   <div class="meter"><i id="meter"></i></div>
   <div class="view" id="view">
+   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button></div>
+
    <div class="msg" id="msg"><div class="spin"></div><h2 id="msg-h">読み込み中…</h2><p id="msg-p"></p></div>
    <div id="pages" hidden><canvas id="canvas" aria-label="教材ページ"></canvas></div>
    <div id="imgwrap" hidden><img id="pageimg" alt="教材ページ" decoding="async"></div>
@@ -284,7 +306,7 @@ function download(key,url,onProgress){
 /* ===== 表示 ===== */
 let token=0,current={key:"",mode:""},renderTask=null,gTimer=0,gTries=0,useNative=!IOS;
 function view(which){$("imgwrap").hidden=which!=="img";$("msg").hidden=which!=="msg";$("pages").hidden=which!=="pages";$("frame").hidden=which!=="frame";if(which!=="frame")$("hint").hidden=true;}
-function message(h,p,spin=true){$("msg-h").textContent=h;$("msg-p").textContent=p||"";$("msg").querySelector(".spin").hidden=!spin;view("msg");}
+function message(h,p,spin=true){if(full)layoutFull(1,1.414);$("msg-h").textContent=h;$("msg-p").textContent=p||"";$("msg").querySelector(".spin").hidden=!spin;view("msg");}
 function setMode(html){$("mode").innerHTML=html;}
 
 async function show(){
@@ -311,20 +333,21 @@ async function show(){
 }
 /* 画像表示：wsrv.nl がPDFの指定ページを画像に変換（ページ送り可能・ブラウザがキャッシュ） */
 const imgBad=new Set();
-function imgUrl(url,n){const w=Math.min(1600,Math.ceil(Math.max(320,$("view").clientWidth-16)*Math.min(window.devicePixelRatio||1,2)/200)*200);return "https://wsrv.nl/?url="+encodeURIComponent(url)+"&page="+(n-1)+"&w="+w+"&output=webp&q=85";}
+function imgUrl(url,n){const w=Math.min(1600,Math.ceil(Math.max(320,full?Math.max(screenWH().w,screenWH().h):$("view").clientWidth-16)*Math.min(window.devicePixelRatio||1,2)/200)*200);return "https://wsrv.nl/?url="+encodeURIComponent(url)+"&page="+(n-1)+"&w="+w+"&output=webp&q=85";}
 function showImage(key,url,offset,total){
  const im=$("pageimg"),src=imgUrl(url,offset);current={key,mode:"img",url};view("img");$("reload").textContent="再読み込み";
  setMode("<b>画像表示</b> · スワイプでもページ移動できます");
  if(im.dataset.src!==src){im.classList.add("loading");im.dataset.src=src;im.src=src;}
  if(offset<total)new Image().src=imgUrl(url,offset+1); /* 次ページを先読み */
 }
-$("pageimg").addEventListener("load",()=>$("pageimg").classList.remove("loading"));
+$("pageimg").addEventListener("load",()=>{$("pageimg").classList.remove("loading");sizeImg();});
 $("pageimg").addEventListener("error",()=>{const im=$("pageimg");if(!im.dataset.src)return;im.classList.remove("loading");if(current.mode==="img"){imgBad.add(current.url);im.dataset.src="";show();}});
+function showFrameFull(){if(full)layoutFull(1,1);}
 function showFrame(key,url,offset){
  const src=useNative?url+"#page="+offset+"&view=FitH":"https://docs.google.com/gview?embedded=true&url="+encodeURIComponent(url);
  const f=$("frame");
  if(f.dataset.src!==src){if(useNative||f.dataset.base!==url){f.dataset.base=url;gTries=0;loadFrame(src);}else f.dataset.src=src;}
- current={key,mode:"frame"};view("frame");
+ current={key,mode:"frame"};view("frame");showFrameFull();
  const h=$("hint");if(!useNative){h.textContent="PDF内 "+offset+" ページ目を表示してください";h.hidden=false;clearTimeout(h._t);h._t=setTimeout(()=>{h.hidden=true;},4000);}
  setMode(useNative?"<b>ブラウザ表示</b> · 白い場合は「Google表示」に切替":"<b>Google表示</b> · 裏で取得でき次第、ページ単位の表示に切替わります");
  $("reload").textContent=useNative?"Google表示に切替":"再読み込み";
@@ -337,7 +360,7 @@ async function drawPage(doc,offset,t){
  const n=Math.min(Math.max(offset,1),doc.numPages);
  try{
   const pg=await doc.getPage(n);if(t!==token)return;
-  const w=Math.max(260,$("view").clientWidth-16),base=pg.getViewport({scale:1}),scale=w/base.width,vp=pg.getViewport({scale});
+  const base=pg.getViewport({scale:1}),scale=fitScale(base.width,base.height),vp=pg.getViewport({scale});
   const dpr=Math.min(window.devicePixelRatio||1,3),c=$("canvas"),ctx=c.getContext("2d");
   renderTask?.cancel();
   c.width=Math.floor(vp.width*dpr);c.height=Math.floor(vp.height*dpr);c.style.width=vp.width+"px";c.style.height=vp.height+"px";
@@ -360,6 +383,7 @@ function render(){
  $("sub").textContent=lessonName(s)+" · PDF "+offset+"/"+(s.end-s.start+1);
  $("page").value=state.page;$("page").max=maxPage(u);$("total").textContent="/ "+maxPage(u);
  $("meter").style.width=(state.page/maxPage(u)*100)+"%";
+ if(typeof fsSync==="function")setTimeout(fsSync,0);
  $("prev").disabled=state.page<=1;$("next").disabled=state.page>=maxPage(u);
  const marked=store.marks.some(m=>m.unit===u&&m.page===state.page);$("star").textContent=marked?"★":"☆";$("star").setAttribute("aria-pressed",String(marked));$("star").setAttribute("aria-label",marked?"しおりを外す":"しおりを付ける");
  list("recent",store.recent,x=>{const sg=segOf(x.unit,x.page);return x.unit+" · "+lessonName(sg).replace("Lesson ","L")+" · p."+x.page;},"まだありません");
@@ -419,8 +443,34 @@ document.addEventListener("keydown",e=>{if(e.target.closest("input")||e.altKey||
 /* スワイプでページ送り */
 let sx=0,sy=0,st=0;
 $("view").addEventListener("touchstart",e=>{if(e.touches.length!==1)return sx=NaN;sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now();},{passive:true});
-$("view").addEventListener("touchend",e=>{const t=e.changedTouches[0];const dx=t.clientX-sx,dy=t.clientY-sy;if(!(Math.abs(dx)>60&&Math.abs(dy)<50&&Date.now()-st<600))return;if(window.visualViewport&&visualViewport.scale>1.05)return;(dx<0?$("next"):$("prev")).click();},{passive:true});
+$("view").addEventListener("touchend",e=>{const t=e.changedTouches[0];let dx=t.clientX-sx,dy=t.clientY-sy;if(full&&fullRot)[dx,dy]=[dy,-dx];if(!(Math.abs(dx)>60&&Math.abs(dy)<50&&Date.now()-st<600))return;if(window.visualViewport&&visualViewport.scale>1.05)return;(dx<0?$("next"):$("prev")).click();},{passive:true});
 let rz=0;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(current.mode==="pdf"||current.mode==="img")show();},200);});
+const FS_PAGE=()=>"p."+state.page+" · PDF "+(state.page-segOf(state.unit,state.page).start+1)+"/"+(segOf(state.unit,state.page).end-segOf(state.unit,state.page).start+1);
+/* ===== 大きく表示：画面いっぱい。横長ページは縦持ちなら90度回して表示 ===== */
+let full=false,fullRot=false;
+function screenWH(){const v=window.visualViewport;return{w:Math.round(v?v.width:innerWidth),h:Math.round(v?v.height:innerHeight)};}
+function layoutFull(pw,ph){
+ const{w,h}=screenWH(),v=$("view");
+ /* 横長ページ×縦持ち → 90度回転。縦長ページ×横持ち → 横幅いっぱい＋縦スクロール */
+ fullRot=pw>ph*1.05&&h>w*1.05&&Math.min(h/pw,w/ph)>Math.min(w/pw,h/ph)*1.1;
+ const scroll=!fullRot&&ph>pw*1.05&&w>h*1.05;v.classList.toggle("scrolly",scroll);
+ Object.assign(v.style,fullRot?{width:h+"px",height:w+"px",left:w+"px",top:"0px",transformOrigin:"0 0",transform:"rotate(90deg)"}:{width:w+"px",height:h+"px",left:"0px",top:"0px",transform:""});
+ return fullRot?{W:h,H:w}:scroll?{W:w,H:Infinity}:{W:w,H:h};
+}
+function fitScale(pw,ph){if(!full)return Math.max(260,$("view").clientWidth-16)/pw;const b=layoutFull(pw,ph);return Math.min(b.W/pw,b.H/ph);}
+function sizeImg(){const im=$("pageimg");if(!full||!im.naturalWidth){im.style.width=im.style.height="";return;}const s=fitScale(im.naturalWidth,im.naturalHeight);im.style.width=Math.floor(im.naturalWidth*s)+"px";im.style.height=Math.floor(im.naturalHeight*s)+"px";}
+function setFull(on){
+ full=on;const v=$("view");v.classList.toggle("full",on);document.body.classList.toggle("noscroll",on);
+ if(on)layoutFull(1,1.414);else{v.style.cssText="";v.classList.remove("scrolly");fullRot=false;$("pageimg").style.width=$("pageimg").style.height="";}
+ fsSync();show();
+}
+function fsSync(){$("fs-pg").textContent=FS_PAGE();$("fs-prev").disabled=$("prev").disabled;$("fs-next").disabled=$("next").disabled;}
+$("fs-open").onclick=()=>setFull(true);
+$("fs-close").onclick=()=>setFull(false);
+$("fs-prev").onclick=()=>{$("prev").click();fsSync();};
+$("fs-next").onclick=()=>{$("next").click();fsSync();};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&full)setFull(false);});
+window.visualViewport?.addEventListener("resize",()=>{if(full){clearTimeout(rz);rz=setTimeout(()=>show(),150);}});
 window.addEventListener("hashchange",()=>{const h=fromHash();if(h&&(h.unit!==state.unit||h.page!==state.page||h.ans!==state.ans))go(h.unit,h.page,h.ans);});
 
 /* 保存：ファイルとしてダウンロード（取得できない場合は公式PDFを開いて手動保存） */
