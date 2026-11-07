@@ -1,13 +1,13 @@
 // Offline cache: app shell + bundled samples. Network-first for code, cache-first for audio.
-const VERSION = 'ss-v8-shadow-follow';
+const VERSION = 'ss-v9-native-repeat-clauses';
 const PRECACHE = [
  "./",
  "index.html",
- "css/app.css?v=shadow-follow-v1",
+ "css/app.css?v=repeat-clauses-v1",
  "manifest.webmanifest",
  "icon.svg",
  "icon-180.png","icon-512.png",
- "js/app.js?v=shadow-follow-v1",
+ "js/app.js?v=repeat-clauses-v1",
  "js/util.js",
  "js/db.js",
  "js/lessons.js",
@@ -17,8 +17,12 @@ const PRECACHE = [
  "js/recordings.js",
  "js/compare.js",
  "js/settings.js",
- "js/views/lesson.js?v=shadow-follow-v1",
- "js/repeat-units.mjs",
+ "js/views/lesson.js?v=repeat-clauses-v1",
+ "js/repeat-units.mjs?v=repeat-clauses-v1",
+ "samples/audio/s01-morning-routine-repeat.mp3?v=repeat-clauses-v1",
+ "samples/audio/s02-kyoto-weekend-repeat.mp3?v=repeat-clauses-v1",
+ "samples/audio/s03-working-from-home-repeat.mp3?v=repeat-clauses-v1",
+ "samples/audio/s04-daily-walk-repeat.mp3?v=repeat-clauses-v1",
  "js/views/library.js",
  "js/views/editor.js",
  "js/views/recview.js",
