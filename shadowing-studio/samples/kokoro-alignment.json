@@ -6,256 +6,256 @@
     "s01-morning-routine": [
       {
         "file": "s01-morning-routine_01.mp3",
-        "duration": 3.736,
+        "duration": 4.049,
         "sentence_start": 0.08,
         "estimated_chunk_bounds": [
           0.08,
-          0.84,
-          2.314,
-          3.816
+          1.186,
+          2.672,
+          4.129
         ]
       },
       {
         "file": "s01-morning-routine_02.mp3",
-        "duration": 5.12,
-        "sentence_start": 4.196,
+        "duration": 6.087,
+        "sentence_start": 4.509,
         "estimated_chunk_bounds": [
-          4.196,
-          5.189,
-          7.03,
-          9.316
+          4.509,
+          5.785,
+          7.921,
+          10.596
         ]
       },
       {
         "file": "s01-morning-routine_03.mp3",
         "duration": 5.59,
-        "sentence_start": 9.696,
+        "sentence_start": 10.976,
         "estimated_chunk_bounds": [
-          9.696,
-          12.31,
-          13.855,
-          15.286
+          10.976,
+          13.693,
+          15.242,
+          16.566
         ]
       },
       {
         "file": "s01-morning-routine_04.mp3",
-        "duration": 3.736,
-        "sentence_start": 15.666,
+        "duration": 3.5,
+        "sentence_start": 16.946,
         "estimated_chunk_bounds": [
-          15.666,
-          17.314,
-          19.401
+          16.946,
+          18.688,
+          20.446
         ]
       },
       {
         "file": "s01-morning-routine_05.mp3",
-        "duration": 5.59,
-        "sentence_start": 19.781,
+        "duration": 6.139,
+        "sentence_start": 20.826,
         "estimated_chunk_bounds": [
-          19.781,
-          22.4,
-          23.631,
-          25.371
+          20.826,
+          23.858,
+          25.232,
+          26.965
         ]
       }
     ],
     "s02-kyoto-weekend": [
       {
         "file": "s02-kyoto-weekend_01.mp3",
-        "duration": 5.12,
+        "duration": 6.296,
         "sentence_start": 0.08,
         "estimated_chunk_bounds": [
           0.08,
-          1.829,
-          3.894,
-          5.2
+          2.308,
+          4.865,
+          6.376
         ]
       },
       {
         "file": "s02-kyoto-weekend_02.mp3",
-        "duration": 5.12,
-        "sentence_start": 5.58,
+        "duration": 5.956,
+        "sentence_start": 6.756,
         "estimated_chunk_bounds": [
-          5.58,
-          6.95,
-          8.804,
-          10.7
+          6.756,
+          8.556,
+          10.686,
+          12.711
         ]
       },
       {
         "file": "s02-kyoto-weekend_03.mp3",
-        "duration": 6.034,
-        "sentence_start": 11.08,
+        "duration": 5.956,
+        "sentence_start": 13.091,
         "estimated_chunk_bounds": [
-          11.08,
-          13.436,
-          16.114,
-          17.114
+          13.091,
+          15.565,
+          18.233,
+          19.047
         ]
       },
       {
         "file": "s02-kyoto-weekend_04.mp3",
-        "duration": 4.65,
-        "sentence_start": 17.494,
+        "duration": 5.381,
+        "sentence_start": 19.427,
         "estimated_chunk_bounds": [
-          17.494,
-          19.011,
-          20.325,
-          22.144
+          19.427,
+          21.286,
+          22.847,
+          24.809
         ]
       },
       {
         "file": "s02-kyoto-weekend_05.mp3",
-        "duration": 5.59,
-        "sentence_start": 22.524,
+        "duration": 6.426,
+        "sentence_start": 25.189,
         "estimated_chunk_bounds": [
-          22.524,
-          24.375,
-          26.617,
-          28.114
+          25.189,
+          27.429,
+          30.037,
+          31.615
         ]
       },
       {
         "file": "s02-kyoto-weekend_06.mp3",
-        "duration": 6.034,
-        "sentence_start": 28.494,
+        "duration": 5.329,
+        "sentence_start": 31.995,
         "estimated_chunk_bounds": [
-          28.494,
-          31.086,
-          33.284,
-          34.529
+          31.995,
+          34.439,
+          36.322,
+          37.324
         ]
       }
     ],
     "s03-working-from-home": [
       {
         "file": "s03-working-from-home_01.mp3",
-        "duration": 6.426,
+        "duration": 5.93,
         "sentence_start": 0.08,
         "estimated_chunk_bounds": [
           0.08,
-          1.487,
-          4.22,
-          6.506
+          1.502,
+          3.985,
+          6.01
         ]
       },
       {
         "file": "s03-working-from-home_02.mp3",
-        "duration": 3.631,
-        "sentence_start": 6.886,
+        "duration": 3.892,
+        "sentence_start": 6.39,
         "estimated_chunk_bounds": [
-          6.886,
-          8.421,
-          10.517
+          6.39,
+          8.09,
+          10.282
         ]
       },
       {
         "file": "s03-working-from-home_03.mp3",
-        "duration": 4.833,
-        "sentence_start": 10.897,
+        "duration": 5.433,
+        "sentence_start": 10.662,
         "estimated_chunk_bounds": [
-          10.897,
-          13.137,
-          14.283,
-          15.73
+          10.662,
+          13.246,
+          14.528,
+          16.096
         ]
       },
       {
         "file": "s03-working-from-home_04.mp3",
-        "duration": 6.034,
-        "sentence_start": 16.11,
+        "duration": 6.661,
+        "sentence_start": 16.476,
         "estimated_chunk_bounds": [
-          16.11,
-          17.665,
-          19.809,
-          20.905,
-          22.144
+          16.476,
+          18.328,
+          20.535,
+          21.743,
+          23.137
         ]
       },
       {
         "file": "s03-working-from-home_05.mp3",
-        "duration": 5.642,
-        "sentence_start": 22.524,
+        "duration": 6.4,
+        "sentence_start": 23.517,
         "estimated_chunk_bounds": [
-          22.524,
-          24.121,
-          26.063,
-          28.167
+          23.517,
+          25.428,
+          27.582,
+          29.917
         ]
       },
       {
         "file": "s03-working-from-home_06.mp3",
-        "duration": 5.251,
-        "sentence_start": 28.547,
+        "duration": 6.87,
+        "sentence_start": 30.297,
         "estimated_chunk_bounds": [
-          28.547,
-          30.029,
-          31.657,
-          33.797
+          30.297,
+          32.378,
+          34.425,
+          37.167
         ]
       }
     ],
     "s04-daily-walk": [
       {
         "file": "s04-daily-walk_01.mp3",
-        "duration": 5.12,
+        "duration": 5.329,
         "sentence_start": 0.08,
         "estimated_chunk_bounds": [
           0.08,
-          2.07,
-          5.2
+          2.287,
+          5.409
         ]
       },
       {
         "file": "s04-daily-walk_02.mp3",
-        "duration": 3.736,
-        "sentence_start": 5.58,
+        "duration": 3.918,
+        "sentence_start": 5.789,
         "estimated_chunk_bounds": [
-          5.58,
-          6.899,
-          9.316
+          5.789,
+          7.273,
+          9.707
         ]
       },
       {
         "file": "s04-daily-walk_03.mp3",
-        "duration": 4.65,
-        "sentence_start": 9.696,
+        "duration": 5.616,
+        "sentence_start": 10.087,
         "estimated_chunk_bounds": [
-          9.696,
-          12.263,
-          14.345
+          10.087,
+          13.368,
+          15.704
         ]
       },
       {
         "file": "s04-daily-walk_04.mp3",
-        "duration": 5.59,
-        "sentence_start": 14.725,
+        "duration": 5.825,
+        "sentence_start": 16.084,
         "estimated_chunk_bounds": [
-          14.725,
-          17.363,
-          19.093,
-          20.316
+          16.084,
+          18.981,
+          20.721,
+          21.909
         ]
       },
       {
         "file": "s04-daily-walk_05.mp3",
-        "duration": 5.59,
-        "sentence_start": 20.696,
+        "duration": 7.105,
+        "sentence_start": 22.289,
         "estimated_chunk_bounds": [
-          20.696,
-          22.37,
-          24.372,
-          26.286
+          22.289,
+          24.615,
+          27.133,
+          29.394
         ]
       },
       {
         "file": "s04-daily-walk_06.mp3",
-        "duration": 5.12,
-        "sentence_start": 26.666,
+        "duration": 6.531,
+        "sentence_start": 29.774,
         "estimated_chunk_bounds": [
-          26.666,
-          29.172,
-          31.786
+          29.774,
+          33.105,
+          36.305
         ]
       }
     ]

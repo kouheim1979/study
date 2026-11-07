@@ -1,5 +1,5 @@
 // Offline cache: app shell + bundled samples. Network-first for code, cache-first for audio.
-const VERSION = 'ss-v3-kokoro-cache-fix';
+const VERSION = 'ss-v4-kokoro-native';
 const PRECACHE = [
  "./",
  "index.html",
@@ -25,17 +25,17 @@ const PRECACHE = [
  "js/views/history.js",
  "samples/index.json",
  "samples/s01-morning-routine.json",
- "samples/audio/s01-morning-routine.mp3?v=kokoro-af-heart-v2",
- "samples/audio/s01-morning-routine-words.mp3?v=kokoro-af-heart-v2",
+ "samples/audio/s01-morning-routine.mp3?v=kokoro-native-v3",
+ "samples/audio/s01-morning-routine-words.mp3?v=kokoro-native-v3",
  "samples/s02-kyoto-weekend.json",
- "samples/audio/s02-kyoto-weekend.mp3?v=kokoro-af-heart-v2",
- "samples/audio/s02-kyoto-weekend-words.mp3?v=kokoro-af-heart-v2",
+ "samples/audio/s02-kyoto-weekend.mp3?v=kokoro-native-v3",
+ "samples/audio/s02-kyoto-weekend-words.mp3?v=kokoro-native-v3",
  "samples/s03-working-from-home.json",
- "samples/audio/s03-working-from-home.mp3?v=kokoro-af-heart-v2",
- "samples/audio/s03-working-from-home-words.mp3?v=kokoro-af-heart-v2",
+ "samples/audio/s03-working-from-home.mp3?v=kokoro-native-v3",
+ "samples/audio/s03-working-from-home-words.mp3?v=kokoro-native-v3",
  "samples/s04-daily-walk.json",
- "samples/audio/s04-daily-walk.mp3?v=kokoro-af-heart-v2",
- "samples/audio/s04-daily-walk-words.mp3?v=kokoro-af-heart-v2",
+ "samples/audio/s04-daily-walk.mp3?v=kokoro-native-v3",
+ "samples/audio/s04-daily-walk-words.mp3?v=kokoro-native-v3",
  "samples/audio/s01-morning-routine_01.mp3",
  "samples/audio/s01-morning-routine_02.mp3",
  "samples/audio/s01-morning-routine_03.mp3",

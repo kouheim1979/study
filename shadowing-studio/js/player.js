@@ -1,7 +1,10 @@
 // Audio player with range playback, A–B repeat and precise stop (rAF polling).
 export class Player extends EventTarget {
-  constructor() {
+  constructor({ baseRate = 1 } = {}) {
     super();
+    // Displayed 1.0x can correspond to a small natural-speech playback lift.
+    // Keep this at 1 for user recordings and user-added lessons.
+    this.baseRate = baseRate;
     const a = this.audio = new Audio();
     a.preload = 'auto';
     a.setAttribute('playsinline', '');
@@ -29,6 +32,7 @@ export class Player extends EventTarget {
   get time() { return this.audio.currentTime || 0; }
   get duration() { return isFinite(this.audio.duration) ? this.audio.duration : (this.knownDuration || 0); }
   get paused() { return this.audio.paused; }
+  get effectiveRate() { return this.rate * this.baseRate; }
 
   load(src, knownDuration = 0) {
     this.knownDuration = knownDuration;
@@ -37,7 +41,7 @@ export class Player extends EventTarget {
     this.src = src;
     this.audio.src = src;
     this.audio.load();
-    this.audio.playbackRate = this.rate;
+    this.audio.playbackRate = this.effectiveRate;
     return new Promise(res => {
       const done = () => { this.audio.removeEventListener('loadedmetadata', done); res(); };
       this.audio.addEventListener('loadedmetadata', done);
@@ -54,15 +58,15 @@ export class Player extends EventTarget {
   }
   setRate(r) {
     this.rate = r;
-    this.audio.playbackRate = r;
-    this.audio.defaultPlaybackRate = r;
+    this.audio.playbackRate = this.effectiveRate;
+    this.audio.defaultPlaybackRate = this.effectiveRate;
   }
   seek(t) {
     try { this.audio.currentTime = Math.max(0, t); } catch (_) { /* not ready */ }
     this.dispatchEvent(new Event('time'));
   }
   async play() {
-    this.audio.playbackRate = this.rate;
+    this.audio.playbackRate = this.effectiveRate;
     try { await this.audio.play(); this._unlocked = true; return true; }
     catch (e) { this.dispatchEvent(new CustomEvent('blocked', { detail: e })); return false; }
   }

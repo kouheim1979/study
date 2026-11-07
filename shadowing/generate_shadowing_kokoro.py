@@ -15,6 +15,10 @@ ROOT.mkdir(exist_ok=True)
 PACK = ROOT / "mp3"
 PACK.mkdir(exist_ok=True)
 VOICE = "af_heart"
+# Kokoro generates slower phoneme durations naturally; never stretch the waveform.
+# The application makes the base recording only 8% faster at its displayed 1.0x.
+NATIVE_SPEED = {"A1": 0.52, "A2": 0.55, "B1": 0.64}
+APP_BASE_RATE = 1.08
 LEVELS = {
  "s01-morning-routine": ("A1", [
   "I get up / at six thirty / every morning.",
@@ -77,16 +81,13 @@ def trim(audio):
     hi = min(len(audio), round((active[-1]+1)*hop + sr*.045))
     return audio[lo:hi], lo / sr
 
-def mp3(audio, filename, target_duration=None):
+def mp3(audio, filename):
     with tempfile.TemporaryDirectory() as tmp:
         wav = Path(tmp)/"speech.wav"
         sf.write(wav, audio, 24000)
         cmd = ["ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y","-i",str(wav)]
-        if target_duration:
-            tempo = (len(audio)/24000)/target_duration
-            if .4 < tempo < 1.6:
-                cmd += ["-af", "rubberband=tempo=%.6f:transients=smooth"%tempo]
-        cmd += ["-ar","44100","-ac","1","-c:a","libmp3lame","-b:a","96k","-write_xing","0",str(filename)]
+        # Native model pacing instead of rubberband/atempo stretching.
+        cmd += ["-ar","44100","-ac","1","-c:a","libmp3lame","-b:a","128k","-write_xing","0",str(filename)]
         subprocess.run(cmd,check=True)
         out = subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=nokey=1:noprint_wrappers=1",str(filename)])
         return round(float(out.strip()),2)
@@ -99,10 +100,10 @@ for sid, (level, lines, words) in LEVELS.items():
         chunks = [x.strip() for x in raw.split("/")]
         sentence = " ".join(chunks)
         filename = "%s_%02d.mp3"%(sid,num)
-        target = len(sentence.split())*60/wpm
-        raw_audio, tokens = generate(sentence, 1.03 if level=="B1" else .93)
+        speed = NATIVE_SPEED[level]
+        raw_audio, tokens = generate(sentence, speed)
         audio, trim_start = trim(raw_audio)
-        duration = mp3(audio, PACK/filename, target)
+        duration = mp3(audio, PACK/filename)
         scale = duration / (len(audio)/24000)
         token_spans = [{"text": t["text"], "start": round(max(0, (t["start"] - trim_start) * scale), 3),
                         "end": round(max(0, (t["end"] - trim_start) * scale), 3)} for t in tokens]
@@ -110,6 +111,8 @@ for sid, (level, lines, words) in LEVELS.items():
             raise RuntimeError("Kokoro did not emit token timestamps for " + filename)
         items.append({"filename":filename,"type":"sentence","level":level,"text":sentence,"chunks":chunks,
                       "duration_s":duration,"target_wpm":wpm,"token_spans":token_spans,
+                      "native_speed": speed, "app_1x_playback_rate": APP_BASE_RATE,
+                      "app_1x_estimated_wpm":round(len(sentence.split())*60/duration*APP_BASE_RATE,1),
                       "timing_method":"kokoro_predicted_token_durations_approximate"})
         row = {"filename":filename}
         for j, chunk in enumerate(chunks, 1):
@@ -117,7 +120,7 @@ for sid, (level, lines, words) in LEVELS.items():
             row["chunk%d_start_s"%j] = "出せない"
             row["chunk%d_end_s"%j] = "出せない"
         timings.append(row)
-        print(filename, duration, flush=True)
+        print(filename, duration, "app_1x_wpm", round(len(sentence.split())*60/duration*APP_BASE_RATE,1), flush=True)
     for word in words:
         filename = "%s_w_%s.mp3"%(sid,word)
         # Punctuation for phrase boundary, no additional spoken word
@@ -129,7 +132,7 @@ for sid, (level, lines, words) in LEVELS.items():
 
 assert len(items)==50 and len(timings)==23
 with (PACK/"manifest.json").open("w",encoding="utf-8") as f:
-    json.dump({"engine":"Kokoro-82M","voice":VOICE,"accent":"American English","format":"MP3 44100 Hz mono 96 kbps","items":items},f,ensure_ascii=False,indent=2)
+    json.dump({"engine":"Kokoro-82M","voice":VOICE,"accent":"American English","format":"MP3 44100 Hz mono 128 kbps","native_speed_by_level":NATIVE_SPEED,"app_1x_playback_rate":APP_BASE_RATE,"slowed_waveform_postprocessing":False,"items":items},f,ensure_ascii=False,indent=2)
 with (PACK/"chunk_timings.csv").open("w",encoding="utf-8",newline="") as f:
     columns=["filename"]+[key for i in range(1,5) for key in ("chunk%d_text"%i,"chunk%d_start_s"%i,"chunk%d_end_s"%i)]
     writer=csv.DictWriter(f,fieldnames=columns)
@@ -138,7 +141,9 @@ with (PACK/"chunk_timings.csv").open("w",encoding="utf-8",newline="") as f:
 (PACK/"README_ja.txt").write_text(
     "音声モデル: Kokoro-82M / voice: af_heart / American English\n"
     "全50 MP3: 23文、27単語。\n"
-    "44.1kHzモノラル、96kbps CBR。チャンク記号/は発話から除去。\n"
+    "44.1kHzモノラル、128kbps CBR。文はKokoro内部でゆっくり生成し、波形の時間引き伸ばし処理は不使用。\n"
+    "アプリ表示1.0倍では、Kokoroが生成したゆっくり音声を1.08倍で再生します。\n"
+    "チャンク記号/は発話から除去。\n"
     "正確なチャンク時刻は出せないためCSVに推測値は入れていません。\n"
     "公開前に発音と音声変化を耳で確認してください。\n"
     "モデルライセンス: Apache-2.0 (https://huggingface.co/hexgrad/Kokoro-82M)\n"
