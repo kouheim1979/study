@@ -46,9 +46,9 @@ const assert = require('node:assert/strict');
     });
     assert.ok(strip.top >= -1 && strip.bottom < 844, 'Current-text strip must remain on screen');
 
-    await page.getByRole('button', { name: '英文', exact: true }).click();
+    await page.locator('.toggles button[data-key="showEn"]').click();
     assert.match(await page.locator('.shadow-follow-text').innerText(), /英文は非表示/);
-    await page.getByRole('button', { name: '英文', exact: true }).click();
+    await page.locator('.toggles button[data-key="showEn"]').click();
     assert.equal((await page.locator('.shadow-follow-text').innerText()).trim(), highlightedText.trim());
     assert.deepEqual(errors, []);
     console.log('PASS: Step 5 glowing active phrase, sticky current text, safe scroll and English visibility toggle');
