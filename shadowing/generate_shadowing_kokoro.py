@@ -58,7 +58,12 @@ def generate(text, speed):
     audio = np.concatenate([np.asarray(r.audio, dtype=np.float32).reshape(-1) for r in results])
     if not np.isfinite(audio).all() or not len(audio):
         raise RuntimeError("Audio was invalid: " + text)
-    return audio
+    spans = []
+    for result in results:
+        for tok in (result.tokens or []):
+            if getattr(tok, "start_ts", None) is not None and getattr(tok, "end_ts", None) is not None:
+                spans.append({"text": str(tok.text), "start": float(tok.start_ts), "end": float(tok.end_ts)})
+    return audio, spans
 
 def trim(audio):
     sr = 24000
@@ -70,7 +75,7 @@ def trim(audio):
         raise RuntimeError("No audible speech found")
     lo = max(0, round(active[0]*hop - sr*.045))
     hi = min(len(audio), round((active[-1]+1)*hop + sr*.045))
-    return audio[lo:hi]
+    return audio[lo:hi], lo / sr
 
 def mp3(audio, filename, target_duration=None):
     with tempfile.TemporaryDirectory() as tmp:
@@ -95,9 +100,17 @@ for sid, (level, lines, words) in LEVELS.items():
         sentence = " ".join(chunks)
         filename = "%s_%02d.mp3"%(sid,num)
         target = len(sentence.split())*60/wpm
-        audio = trim(generate(sentence, 1.03 if level=="B1" else .93))
+        raw_audio, tokens = generate(sentence, 1.03 if level=="B1" else .93)
+        audio, trim_start = trim(raw_audio)
         duration = mp3(audio, PACK/filename, target)
-        items.append({"filename":filename,"type":"sentence","level":level,"text":sentence,"chunks":chunks,"duration_s":duration,"target_wpm":wpm})
+        scale = duration / (len(audio)/24000)
+        token_spans = [{"text": t["text"], "start": round(max(0, (t["start"] - trim_start) * scale), 3),
+                        "end": round(max(0, (t["end"] - trim_start) * scale), 3)} for t in tokens]
+        if not token_spans:
+            raise RuntimeError("Kokoro did not emit token timestamps for " + filename)
+        items.append({"filename":filename,"type":"sentence","level":level,"text":sentence,"chunks":chunks,
+                      "duration_s":duration,"target_wpm":wpm,"token_spans":token_spans,
+                      "timing_method":"kokoro_predicted_token_durations_approximate"})
         row = {"filename":filename}
         for j, chunk in enumerate(chunks, 1):
             row["chunk%d_text"%j] = chunk
@@ -108,7 +121,9 @@ for sid, (level, lines, words) in LEVELS.items():
     for word in words:
         filename = "%s_w_%s.mp3"%(sid,word)
         # Punctuation for phrase boundary, no additional spoken word
-        duration = mp3(trim(generate(word+".",.9)), PACK/filename)
+        word_audio, _ = generate(word+".",.9)
+        word_audio, _ = trim(word_audio)
+        duration = mp3(word_audio, PACK/filename)
         items.append({"filename":filename,"type":"word","level":level,"text":word,"duration_s":duration})
         print(filename,duration,flush=True)
 
