@@ -17,7 +17,7 @@ PACK.mkdir(exist_ok=True)
 VOICE = "af_heart"
 # Kokoro generates slower phoneme durations naturally; never stretch the waveform.
 # The application makes the base recording only 8% faster at its displayed 1.0x.
-NATIVE_SPEED = {"A1": 0.60, "A2": 0.60, "B1": 0.68}
+NATIVE_SPEED = {"A1": 0.52, "A2": 0.55, "B1": 0.64}
 APP_BASE_RATE = 1.08
 LEVELS = {
  "s01-morning-routine": ("A1", [
