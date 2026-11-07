@@ -14,11 +14,12 @@ function once(player, s, e) {
  * @returns {{el: HTMLElement, destroy(): void, playComment(c): void, stop(): void}}
  */
 export function createCompare({ rec, lesson, recUrl, comments = [], onPractice = null }) {
-  const model = new Player();
+  const model = new Player({ baseRate: lesson.kind === 'sample' ? (lesson.appPlaybackRateAt1x || 1.08) : 1 });
   const mine = new Player();
   const linear = !(rec.marks && rec.marks.length);
   const rate = (rec.sync && rec.sync.rate) || 1;
-  model.setRate(rate);
+  // rec.sync.rate stores the physical playback rate, not the displayed rate.
+  model.setRate(rate / model.baseRate);
   if (lesson.audioUrl) model.load(lesson.audioUrl, lesson.duration);
   mine.load(recUrl, rec.duration);
   let source = 'mine';
