@@ -25,12 +25,15 @@ const assert = require('node:assert/strict');
     assert.notEqual(currentColor, idleColor, 'Step 5 phrase must glow more brightly than idle text');
 
     // Even a fixed bottom audio player cannot cover the active line.
+    // scrollIntoView uses smooth scrolling; let the iPhone-sized viewport settle.
+    await page.waitForTimeout(850);
     const position = await active.evaluate(el => {
       const r = el.getBoundingClientRect();
       const header = document.querySelector('.topbar').getBoundingClientRect();
       const player = document.querySelector('.playerbar').getBoundingClientRect();
       return { top: r.top, bottom: r.bottom, headerBottom: header.bottom, playerTop: player.top };
     });
+    console.log('Shadow phrase viewport', position);
     assert.ok(position.bottom <= position.playerTop + 10, 'Active phrase cannot hide under bottom player bar');
 
     // The pinned now-reading phrase stays visible while moving through the text.
