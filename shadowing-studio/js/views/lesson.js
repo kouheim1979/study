@@ -35,6 +35,8 @@ export class LessonView {
     this.studyAcc = 0;
     this.lastAct = Date.now();
     this.lastChunkId = null;
+    this.activeRepeatIndex = -1;
+    this.activeRepeatPhase = null;
     this.lastResumeSave = 0;
   }
 
@@ -239,6 +241,7 @@ export class LessonView {
     this.playBtn.setAttribute('aria-label', playing ? '一時停止' : '再生');
     if (!playing) this.saveResume();
     if (this.step === 1 && playing && this.player.time < 0.5) this.countListen();
+    if (this.step === 4 && !this.tok) this.updateRepeatHighlightFromPlayer();
   }
   onTime() {
     const t = this.player.time;
@@ -248,12 +251,43 @@ export class LessonView {
     const id = c ? c.id : null;
     if (id !== this.lastChunkId) {
       this.lastChunkId = id;
-      $$('[data-cid]', this.body).forEach(r => r.classList.toggle('now', r.dataset.cid === id));
+      $('[data-cid]', this.body).forEach(r => r.classList.toggle('now', r.dataset.cid === id));
       if (id && !this.player.paused && this.follow) {
         const row = this.body.querySelector(`[data-cid="${id}"]`);
         if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }
     }
+    if (this.step === 4 && !this.tok) this.updateRepeatHighlightFromPlayer();
+  }
+
+  /** Highlight the current whole sentence, not the old meaning-chunk rows. */
+  setRepeatHighlight(index, phase = 'model') {
+    if (this.step !== 4 || !this.body) return;
+    const rows = this.body.querySelectorAll('.repeat-unit');
+    if (!rows.length) return;
+    const changed = index !== this.activeRepeatIndex;
+    this.activeRepeatIndex = index;
+    this.activeRepeatPhase = phase;
+    rows.forEach((row, i) => {
+      const active = i === index && phase !== null;
+      row.classList.toggle('now', active);
+      row.classList.toggle('speaking', active && phase === 'you');
+      if (active) row.setAttribute('aria-current', 'true');
+      else row.removeAttribute('aria-current');
+    });
+    // On iPhone, automatically bring each newly active sentence into view.
+    // Do not scroll on every playback tick or overwrite a user's scrolling.
+    if (changed && index >= 0 && rows[index]) {
+      rows[index].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }
+
+  updateRepeatHighlightFromPlayer() {
+    if (this.step !== 4 || this.tok) return;
+    const t = this.player.time;
+    const index = this.player.paused ? -1 :
+      (this.repeatUnits || []).findIndex(u => t >= u.start && t < u.end);
+    this.setRepeatHighlight(index, index >= 0 ? 'model' : null);
   }
 
   playChunk(c, opts = {}) {
@@ -334,6 +368,8 @@ export class LessonView {
     await this[`step${n}`](body);
     body.append(this.nextNav(n));
     this.lastChunkId = undefined;
+    this.activeRepeatIndex = -1;
+    this.activeRepeatPhase = null;
     this.onTime();
     this.renderMeta();
     if (query.ab) {
@@ -505,6 +541,8 @@ export class LessonView {
     const label = this.status.querySelector('.st-label');
     const fill = this.status.querySelector('.st-fill');
     this.status.dataset.kind = kind;
+    this.setRepeatHighlight(u ? (this.repeatUnits || []).indexOf(u) : -1,
+      kind === 'model' || kind === 'you' ? kind : null);
     fill.style.transition = 'none';
     fill.style.width = '0%';
     if (kind === 'model') label.textContent = `🔊 お手本: ${u.label}　${settings().showEn ? u.en : '（英文非表示）'}`;
