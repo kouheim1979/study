@@ -6,11 +6,16 @@ let sampleIndex = null;
 const sampleCache = new Map();
 const urlCache = new Map(); // blobId -> object URL
 
+// Cache-bust revised MP3s without deleting the learner's IndexedDB recordings.
+// The old service worker cached these same filenames with the previous voice.
+export const SAMPLE_ASSET_VERSION = 'kokoro-af-heart-v2';
+const sampleUrl = path => `${path}${path.includes('?') ? '&' : '?'}v=${SAMPLE_ASSET_VERSION}`;
+
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'その他'];
 
 export async function loadSampleIndex() {
   if (!sampleIndex) {
-    const r = await fetch('samples/index.json');
+    const r = await fetch(sampleUrl('samples/index.json'));
     if (!r.ok) throw new Error('サンプル一覧を読み込めませんでした');
     sampleIndex = (await r.json()).lessons.map(l => ({ ...l, kind: 'sample' }));
   }
@@ -56,9 +61,9 @@ export async function getLesson(id) {
   const idx = await loadSampleIndex();
   const meta = idx.find(l => l.id === id);
   if (!meta) return null;
-  const r = await fetch(meta.file);
+  const r = await fetch(sampleUrl(meta.file));
   const l = await r.json();
-  const full = normalize({ ...l, audioUrl: l.audio, wordsAudioUrl: l.wordsAudio, kind: 'sample' });
+  const full = normalize({ ...l, audioUrl: sampleUrl(l.audio), wordsAudioUrl: sampleUrl(l.wordsAudio), kind: 'sample' });
   sampleCache.set(id, full);
   return full;
 }
