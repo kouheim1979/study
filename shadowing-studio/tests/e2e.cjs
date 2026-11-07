@@ -221,7 +221,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ss-e2e-'));
   // 10. register own lesson (audio + pasted text), edit timings, practice
   const audioPath = path.join(__dirname, '..', 'samples', 'audio', 's04-daily-walk.mp3');
   await p.goto(BASE + '#/edit/new');
-  await p.fill('input[placeholder^="例: ELLLO #"]', 'My own lesson');
+  await p.fill('input[placeholder^="例: Weekend Plans"]', 'My own lesson');
   await p.locator('input[type="file"]').setInputFiles(audioPath);
   await p.fill('textarea[placeholder^="英文を貼り付け"]', 'My doctor told me to walk for thirty minutes a day. At first, I thought it would be boring.');
   await p.fill('textarea[placeholder^="任意。文の順"]', '医者に1日30分歩くように言われました。\n最初は退屈だろうと思っていました。');

@@ -1,6 +1,6 @@
 # えいごヒマつぶしクエスト — SENTENCE LAB
 
-REMSを参考にした、独自教材による反復・置換・文の拡張トレーニングです。QQEnglishの公式・公認アプリではなく、公式教材・公式音声は収録していません。公式レッスンとのレベル対応や同等の学習効果は保証しません。
+独自教材による反復・置換・文の拡張トレーニングです。特定の企業・サービスとは関係のない独立したアプリで、教材・音声はすべてこのアプリ用に作成したものです。
 
 ## 起動
 
@@ -33,7 +33,7 @@ GitHub Pagesの公開先： https://kouheim1979.github.io/study/eigo-quest/
 - 単語：`QUESTIONS` 配列。
 - 反復：`lesson(id, title, level, rows)` 呼び出し。rowsは `[種類, 元の英文, 英語指示, 日本語指示, 見本文, 日本語訳, ポイント]`。
 - 公開済みの問題ID・レッスンIDは履歴の参照に使うため変更しないでください。
-- 難易度1〜3はこのアプリ独自の分類で、公式REMSのレベルとは対応しません。
+- 難易度1〜3はこのアプリ独自の分類です。
 
 ## 検証範囲
 
@@ -41,10 +41,8 @@ GitHub Pagesの公開先： https://kouheim1979.github.io/study/eigo-quest/
 
 検証環境では通常のページナビゲーションに制限があったため、DOM読み込みによる検証です。保存の継続・移行はStorageテストダブルも使用しています。iPhone実機、実音声の音質、実マイク、Safari固有の挙動は未確認です。
 
-## メソッド参考資料
+## 参考資料
 
-- https://www.qqeng.com/rems/
-- https://qqeng-faq.dga.jp/faq_detail.html?id=204
 - https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisVoice/localService
 
 Version 3.0.0
