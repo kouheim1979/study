@@ -1,13 +1,13 @@
 // Offline cache: app shell + bundled samples. Network-first for code, cache-first for audio.
-const VERSION = 'ss-v4-kokoro-native';
+const VERSION = 'ss-v5-step1-script';
 const PRECACHE = [
  "./",
  "index.html",
- "css/app.css",
+ "css/app.css?v=step1-script-v1",
  "manifest.webmanifest",
  "icon.svg",
  "icon-180.png","icon-512.png",
- "js/app.js",
+ "js/app.js?v=step1-script-v1",
  "js/util.js",
  "js/db.js",
  "js/lessons.js",
@@ -17,7 +17,7 @@ const PRECACHE = [
  "js/recordings.js",
  "js/compare.js",
  "js/settings.js",
- "js/views/lesson.js",
+ "js/views/lesson.js?v=step1-script-v1",
  "js/views/library.js",
  "js/views/editor.js",
  "js/views/recview.js",
