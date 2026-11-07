@@ -1,7 +1,7 @@
 // Lesson practice screen: the six steps, shared player bar, display toggles, recording.
 import { h, $, $$, fmtTime, toast, sleep, pickFile, saveFile } from '../util.js';
 import { Player } from '../player.js';
-import { buildRepeatUnits, repeatRecordingMarks } from '../repeat-units.mjs';
+import { buildRepeatUnits, repeatRecordingMarks } from '../repeat-units.mjs?v=repeat-clauses-v1';
 import { micErrorMessage, Recorder } from '../recorder.js';
 import { chunkAt, audioDuration, blobUrl } from '../lessons.js';
 import { STEPS, getProgress, updateProgress, toggleFavorite, markStep, addStudyTime, addCompletion, setResume } from '../progress.js';
