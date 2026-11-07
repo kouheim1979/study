@@ -18,10 +18,12 @@ const assert = require('node:assert/strict');
       throw error;
     }
     const list = page.locator('.repeat-unit');
-    assert.equal(await list.count(), 5, 'My Morning Routine should repeat 5 full sentences, not 14 chunks');
-    assert.match(await list.first().locator('.tx-en').textContent(), /I get up at six thirty every morning/);
+    assert.equal(await list.count(), 10, 'My Morning Routine uses 10 freshly synthesized clauses, not 5 long sentences');
+    assert.match(await list.first().locator('.tx-en').textContent(), /I get up at six thirty/);
     const u = await page.evaluate(() => window.__app.lessonView.repeatUnits[0]);
-    assert.equal(u.chunks.length, 3);
+    assert.equal(u.chunks.length, 2);
+    assert.ok(u.start > 0 && u.end > u.start);
+    assert.equal(await page.evaluate(() => window.__app.lessonView.player.src.includes('-repeat.mp3')), true, 'Step 4 uses fresh repeat-only MP3');
     await list.first().locator('.repeat-play').click();
     const firstRange = await page.evaluate(() => window.__app.lessonView.player.range);
     assert.ok(Math.abs(firstRange.s-u.start) < .01);
@@ -49,6 +51,6 @@ const assert = require('node:assert/strict');
     assert.ok(visible, 'Automatically scroll newly active sentence into view');
     await context.close();
     assert.deepEqual(failures, []);
-    console.log('PASS: sentence highlighting, speaking-phase glow and automatic scroll');
+    console.log('PASS: 10 new natural clause units, dedicated repeat audio, glow and scroll');
   } finally { await browser.close(); }
 })().catch(err => { console.error(err); process.exit(1); });

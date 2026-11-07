@@ -280,5 +280,164 @@
   },
   "timingMethod": "kokoro_predicted_token_durations_approximate",
   "audioGeneration": "native_slow_kokoro_without_waveform_time_stretch",
-  "appPlaybackRateAt1x": 1.08
+  "appPlaybackRateAt1x": 1.08,
+  "repeatAudio": "samples/audio/s01-morning-routine-repeat.mp3",
+  "repeatAudioDuration": 27.0106,
+  "repeatAudioGeneration": "independent_kokoro_clause_synthesis_v1_no_audio_cropping",
+  "repeatUnits": [
+    {
+      "sentenceIndex": 0,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c1",
+        "c2"
+      ],
+      "en": "I get up at six thirty",
+      "ja": "私は起きる／6時半に",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s01-p01.mp3",
+      "start": 0.12,
+      "end": 2.62,
+      "duration": 2.5,
+      "stemDuration": 2.534
+    },
+    {
+      "sentenceIndex": 0,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c3"
+      ],
+      "en": "every morning.",
+      "ja": "毎朝",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s01-p02.mp3",
+      "start": 2.86,
+      "end": 4.51,
+      "duration": 1.65,
+      "stemDuration": 1.698
+    },
+    {
+      "sentenceIndex": 1,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c4",
+        "c5"
+      ],
+      "en": "First, I open the window",
+      "ja": "まず／窓を開ける",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s02-p01.mp3",
+      "start": 4.75,
+      "end": 7.65,
+      "duration": 2.9,
+      "stemDuration": 2.952
+    },
+    {
+      "sentenceIndex": 1,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c6"
+      ],
+      "en": "and drink a glass of water.",
+      "ja": "そして水を1杯飲む",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s02-p02.mp3",
+      "start": 7.89,
+      "end": 10.67,
+      "duration": 2.78,
+      "stemDuration": 2.821
+    },
+    {
+      "sentenceIndex": 2,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c7"
+      ],
+      "en": "Then I make some toast",
+      "ja": "それからトーストを作る",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s03-p01.mp3",
+      "start": 10.91,
+      "end": 13.25,
+      "duration": 2.34,
+      "stemDuration": 2.377
+    },
+    {
+      "sentenceIndex": 2,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c8",
+        "c9"
+      ],
+      "en": "and check the news on my phone.",
+      "ja": "ニュースを確認する／スマホで",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s03-p02.mp3",
+      "start": 13.49,
+      "end": 16.38,
+      "duration": 2.89,
+      "stemDuration": 2.926
+    },
+    {
+      "sentenceIndex": 3,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c10"
+      ],
+      "en": "I leave home",
+      "ja": "家を出る",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s04-p01.mp3",
+      "start": 16.62,
+      "end": 18.27,
+      "duration": 1.65,
+      "stemDuration": 1.698
+    },
+    {
+      "sentenceIndex": 3,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c11"
+      ],
+      "en": "at a quarter to eight.",
+      "ja": "8時15分前に",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s04-p02.mp3",
+      "start": 18.51,
+      "end": 20.61,
+      "duration": 2.1,
+      "stemDuration": 2.142
+    },
+    {
+      "sentenceIndex": 4,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c12"
+      ],
+      "en": "It's a simple routine,",
+      "ja": "シンプルな習慣だが",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s05-p01.mp3",
+      "start": 20.85,
+      "end": 23.3,
+      "duration": 2.45,
+      "stemDuration": 2.482
+    },
+    {
+      "sentenceIndex": 4,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c13",
+        "c14"
+      ],
+      "en": "but it helps me start the day well.",
+      "ja": "それは私の助けになる／1日をうまく始めるのに",
+      "audioStem": "samples/audio/repeat/s01-morning-routine-s05-p02.mp3",
+      "start": 23.54,
+      "end": 26.5,
+      "duration": 2.96,
+      "stemDuration": 3.004
+    }
+  ]
 }

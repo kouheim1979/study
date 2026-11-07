@@ -1,0 +1,53 @@
+name: Validate Natural Clause Repeat Playback
+on:
+  push:
+    branches:
+      - shadowing-repeat-native-clause-audio-20261108
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Javascript syntax and unit tests
+        run: |
+          node --check shadowing-studio/js/repeat-units.mjs
+          node --check shadowing-studio/js/views/lesson.js
+          node --check shadowing-studio/js/lessons.js
+          node --test shadowing-studio/tests/repeat-units.test.mjs
+      - name: Validate generated metadata
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('shadowing-studio/samples')
+          count=0
+          for sid in ('s01-morning-routine','s02-kyoto-weekend','s03-working-from-home','s04-daily-walk'):
+            l=json.loads((root/(sid+'.json')).read_text())
+            assert l['repeatAudio'] != l['audio']
+            assert (Path('shadowing-studio')/l['repeatAudio']).exists()
+            for u in l['repeatUnits']:
+              assert 0 <= u['start'] < u['end'] < l['repeatAudioDuration']
+              assert (Path('shadowing-studio')/u['audioStem']).exists()
+              assert 0 < u['duration'] < 5
+              count+=1
+          assert count==45, count
+          print('Validated 45 independently generated clauses and four new reference tracks')
+          PY
+      - name: Install Chromium for browser playback tests
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Playwright iPhone-size smoke checks for Step 4 and Step 5
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/server.log 2>&1 &
+          node shadowing-studio/tests/repeat-ui.e2e.cjs
+          node shadowing-studio/tests/shadow-follow.e2e.cjs

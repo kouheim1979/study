@@ -336,5 +336,196 @@
   },
   "timingMethod": "kokoro_predicted_token_durations_approximate",
   "audioGeneration": "native_slow_kokoro_without_waveform_time_stretch",
-  "appPlaybackRateAt1x": 1.08
+  "appPlaybackRateAt1x": 1.08,
+  "repeatAudio": "samples/audio/s03-working-from-home-repeat.mp3",
+  "repeatAudioDuration": 35.5526,
+  "repeatAudioGeneration": "independent_kokoro_clause_synthesis_v1_no_audio_cropping",
+  "repeatUnits": [
+    {
+      "sentenceIndex": 0,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c1",
+        "c2"
+      ],
+      "en": "These days, a lot of people work from home",
+      "ja": "最近では／多くの人が在宅で働く",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s01-p01.mp3",
+      "start": 0.12,
+      "end": 3.6,
+      "duration": 3.48,
+      "stemDuration": 3.526
+    },
+    {
+      "sentenceIndex": 0,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c3"
+      ],
+      "en": "at least a few days a week.",
+      "ja": "少なくとも週に数日",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s01-p02.mp3",
+      "start": 3.84,
+      "end": 5.94,
+      "duration": 2.1,
+      "stemDuration": 2.142
+    },
+    {
+      "sentenceIndex": 1,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c4"
+      ],
+      "en": "It saves time",
+      "ja": "時間の節約になる",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s02-p01.mp3",
+      "start": 6.18,
+      "end": 7.79,
+      "duration": 1.61,
+      "stemDuration": 1.646
+    },
+    {
+      "sentenceIndex": 1,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c5"
+      ],
+      "en": "because you don't have to commute.",
+      "ja": "通勤しなくていいので",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s02-p02.mp3",
+      "start": 8.03,
+      "end": 10.37,
+      "duration": 2.34,
+      "stemDuration": 2.377
+    },
+    {
+      "sentenceIndex": 2,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c6"
+      ],
+      "en": "You can also focus better",
+      "ja": "より集中することもできる",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s03-p01.mp3",
+      "start": 10.61,
+      "end": 12.9,
+      "duration": 2.29,
+      "stemDuration": 2.325
+    },
+    {
+      "sentenceIndex": 2,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c7",
+        "c8"
+      ],
+      "en": "without the noise of a busy office.",
+      "ja": "騒音なしで／忙しいオフィスの",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s03-p02.mp3",
+      "start": 13.14,
+      "end": 15.85,
+      "duration": 2.71,
+      "stemDuration": 2.743
+    },
+    {
+      "sentenceIndex": 3,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c9",
+        "c10"
+      ],
+      "en": "On the other hand, some people feel lonely",
+      "ja": "一方で／孤独を感じる人もいる",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s04-p01.mp3",
+      "start": 16.09,
+      "end": 19.49,
+      "duration": 3.4,
+      "stemDuration": 3.448
+    },
+    {
+      "sentenceIndex": 3,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c11",
+        "c12"
+      ],
+      "en": "and find it hard to stop working.",
+      "ja": "そして難しいと感じる／仕事をやめるのが",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s04-p02.mp3",
+      "start": 19.73,
+      "end": 22.25,
+      "duration": 2.52,
+      "stemDuration": 2.56
+    },
+    {
+      "sentenceIndex": 4,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c13",
+        "c14"
+      ],
+      "en": "That's why it's important to set clear rules,",
+      "ja": "だからこそ大切だ／明確なルールを決めることが",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s05-p01.mp3",
+      "start": 22.49,
+      "end": 25.82,
+      "duration": 3.33,
+      "stemDuration": 3.37
+    },
+    {
+      "sentenceIndex": 4,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c15"
+      ],
+      "en": "like when to start and finish.",
+      "ja": "いつ始めて終えるかなど",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s05-p02.mp3",
+      "start": 26.06,
+      "end": 28.26,
+      "duration": 2.2,
+      "stemDuration": 2.247
+    },
+    {
+      "sentenceIndex": 5,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c16",
+        "c17"
+      ],
+      "en": "With the right balance, working from home can be",
+      "ja": "適切なバランスがあれば／在宅勤務は〜になりうる",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s06-p01.mp3",
+      "start": 28.5,
+      "end": 32.15,
+      "duration": 3.65,
+      "stemDuration": 3.683
+    },
+    {
+      "sentenceIndex": 5,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c18"
+      ],
+      "en": "both productive and comfortable.",
+      "ja": "生産的で快適な",
+      "audioStem": "samples/audio/repeat/s03-working-from-home-s06-p02.mp3",
+      "start": 32.39,
+      "end": 35.06,
+      "duration": 2.67,
+      "stemDuration": 2.717
+    }
+  ]
 }

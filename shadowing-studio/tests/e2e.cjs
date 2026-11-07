@@ -87,16 +87,16 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ss-e2e-'));
   ok('非表示の和訳をタップで1つだけ表示', jaColor2 !== 'rgba(0, 0, 0, 0)');
   await p.getByRole('button', { name: '和訳' }).click();
 
-  // 2b. repeating: full sentence -> speaking pause, then next sentence.
+  // 2b. repeating: newly generated short clauses -> speaking pause, then next clause.
   await p.click('a.step[data-n="4"]');
   await p.waitForSelector('.repeat-status');
   const repeatItems = p.locator('.repeat-unit');
-  ok('リピーティングは意味チャンクではなく1文単位で表示', (await repeatItems.count()) === 5);
-  ok('1文目の英文は全文表示', (await repeatItems.first().locator('.tx-en').innerText()).includes('every morning.'));
+  ok('リピーティングは新規合成した節単位で表示', (await repeatItems.count()) === 10);
+  ok('最初の節は自然な短いまとまり', (await repeatItems.first().locator('.tx-en').innerText()).includes('at six thirty'));
   await p.locator('label.check:has-text("練習を録音する") input').check();
   await p.click('button:has-text("リピーティング開始")');
   await p.waitForFunction(() => document.querySelector('.repeat-status').dataset.kind === 'you', null, { timeout: 15000 });
-  ok('リピーティング：1文まるごとのお手本のあとに発声用のポーズ', true);
+  ok('リピーティング：節専用お手本のあとに発声用のポーズ', true);
   await p.waitForFunction(() => document.querySelector('.repeat-status').dataset.kind === 'model' && /2文目/.test(document.querySelector('.st-label').textContent), null, { timeout: 30000 });
   ok('リピーティング：次の文へ自動で進む', true);
   await p.click('button:has-text("■ 停止")');

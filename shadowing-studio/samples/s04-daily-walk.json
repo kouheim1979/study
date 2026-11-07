@@ -296,5 +296,178 @@
   },
   "timingMethod": "kokoro_predicted_token_durations_approximate",
   "audioGeneration": "native_slow_kokoro_without_waveform_time_stretch",
-  "appPlaybackRateAt1x": 1.08
+  "appPlaybackRateAt1x": 1.08,
+  "repeatAudio": "samples/audio/s04-daily-walk-repeat.mp3",
+  "repeatAudioDuration": 34.0636,
+  "repeatAudioGeneration": "independent_kokoro_clause_synthesis_v1_no_audio_cropping",
+  "repeatUnits": [
+    {
+      "sentenceIndex": 0,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c1"
+      ],
+      "en": "My doctor told me",
+      "ja": "医者に言われた",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s01-p01.mp3",
+      "start": 0.12,
+      "end": 2.33,
+      "duration": 2.21,
+      "stemDuration": 2.247
+    },
+    {
+      "sentenceIndex": 0,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c2"
+      ],
+      "en": "to walk for thirty minutes a day.",
+      "ja": "1日30分歩くように",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s01-p02.mp3",
+      "start": 2.57,
+      "end": 5.54,
+      "duration": 2.97,
+      "stemDuration": 3.004
+    },
+    {
+      "sentenceIndex": 1,
+      "part": 1,
+      "partCount": 1,
+      "chunkIds": [
+        "c3",
+        "c4"
+      ],
+      "en": "At first, I thought it would be boring.",
+      "ja": "最初は／退屈だろうと思った",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s02-p01.mp3",
+      "start": 5.78,
+      "end": 9.2,
+      "duration": 3.42,
+      "stemDuration": 3.448
+    },
+    {
+      "sentenceIndex": 2,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c5"
+      ],
+      "en": "But now I really enjoy it,",
+      "ja": "今では本当に楽しんでいる",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s03-p01.mp3",
+      "start": 9.44,
+      "end": 11.93,
+      "duration": 2.49,
+      "stemDuration": 2.534
+    },
+    {
+      "sentenceIndex": 2,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c6"
+      ],
+      "en": "especially in the evening.",
+      "ja": "特に夕方に",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s03-p02.mp3",
+      "start": 12.17,
+      "end": 14.54,
+      "duration": 2.37,
+      "stemDuration": 2.403
+    },
+    {
+      "sentenceIndex": 3,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c7"
+      ],
+      "en": "I listen to podcasts",
+      "ja": "ポッドキャストを聞く",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s04-p01.mp3",
+      "start": 14.78,
+      "end": 17.31,
+      "duration": 2.53,
+      "stemDuration": 2.56
+    },
+    {
+      "sentenceIndex": 3,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c8",
+        "c9"
+      ],
+      "en": "and look at the trees and the sky.",
+      "ja": "そして木を見る／そして空を",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s04-p02.mp3",
+      "start": 17.55,
+      "end": 20.58,
+      "duration": 3.03,
+      "stemDuration": 3.056
+    },
+    {
+      "sentenceIndex": 4,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c10",
+        "c11"
+      ],
+      "en": "After a few weeks, I started sleeping better",
+      "ja": "数週間後／よく眠れるようになった",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s05-p01.mp3",
+      "start": 20.82,
+      "end": 25.08,
+      "duration": 4.26,
+      "stemDuration": 4.31
+    },
+    {
+      "sentenceIndex": 4,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c12"
+      ],
+      "en": "and feeling less tired.",
+      "ja": "そして疲れにくくなった",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s05-p02.mp3",
+      "start": 25.32,
+      "end": 27.52,
+      "duration": 2.2,
+      "stemDuration": 2.247
+    },
+    {
+      "sentenceIndex": 5,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c13"
+      ],
+      "en": "Walking is easy, free,",
+      "ja": "歩くことは簡単で無料",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s06-p01.mp3",
+      "start": 27.76,
+      "end": 30.28,
+      "duration": 2.52,
+      "stemDuration": 2.56
+    },
+    {
+      "sentenceIndex": 5,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c14"
+      ],
+      "en": "and good for both body and mind.",
+      "ja": "体にも心にも良い",
+      "audioStem": "samples/audio/repeat/s04-daily-walk-s06-p02.mp3",
+      "start": 30.52,
+      "end": 33.56,
+      "duration": 3.04,
+      "stemDuration": 3.082
+    }
+  ]
 }
