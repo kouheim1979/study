@@ -8,7 +8,7 @@ const urlCache = new Map(); // blobId -> object URL
 
 // Cache-bust revised MP3s without deleting the learner's IndexedDB recordings.
 // The old service worker cached these same filenames with the previous voice.
-export const SAMPLE_ASSET_VERSION = 'kokoro-af-heart-v2';
+export const SAMPLE_ASSET_VERSION = 'kokoro-native-v3';
 const sampleUrl = path => `${path}${path.includes('?') ? '&' : '?'}v=${SAMPLE_ASSET_VERSION}`;
 
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'その他'];
