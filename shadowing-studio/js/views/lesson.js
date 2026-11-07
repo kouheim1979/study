@@ -12,7 +12,7 @@ const RATES = [0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5];
 const RATINGS = ['ほとんど聞き取れない', '3割くらい', '半分くらい', 'ほぼ全部'];
 
 const STEP_GUIDE = {
-  1: '英文を見ずに、まずは全体を通して聞きます。内容をどれくらいつかめたか、最後に自己評価してください。2〜3回聞いてもかまいません。',
+  1: '最初に英文全体を読み、英文を見ながら音声を通して聞きましょう。意味がすべて分からなくても大丈夫です。2〜3回聞いてもかまいません。',
   2: '知らない単語・発音があいまいな単語を確認します。「単語」で単独の発音、「文中」で実際の文の中での聞こえ方を比べましょう。',
   3: 'チャンク（意味のかたまり）ごとに、英語の語順のまま意味をとります。和訳をOFFにすると、タップするまで訳を隠せます。',
   4: 'お手本を1チャンク聞いたら、ポーズの間に同じように声に出します（リピーティング）。音声変化の解説も参考に、まねして言いましょう。',
@@ -379,18 +379,25 @@ export class LessonView {
     if (this.listenEl) this.listenEl.textContent = `${this.listens}回目`;
   }
 
-  // Step 1: listening without the script
+  // Step 1: show the entire English script before the first listening.
+  // These paragraphs must remain visible even when the learner disabled
+  // English in the later chunk-practice steps (the toggle is hidden here).
   step1(body) {
     this.listens = 0;
     this.listenEl = h('span.count', '0回');
+    const script = this.lesson.sentences.map((sentence, i) =>
+      h('p.intro-sentence', { lang: 'en' }, sentence.en));
     body.append(
+      h('section.card.intro-script-card',
+        h('h3', '英文全文'),
+        h('div.intro-script', ...script)),
       h('div.card.center',
         h('div.big-ear', '👂'),
-        h('p', '英文・和訳は表示されません。まず音だけに集中しましょう。'),
+        h('p', '上の英文を見ながら、音声を最初から聞いてみましょう。'),
         h('div.row.center',
           h('button.btn.primary.lg', { onclick: () => { this.player.clearAB(); this.player.unlock(); this.player.playFrom(0); } }, '▶ 最初から通して聞く')),
         h('p.small', '再生回数: ', this.listenEl)),
-      this.ratingRow('first', '内容をどれくらい聞き取れましたか？（あとで最終チェックと比べます）'));
+      this.ratingRow('first', '内容をどれくらい理解できましたか？（あとで最終チェックと比べます）'));
   }
 
   // Step 2: words
