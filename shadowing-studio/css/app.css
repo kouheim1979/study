@@ -364,6 +364,7 @@ details > summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
 }
 .repeat-unit.now .repeat-unit-label { color: var(--ink); }
 .repeat-unit.now.speaking {
+  animation: none;
   border-color: var(--rec);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--rec) 25%, transparent),
               0 0 18px color-mix(in srgb, var(--rec) 30%, transparent);
