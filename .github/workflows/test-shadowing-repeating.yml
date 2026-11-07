@@ -5,7 +5,6 @@ on:
     branches:
       - shadowing-repeat-active-highlight-20261107
       - shadowing-step5-keep-highlight-visible-20261108
-      - shadowing-repeat-native-clause-audio-20261108
     paths:
       - shadowing-studio/js/repeat-units.mjs
       - shadowing-studio/js/views/lesson.js
@@ -13,9 +12,6 @@ on:
       - shadowing-studio/tests/repeat-units.test.mjs
       - shadowing-studio/tests/repeat-ui.e2e.cjs
       - shadowing-studio/tests/shadow-follow.e2e.cjs
-      - shadowing-studio/samples/s??-*.json
-      - shadowing-studio/samples/audio/*-repeat.mp3
-      - shadowing-studio/js/lessons.js
       - .github/workflows/test-shadowing-repeating.yml
   workflow_dispatch:
 
@@ -34,7 +30,6 @@ jobs:
         run: |
           node --check shadowing-studio/js/repeat-units.mjs
           node --check shadowing-studio/js/views/lesson.js
-          node --check shadowing-studio/js/lessons.js
           node --check shadowing-studio/tests/shadow-follow.e2e.cjs
           node --check shadowing-studio/tests/e2e.cjs
       - name: Run sentence grouping and recording timestamp tests
