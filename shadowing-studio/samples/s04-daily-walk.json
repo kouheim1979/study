@@ -1,0 +1,297 @@
+{
+ "id": "s04-daily-walk",
+ "title": "A Short Walk Every Day",
+ "titleJa": "毎日少し歩く",
+ "level": "A2",
+ "theme": "健康",
+ "description": "散歩を習慣にした体験談。黙字（walk の l、listen の t）や前置詞のつながりを練習します。",
+ "audio": "samples/audio/s04-daily-walk.mp3",
+ "wordsAudio": "samples/audio/s04-daily-walk-words.mp3",
+ "duration": 24.67,
+ "chunks": [
+  {
+   "id": "c1",
+   "start": 0.405,
+   "end": 1.62,
+   "en": "My doctor told me",
+   "ja": "医者に言われた",
+   "note": "told me：d を止めてすぐ m へ。",
+   "sentence": 0
+  },
+  {
+   "id": "c2",
+   "start": 1.62,
+   "end": 3.94,
+   "en": "to walk for thirty minutes a day.",
+   "ja": "1日30分歩くように",
+   "note": "walk の l は発音しません。minutes a →「ミニッツァ」。",
+   "sentence": 0
+  },
+  {
+   "id": "c3",
+   "start": 4.55,
+   "end": 5.333,
+   "en": "At first,",
+   "ja": "最初は",
+   "note": "At first：t は止めるだけ。",
+   "sentence": 1
+  },
+  {
+   "id": "c4",
+   "start": 5.333,
+   "end": 6.815,
+   "en": "I thought it would be boring.",
+   "ja": "退屈だろうと思った",
+   "note": "thought it →「ソーリッ」。would は弱形「ウド」。",
+   "sentence": 1
+  },
+  {
+   "id": "c5",
+   "start": 7.42,
+   "end": 8.875,
+   "en": "But now I really enjoy it,",
+   "ja": "今では本当に楽しんでいる",
+   "note": "enjoy it →「エンジョイイッ」。y の音でつながります。",
+   "sentence": 2
+  },
+  {
+   "id": "c6",
+   "start": 8.875,
+   "end": 10.46,
+   "en": "especially in the evening.",
+   "ja": "特に夕方に",
+   "note": "especially in →「イスペシャリーイン」。",
+   "sentence": 2
+  },
+  {
+   "id": "c7",
+   "start": 11.075,
+   "end": 12.51,
+   "en": "I listen to podcasts",
+   "ja": "ポッドキャストを聞く",
+   "note": "listen の t は黙字。",
+   "sentence": 3
+  },
+  {
+   "id": "c8",
+   "start": 12.51,
+   "end": 13.67,
+   "en": "and look at the trees",
+   "ja": "そして木を見る",
+   "note": "look at the →「ルッカッザ」。",
+   "sentence": 3
+  },
+  {
+   "id": "c9",
+   "start": 13.67,
+   "end": 14.64,
+   "en": "and the sky.",
+   "ja": "そして空を",
+   "note": "and the：d を落として「アンザ」。",
+   "sentence": 3
+  },
+  {
+   "id": "c10",
+   "start": 15.25,
+   "end": 16.445,
+   "en": "After a few weeks,",
+   "ja": "数週間後",
+   "note": "After a →「アフタラ」。",
+   "sentence": 4
+  },
+  {
+   "id": "c11",
+   "start": 16.445,
+   "end": 18.187,
+   "en": "I started sleeping better",
+   "ja": "よく眠れるようになった",
+   "note": "started の ed は「ティッド」。better は「ベラー」。",
+   "sentence": 4
+  },
+  {
+   "id": "c12",
+   "start": 18.187,
+   "end": 19.745,
+   "en": "and feeling less tired.",
+   "ja": "そして疲れにくくなった",
+   "note": "less tired：s から t へなめらかに。",
+   "sentence": 4
+  },
+  {
+   "id": "c13",
+   "start": 20.355,
+   "end": 21.792,
+   "en": "Walking is easy, free,",
+   "ja": "歩くことは簡単で無料",
+   "note": "Walking is →「ウォーキンギズ」。",
+   "sentence": 5
+  },
+  {
+   "id": "c14",
+   "start": 21.792,
+   "end": 24.065,
+   "en": "and good for both body and mind.",
+   "ja": "体にも心にも良い",
+   "note": "good for：d を止めて f へ。body and →「バディアン」。",
+   "sentence": 5
+  }
+ ],
+ "sentences": [
+  {
+   "en": "My doctor told me to walk for thirty minutes a day.",
+   "ja": "医者に1日30分歩くように言われました。",
+   "chunkIds": [
+    "c1",
+    "c2"
+   ]
+  },
+  {
+   "en": "At first, I thought it would be boring.",
+   "ja": "最初は退屈だろうと思っていました。",
+   "chunkIds": [
+    "c3",
+    "c4"
+   ]
+  },
+  {
+   "en": "But now I really enjoy it, especially in the evening.",
+   "ja": "でも今では、特に夕方の散歩を本当に楽しんでいます。",
+   "chunkIds": [
+    "c5",
+    "c6"
+   ]
+  },
+  {
+   "en": "I listen to podcasts and look at the trees and the sky.",
+   "ja": "ポッドキャストを聞いたり、木や空を眺めたりします。",
+   "chunkIds": [
+    "c7",
+    "c8",
+    "c9"
+   ]
+  },
+  {
+   "en": "After a few weeks, I started sleeping better and feeling less tired.",
+   "ja": "数週間後、よく眠れるようになり、疲れにくくなりました。",
+   "chunkIds": [
+    "c10",
+    "c11",
+    "c12"
+   ]
+  },
+  {
+   "en": "Walking is easy, free, and good for both body and mind.",
+   "ja": "歩くことは簡単で、お金もかからず、体にも心にも良いのです。",
+   "chunkIds": [
+    "c13",
+    "c14"
+   ]
+  }
+ ],
+ "words": [
+  {
+   "w": "doctor",
+   "ipa": "/ˈdɑːktər/",
+   "pos": "名",
+   "ja": "医者",
+   "tip": "「ダクター」。o は口を大きく。",
+   "start": 0.345,
+   "end": 1.115,
+   "chunkId": "c1"
+  },
+  {
+   "w": "minute",
+   "ipa": "/ˈmɪnɪt/",
+   "pos": "名",
+   "ja": "分",
+   "tip": "「ミニット」。語末 t は弱く。",
+   "start": 1.695,
+   "end": 2.255,
+   "chunkId": null
+  },
+  {
+   "w": "boring",
+   "ipa": "/ˈbɔːrɪŋ/",
+   "pos": "形",
+   "ja": "退屈な",
+   "tip": "「ボーリング」の最後は鼻に抜ける ng。",
+   "start": 2.8,
+   "end": 3.45,
+   "chunkId": "c4"
+  },
+  {
+   "w": "especially",
+   "ipa": "/ɪˈspeʃəli/",
+   "pos": "副",
+   "ja": "特に",
+   "tip": "「スペ」に強勢。",
+   "start": 4.035,
+   "end": 4.945,
+   "chunkId": "c6"
+  },
+  {
+   "w": "listen",
+   "ipa": "/ˈlɪsən/",
+   "pos": "動",
+   "ja": "聞く",
+   "tip": "t は読まない。",
+   "start": 5.525,
+   "end": 6.23,
+   "chunkId": "c7"
+  },
+  {
+   "w": "tired",
+   "ipa": "/ˈtaɪərd/",
+   "pos": "形",
+   "ja": "疲れた",
+   "tip": "1音節に近く「タイアド」。",
+   "start": 6.815,
+   "end": 7.58,
+   "chunkId": "c12"
+  },
+  {
+   "w": "mind",
+   "ipa": "/maɪnd/",
+   "pos": "名",
+   "ja": "心、精神",
+   "tip": "「マインド」。d は軽く。",
+   "start": 8.16,
+   "end": 8.86,
+   "chunkId": "c14"
+  }
+ ],
+ "quiz": [
+  {
+   "q": "医者は1日にどれくらい歩くように言いましたか。",
+   "choices": [
+    "10分",
+    "30分",
+    "1時間"
+   ],
+   "answer": 1
+  },
+  {
+   "q": "話し手は最初、散歩をどう思っていましたか。",
+   "choices": [
+    "退屈そう",
+    "大変そう",
+    "お金がかかりそう"
+   ],
+   "answer": 0
+  },
+  {
+   "q": "数週間後に何が変わりましたか。",
+   "choices": [
+    "忙しくなった",
+    "よく眠れて疲れにくくなった",
+    "体重が増えた"
+   ],
+   "answer": 1
+  }
+ ],
+ "source": {
+  "type": "sample",
+  "credit": "Shadowing Studio オリジナル教材。音声は CMU ARCTIC slt 音声（Festival HTS）による合成。",
+  "license": "CC BY 4.0（本文・訳・解説）／音声は合成音声（再配布可）"
+ }
+}

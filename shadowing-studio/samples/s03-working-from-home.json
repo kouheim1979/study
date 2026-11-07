@@ -1,0 +1,337 @@
+{
+ "id": "s03-working-from-home",
+ "title": "Working from Home",
+ "titleJa": "在宅勤務のメリットと課題",
+ "level": "B1",
+ "theme": "仕事",
+ "description": "在宅勤務の良い点と難しい点を比べる説明文。論理をつなぐ表現と弱形を練習します。",
+ "audio": "samples/audio/s03-working-from-home.mp3",
+ "wordsAudio": "samples/audio/s03-working-from-home-words.mp3",
+ "duration": 29.32,
+ "chunks": [
+  {
+   "id": "c1",
+   "start": 0.405,
+   "end": 1.215,
+   "en": "These days,",
+   "ja": "最近では",
+   "note": "These の th は舌先を軽く歯に当てて濁らせます。",
+   "sentence": 0
+  },
+  {
+   "id": "c2",
+   "start": 1.215,
+   "end": 3.065,
+   "en": "a lot of people work from home",
+   "ja": "多くの人が在宅で働く",
+   "note": "a lot of →「アラロヴ」。t の弾音化と of の弱形。",
+   "sentence": 0
+  },
+  {
+   "id": "c3",
+   "start": 3.065,
+   "end": 4.865,
+   "en": "at least a few days a week.",
+   "ja": "少なくとも週に数日",
+   "note": "least a →「リースタ」。days a →「デイザ」。",
+   "sentence": 0
+  },
+  {
+   "id": "c4",
+   "start": 5.47,
+   "end": 6.718,
+   "en": "It saves time",
+   "ja": "時間の節約になる",
+   "note": "saves time：z を短くしてすぐ t へ。",
+   "sentence": 1
+  },
+  {
+   "id": "c5",
+   "start": 6.718,
+   "end": 8.51,
+   "en": "because you don't have to commute.",
+   "ja": "通勤しなくていいので",
+   "note": "don't の t は脱落しがち。have to →「ハフタ」。commute は後ろに強勢。",
+   "sentence": 1
+  },
+  {
+   "id": "c6",
+   "start": 9.115,
+   "end": 11.128,
+   "en": "You can also focus better",
+   "ja": "より集中することもできる",
+   "note": "can は弱形で「クン」。better の tt は弾音で「ベラー」。",
+   "sentence": 2
+  },
+  {
+   "id": "c7",
+   "start": 11.128,
+   "end": 11.975,
+   "en": "without the noise",
+   "ja": "騒音なしで",
+   "note": "without the：t は止めるだけで th へ。",
+   "sentence": 2
+  },
+  {
+   "id": "c8",
+   "start": 11.975,
+   "end": 13.065,
+   "en": "of a busy office.",
+   "ja": "忙しいオフィスの",
+   "note": "of a →「オヴァ」。",
+   "sentence": 2
+  },
+  {
+   "id": "c9",
+   "start": 13.67,
+   "end": 14.795,
+   "en": "On the other hand,",
+   "ja": "一方で",
+   "note": "On the other →「オンジアザー」。hand の d は弱まります。",
+   "sentence": 3
+  },
+  {
+   "id": "c10",
+   "start": 14.795,
+   "end": 16.393,
+   "en": "some people feel lonely",
+   "ja": "孤独を感じる人もいる",
+   "note": "feel lonely：L が2回続くので一度でつなげます。",
+   "sentence": 3
+  },
+  {
+   "id": "c11",
+   "start": 16.393,
+   "end": 17.36,
+   "en": "and find it hard",
+   "ja": "そして難しいと感じる",
+   "note": "find it →「ファインディッ」。",
+   "sentence": 3
+  },
+  {
+   "id": "c12",
+   "start": 17.36,
+   "end": 18.545,
+   "en": "to stop working.",
+   "ja": "仕事をやめるのが",
+   "note": "stop working：p は破裂させず口を閉じるだけ。",
+   "sentence": 3
+  },
+  {
+   "id": "c13",
+   "start": 19.15,
+   "end": 20.605,
+   "en": "That's why it's important",
+   "ja": "だからこそ大切だ",
+   "note": "why it's →「ワイイッツ」。it's important は s と i をつなげて。",
+   "sentence": 4
+  },
+  {
+   "id": "c14",
+   "start": 20.605,
+   "end": 21.855,
+   "en": "to set clear rules,",
+   "ja": "明確なルールを決めることが",
+   "note": "set clear：t を止めて cl へ。",
+   "sentence": 4
+  },
+  {
+   "id": "c15",
+   "start": 21.855,
+   "end": 23.585,
+   "en": "like when to start and finish.",
+   "ja": "いつ始めて終えるかなど",
+   "note": "start and →「スターラン(ド)」。and は弱形。",
+   "sentence": 4
+  },
+  {
+   "id": "c16",
+   "start": 24.19,
+   "end": 25.385,
+   "en": "With the right balance,",
+   "ja": "適切なバランスがあれば",
+   "note": "right balance：t を止めて b へ。",
+   "sentence": 5
+  },
+  {
+   "id": "c17",
+   "start": 25.385,
+   "end": 26.615,
+   "en": "working from home can be",
+   "ja": "在宅勤務は〜になりうる",
+   "note": "can be：can は弱く短く。",
+   "sentence": 5
+  },
+  {
+   "id": "c18",
+   "start": 26.615,
+   "end": 28.71,
+   "en": "both productive and comfortable.",
+   "ja": "生産的で快適な",
+   "note": "productive and →「プロダクティヴァン」。comfortable は「カンフタブル」の3音節。",
+   "sentence": 5
+  }
+ ],
+ "sentences": [
+  {
+   "en": "These days, a lot of people work from home at least a few days a week.",
+   "ja": "最近では、多くの人が少なくとも週に数日は在宅で働いています。",
+   "chunkIds": [
+    "c1",
+    "c2",
+    "c3"
+   ]
+  },
+  {
+   "en": "It saves time because you don't have to commute.",
+   "ja": "通勤しなくてよいので時間の節約になります。",
+   "chunkIds": [
+    "c4",
+    "c5"
+   ]
+  },
+  {
+   "en": "You can also focus better without the noise of a busy office.",
+   "ja": "また、忙しいオフィスの騒音がないので集中しやすくなります。",
+   "chunkIds": [
+    "c6",
+    "c7",
+    "c8"
+   ]
+  },
+  {
+   "en": "On the other hand, some people feel lonely and find it hard to stop working.",
+   "ja": "一方で、孤独を感じたり、仕事をやめにくいと感じたりする人もいます。",
+   "chunkIds": [
+    "c9",
+    "c10",
+    "c11",
+    "c12"
+   ]
+  },
+  {
+   "en": "That's why it's important to set clear rules, like when to start and finish.",
+   "ja": "だからこそ、いつ始めていつ終えるかなど、はっきりしたルールを決めることが大切です。",
+   "chunkIds": [
+    "c13",
+    "c14",
+    "c15"
+   ]
+  },
+  {
+   "en": "With the right balance, working from home can be both productive and comfortable.",
+   "ja": "適切なバランスがあれば、在宅勤務は生産的で快適なものになります。",
+   "chunkIds": [
+    "c16",
+    "c17",
+    "c18"
+   ]
+  }
+ ],
+ "words": [
+  {
+   "w": "commute",
+   "ipa": "/kəˈmjuːt/",
+   "pos": "動",
+   "ja": "通勤する",
+   "tip": "後ろの「ミュート」に強勢。",
+   "start": 0.335,
+   "end": 1.08,
+   "chunkId": "c5"
+  },
+  {
+   "w": "focus",
+   "ipa": "/ˈfoʊkəs/",
+   "pos": "動",
+   "ja": "集中する",
+   "tip": "「フォウカス」。",
+   "start": 1.615,
+   "end": 2.3,
+   "chunkId": "c6"
+  },
+  {
+   "w": "noise",
+   "ipa": "/nɔɪz/",
+   "pos": "名",
+   "ja": "騒音",
+   "tip": "語末は濁った z。",
+   "start": 2.845,
+   "end": 3.445,
+   "chunkId": "c7"
+  },
+  {
+   "w": "lonely",
+   "ipa": "/ˈloʊnli/",
+   "pos": "形",
+   "ja": "孤独な、寂しい",
+   "tip": "L で始まる。only と同じリズム。",
+   "start": 3.98,
+   "end": 4.65,
+   "chunkId": "c10"
+  },
+  {
+   "w": "important",
+   "ipa": "/ɪmˈpɔːrtənt/",
+   "pos": "形",
+   "ja": "大切な",
+   "tip": "tant の t は声門閉鎖で「インポーッンt」とも。",
+   "start": 5.23,
+   "end": 6.16,
+   "chunkId": "c13"
+  },
+  {
+   "w": "productive",
+   "ipa": "/prəˈdʌktɪv/",
+   "pos": "形",
+   "ja": "生産的な",
+   "tip": "「ダク」に強勢。",
+   "start": 6.705,
+   "end": 7.61,
+   "chunkId": "c18"
+  },
+  {
+   "w": "comfortable",
+   "ipa": "/ˈkʌmftəbəl/",
+   "pos": "形",
+   "ja": "快適な",
+   "tip": "3音節「カンフタブル」。or は発音しないことが多い。",
+   "start": 8.145,
+   "end": 9.255,
+   "chunkId": "c18"
+  }
+ ],
+ "quiz": [
+  {
+   "q": "在宅勤務で時間が節約できる理由は何ですか。",
+   "choices": [
+    "通勤しなくてよいから",
+    "会議が短いから",
+    "メールが少ないから"
+   ],
+   "answer": 0
+  },
+  {
+   "q": "在宅勤務で困ることとして挙げられているのは何ですか。",
+   "choices": [
+    "孤独を感じ、仕事をやめにくいこと",
+    "インターネットが遅いこと",
+    "家がうるさいこと"
+   ],
+   "answer": 0
+  },
+  {
+   "q": "話し手がすすめていることは何ですか。",
+   "choices": [
+    "毎日オフィスに行く",
+    "はっきりしたルールを決める",
+    "長く働く"
+   ],
+   "answer": 1
+  }
+ ],
+ "source": {
+  "type": "sample",
+  "credit": "Shadowing Studio オリジナル教材。音声は CMU ARCTIC slt 音声（Festival HTS）による合成。",
+  "license": "CC BY 4.0（本文・訳・解説）／音声は合成音声（再配布可）"
+ }
+}
