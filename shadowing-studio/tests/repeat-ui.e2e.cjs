@@ -29,7 +29,8 @@ const assert = require('node:assert/strict');
     assert.equal(await list.first().evaluate(el => el.classList.contains('now') && el.classList.contains('speaking')), true,
       'Keep the active sentence highlighted during the speaking pause');
     await page.locator('button:has-text("■ 停止")').click();
-    await list.nth(3).locator('.repeat-start').click();
+    await page.waitForTimeout(300);
+    await list.nth(3).locator('.repeat-play').click();
     await page.waitForFunction(() => document.querySelector('.repeat-unit[data-repeat-index="3"]')?.classList.contains('now'), null, { timeout: 5000 });
     await page.waitForTimeout(800);
     const visible = await list.nth(3).evaluate(el => {
@@ -37,7 +38,6 @@ const assert = require('node:assert/strict');
       return r.bottom > 0 && r.top < window.innerHeight;
     });
     assert.ok(visible, 'Automatically scroll newly active sentence into view');
-    await page.locator('button:has-text("■ 停止")').click();
     await context.close();
     assert.deepEqual(failures, []);
     console.log('PASS: sentence highlighting, speaking-phase glow and automatic scroll');
