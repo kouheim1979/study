@@ -1,0 +1,75 @@
+name: Rebuild Dedicated Shadowing Repeat Clause Audio
+on:
+  push:
+    branches:
+      - shadowing-repeat-native-clause-audio-20261108
+    paths:
+      - shadowing-studio/samples/repeat-clauses.json
+      - shadowing-studio/tools/generate_repeat_clauses.py
+      - .github/workflows/build-repeat-clauses.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  synthesize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install system speech dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg espeak-ng
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Kokoro native synthesis runtime
+        run: python -m pip install 'kokoro>=0.9.4,<1' 'numpy<3'
+      - name: Generate brand new clause recordings and concatenated tracks
+        run: python shadowing-studio/tools/generate_repeat_clauses.py
+      - name: Validate every audio asset and its exact audio segmentation
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from zipfile import ZipFile
+          root=Path('shadowing-studio/samples')
+          m=json.loads(Path('shadowing_kokoro_repeat_out/manifest.json').read_text())
+          assert m['total'] == 45, m['total']
+          assert not m['tempo_stretching'] and not m['crop_existing_audio']
+          assert len(list((root/'audio'/'repeat').glob('*.mp3')))==45
+          assert len(m['tracks'])==4
+          for sid,meta in m['tracks'].items():
+              lesson=json.loads((root/(sid+'.json')).read_text())
+              track=root/'audio'/(sid+'-repeat.mp3')
+              assert track.is_file() and track.stat().st_size > 5000
+              units=lesson['repeatUnits']
+              assert len(units)==meta['clauses']
+              assert all(u['start'] < u['end'] < lesson['repeatAudioDuration'] for u in units)
+              assert all(u['end'] <= v['start'] for u,v in zip(units,units[1:]))
+              assert all((Path('shadowing-studio')/u['audioStem']).is_file() for u in units)
+              original=lesson['audio']
+              assert original.endswith('.mp3') and original != lesson['repeatAudio']
+              assert lesson['repeatAudioGeneration']=='independent_kokoro_clause_synthesis_v1_no_audio_cropping'
+          with ZipFile('shadowing_kokoro_repeat_out/shadowing-repeat-45clauses.zip') as z:
+              assert len([f for f in z.namelist() if f.endswith('.mp3')])==49
+              assert z.testzip() is None
+          print('Validated 45 new stems + 4 repeat tracks, exact PCM segment metadata, original audio unaffected')
+          PY
+      - name: Commit new repeat audio and lesson metadata to branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add shadowing-studio/samples/s??-*.json shadowing-studio/samples/audio/*-repeat.mp3 shadowing-studio/samples/audio/repeat/
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate dedicated Kokoro voice recordings for 45 clause repeat units"
+            git fetch origin "$GITHUB_REF_NAME"
+            git rebase "origin/$GITHUB_REF_NAME"
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: natural-repeat-45-clauses
+          path: shadowing_kokoro_repeat_out/shadowing-repeat-45clauses.zip
+          if-no-files-found: error
+          retention-days: 30
