@@ -53,7 +53,8 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ss-e2e-'));
   await shot('01-library');
   await p.locator('.lesson-card', { hasText: 'My Morning Routine' }).click();
   await p.waitForSelector('.step-title');
-  ok('教材を開くとStep 1（台本なし）から始まる', (await p.locator('.tx-en').count()) === 0);
+  ok('教材を開くとStep 1で英文全文が表示される', (await p.locator('.intro-script .intro-sentence').count()) === 5);
+  ok('最初の英文が表示される', (await p.locator('.intro-script').innerText()).includes('I get up at six thirty every morning.'));
 
   // 2. chunk playback, highlight, speed, A–B
   const lesson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'samples', 's01-morning-routine.json'), 'utf8'));
