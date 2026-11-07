@@ -9,7 +9,7 @@ const urlCache = new Map(); // blobId -> object URL
 // Cache-bust revised MP3s without deleting the learner's IndexedDB recordings.
 // The old service worker cached these same filenames with the previous voice.
 export const SAMPLE_ASSET_VERSION = 'kokoro-native-v3';
-const sampleUrl = path => `${path}${path.includes('?') ? '&' : '?'}v=${SAMPLE_ASSET_VERSION}`;
+const sampleUrl = (path, version = SAMPLE_ASSET_VERSION) => `${path}${path.includes('?') ? '&' : '?'}v=${version}`;
 
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'その他'];
 
@@ -63,7 +63,7 @@ export async function getLesson(id) {
   if (!meta) return null;
   const r = await fetch(sampleUrl(meta.file));
   const l = await r.json();
-  const full = normalize({ ...l, audioUrl: sampleUrl(l.audio), wordsAudioUrl: sampleUrl(l.wordsAudio), kind: 'sample' });
+  const full = normalize({ ...l, audioUrl: sampleUrl(l.audio), wordsAudioUrl: sampleUrl(l.wordsAudio), repeatAudioUrl: l.repeatAudio ? sampleUrl(l.repeatAudio, 'repeat-clauses-v1') : null, kind: 'sample' });
   sampleCache.set(id, full);
   return full;
 }
