@@ -1,0 +1,30 @@
+// Browser smoke test for sentence-based repeating and its controls.
+const { chromium } = require('playwright');
+const assert = require('node:assert/strict');
+(async () => {
+  const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+  try {
+    const context = await browser.newContext({ viewport: {width: 390, height: 844}, hasTouch: true });
+    const page = await context.newPage();
+    const failures = [];
+    page.on('pageerror', err => failures.push(err.message));
+    await page.goto('http://127.0.0.1:8080/shadowing-studio/#/lesson/s01-morning-routine/4');
+    await page.waitForSelector('.repeat-unit', { timeout: 20000 });
+    const list = page.locator('.repeat-unit');
+    assert.equal(await list.count(), 5, 'My Morning Routine should repeat 5 full sentences, not 14 chunks');
+    assert.match(await list.first().locator('.tx-en').textContent(), /I get up at six thirty every morning/);
+    const u = await page.evaluate(() => window.__app.lessonView.repeatUnits[0]);
+    assert.equal(u.chunks.length, 3);
+    await list.first().locator('.repeat-play').click();
+    const firstRange = await page.evaluate(() => window.__app.lessonView.player.range);
+    assert.ok(Math.abs(firstRange.s-u.start) < .01);
+    assert.ok(Math.abs(firstRange.e-u.end) < .01);
+    await page.locator('button:has-text("リピーティング開始")').click();
+    await page.waitForFunction(() => document.querySelector('.repeat-status').dataset.kind === 'you', null, { timeout: 15000 });
+    assert.match(await page.locator('.repeat-status .st-label').textContent(), /1文目/);
+    await page.locator('button:has-text("■ 停止")').click();
+    await context.close();
+    assert.deepEqual(failures, []);
+    console.log('PASS: 5 full-sentence units, full-range play, and repeating pause');
+  } finally { await browser.close(); }
+})().catch(err => { console.error(err); process.exit(1); });

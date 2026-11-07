@@ -87,18 +87,21 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ss-e2e-'));
   ok('非表示の和訳をタップで1つだけ表示', jaColor2 !== 'rgba(0, 0, 0, 0)');
   await p.getByRole('button', { name: '和訳' }).click();
 
-  // 2b. repeating: model chunk -> pause for the learner (recorded)
+  // 2b. repeating: full sentence -> speaking pause, then next sentence.
   await p.click('a.step[data-n="4"]');
   await p.waitForSelector('.repeat-status');
+  const repeatItems = p.locator('.repeat-unit');
+  ok('リピーティングは意味チャンクではなく1文単位で表示', (await repeatItems.count()) === 5);
+  ok('1文目の英文は全文表示', (await repeatItems.first().locator('.tx-en').innerText()).includes('every morning.'));
   await p.locator('label.check:has-text("練習を録音する") input').check();
   await p.click('button:has-text("リピーティング開始")');
-  await p.waitForFunction(() => document.querySelector('.repeat-status').dataset.kind === 'you', null, { timeout: 5000 });
-  ok('リピーティング：お手本のあとに発声用のポーズ', true);
-  await p.waitForFunction(() => document.querySelector('.repeat-status').dataset.kind === 'model' && /at six/.test(document.querySelector('.st-label').textContent), null, { timeout: 8000 });
-  ok('リピーティング：次のチャンクへ自動で進む', true);
+  await p.waitForFunction(() => document.querySelector('.repeat-status').dataset.kind === 'you', null, { timeout: 15000 });
+  ok('リピーティング：1文まるごとのお手本のあとに発声用のポーズ', true);
+  await p.waitForFunction(() => document.querySelector('.repeat-status').dataset.kind === 'model' && /2文目/.test(document.querySelector('.st-label').textContent), null, { timeout: 30000 });
+  ok('リピーティング：次の文へ自動で進む', true);
   await p.click('button:has-text("■ 停止")');
   await p.waitForSelector('section.compare', { timeout: 8000 });
-  ok('リピーティングの録音をチャンクごとに聞き比べ', (await p.locator('.cmp-chunk').count()) >= 1);
+  ok('リピーティング：文全体を録音して既存のチャンクと聞き比べ可能', (await p.locator('.cmp-chunk').count()) >= 3);
 
   // 3. record while shadowing, then compare
   await p.click('a.step[data-n="5"]');

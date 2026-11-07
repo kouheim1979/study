@@ -1,6 +1,7 @@
 // Lesson practice screen: the six steps, shared player bar, display toggles, recording.
 import { h, $, $$, fmtTime, toast, sleep, pickFile, saveFile } from '../util.js';
 import { Player } from '../player.js';
+import { buildRepeatUnits, repeatRecordingMarks } from '../repeat-units.mjs';
 import { micErrorMessage, Recorder } from '../recorder.js';
 import { chunkAt, audioDuration, blobUrl } from '../lessons.js';
 import { STEPS, getProgress, updateProgress, toggleFavorite, markStep, addStudyTime, addCompletion, setResume } from '../progress.js';
@@ -15,7 +16,7 @@ const STEP_GUIDE = {
   1: '最初に英文全体を読み、英文を見ながら音声を通して聞きましょう。意味がすべて分からなくても大丈夫です。2〜3回聞いてもかまいません。',
   2: '知らない単語・発音があいまいな単語を確認します。「単語」で単独の発音、「文中」で実際の文の中での聞こえ方を比べましょう。',
   3: 'チャンク（意味のかたまり）ごとに、英語の語順のまま意味をとります。和訳をOFFにすると、タップするまで訳を隠せます。',
-  4: 'お手本を1チャンク聞いたら、ポーズの間に同じように声に出します（リピーティング）。音声変化の解説も参考に、まねして言いましょう。',
+  4: 'お手本を1文まるごと聞いたら、ポーズの間に同じ文を声に出します。特に長い文だけ意味の切れ目で分けます。',
   5: 'お手本を聞きながら、少し遅れて同時に声に出します（シャドーイング）。慣れたら英文をOFFに。録音して自分の声と聞き比べましょう。イヤホン推奨。',
   6: '文ごとの和訳で理解を確かめ、内容の確認問題に答えます。最初のリスニングと比べてどれくらい聞き取れるようになったか振り返りましょう。',
 };
@@ -450,9 +451,10 @@ export class LessonView {
       h('div.chunks', this.lesson.chunks.map(c => this.chunkRow(c))));
   }
 
-  // Step 4: repeating
+  // Step 4: repeating full sentences rather than short meaning chunks.
   step4(body) {
     const s = settings();
+    this.repeatUnits = buildRepeatUnits(this.lesson);
     const gapSel = h('select', { 'aria-label': 'ポーズの長さ', onchange: e => setSetting('repeatGap', +e.target.value) },
       [[1, '短め（×1.0）'], [1.5, 'ふつう（×1.5）'], [2, '長め（×2.0）'], [3, 'たっぷり（×3.0）']].map(([v, l]) => h('option', { value: v, selected: v === s.repeatGap }, l)));
     const cntSel = h('select', { 'aria-label': '繰り返し回数', onchange: e => setSetting('repeatCount', +e.target.value) },
@@ -461,33 +463,53 @@ export class LessonView {
     this.status = h('div.repeat-status', { 'aria-live': 'polite' }, h('span.st-label', '待機中'), h('div.st-bar', h('div.st-fill')));
     this.startBtn = h('button.btn.primary.lg', { onclick: () => (this.tok ? this.cancelTask() : this.runRepeat(0)) }, '▶ リピーティング開始');
     this.onTaskCancel = () => { this.startBtn.textContent = '▶ リピーティング開始'; this.setStatus('idle'); };
+
+    const units = h('div.repeat-units', this.repeatUnits.map((u, i) =>
+      h('div.repeat-unit', { dataset: { repeatIndex: String(i) } },
+        h('button.cplay.repeat-play', { type: 'button', 'aria-label': `お手本再生: ${u.label}` }, '▶'),
+        h('div.ctext',
+          h('p.repeat-unit-label', u.label),
+          h('p.tx-en', u.en),
+          u.ja ? h('p.tx-ja', u.ja) : null),
+        h('button.btn.sm.repeat-start', { type: 'button', 'aria-label': `${u.label}から練習` }, 'ここから練習'))));
+    units.addEventListener('click', e => {
+      const row = e.target.closest('[data-repeat-index]');
+      if (!row) return;
+      const idx = +row.dataset.repeatIndex;
+      const unit = this.repeatUnits[idx];
+      if (!unit || this.tok) return;
+      if (e.target.closest('.repeat-play')) {
+        this.cancelTask();
+        this.player.clearAB();
+        this.player.unlock();
+        this.player.playRange(unit.start, unit.end);
+      } else if (e.target.closest('.repeat-start')) {
+        this.runRepeat(idx);
+      } else if (e.target.closest('.ctext') && !this.maskedTarget(e.target)) {
+        this.runRepeat(idx);
+      }
+    });
+
     body.append(
       h('div.card',
         h('div.row.wrap', h('label', 'ポーズ ', gapSel), h('label', '回数 ', cntSel),
           Recorder.supported() ? h('label.check', this.recCheck, ' 練習を録音する') : null),
         h('div.row.center', this.startBtn),
         this.status),
-      h('p.hint', 'チャンクの▶で1つだけ再生、テキストをタップするとそこから開始します（停止中のみ）。'),
-      h('div.chunks', this.lesson.chunks.map(c => this.chunkRow(c))),
+      h('p.hint', '基本は1文ずつ練習。長い文だけ途中で分けます。▶で文全体を聞き、英文や「ここから練習」を押すとその文からリピーティングを始めます。'),
+      units,
       this.compareSlot = h('div'));
-    body.querySelector('.chunks').addEventListener('click', e => {
-      const row = e.target.closest('[data-cid]');
-      if (row && e.target.closest('.ctext') && !this.tok && !this.maskedTarget(e.target)) {
-        e.stopPropagation();
-        this.runRepeat(this.lesson.chunks.findIndex(c => c.id === row.dataset.cid));
-      }
-    }, true);
   }
-  setStatus(kind, c, sec) {
+  setStatus(kind, u, sec) {
     if (!this.status) return;
     const label = this.status.querySelector('.st-label');
     const fill = this.status.querySelector('.st-fill');
     this.status.dataset.kind = kind;
     fill.style.transition = 'none';
     fill.style.width = '0%';
-    if (kind === 'model') label.textContent = `🔊 お手本: ${settings().showEn ? c.en : '（英文非表示）'}`;
+    if (kind === 'model') label.textContent = `🔊 お手本: ${u.label}　${settings().showEn ? u.en : '（英文非表示）'}`;
     else if (kind === 'you') {
-      label.textContent = '🎤 あなたの番：声に出して言ってみましょう';
+      label.textContent = `🎤 ${u.label}：同じ文を声に出しましょう`;
       fill.getBoundingClientRect();
       fill.style.transition = `width ${sec}s linear`;
       fill.style.width = '100%';
@@ -502,23 +524,32 @@ export class LessonView {
     const record = this.recCheck && this.recCheck.checked;
     const marks = [];
     if (record) {
-      try { await this.recorder.start(); } catch (e) { this.tok = null; toast(micErrorMessage(e), 6000); return; }
+      try { await this.recorder.start(); }
+      catch (e) { this.tok = null; toast(micErrorMessage(e), 6000); return; }
     }
     this.startBtn.textContent = '■ 停止';
     const { repeatGap, repeatCount } = settings();
-    const cs = this.lesson.chunks;
-    for (let i = Math.max(0, startIdx); i < cs.length && !tok.cancel; i++) {
-      const c = cs[i];
+    const units = this.repeatUnits || [];
+    for (let i = Math.max(0, startIdx); i < units.length && !tok.cancel; i++) {
+      const u = units[i];
       for (let k = 0; k < repeatCount && !tok.cancel; k++) {
-        this.setStatus('model', c);
-        await new Promise(res => { this.player._cancel = res; this.player.playRange(c.start, c.end, { onEnd: res }); });
+        this.setStatus('model', u);
+        await new Promise(res => {
+          this.player._cancel = res;
+          this.player.playRange(u.start, u.end, { onEnd: res });
+        });
         this.player._cancel = null;
         if (tok.cancel) break;
-        const gap = ((c.end - c.start) / this.player.effectiveRate) * repeatGap + 0.4;
-        const s = this.recorder.elapsed();
-        this.setStatus('you', c, gap);
-        await new Promise(res => { tok.wake = res; setTimeout(res, gap * 1000); });
-        if (record) marks.push({ chunkId: c.id, s: Math.max(0, s - 0.1), e: this.recorder.elapsed() });
+        const gap = ((u.end - u.start) / this.player.effectiveRate) * repeatGap + 0.4;
+        const responseStart = this.recorder.elapsed();
+        this.setStatus('you', u, gap);
+        await new Promise(res => {
+          tok.wake = res;
+          setTimeout(res, gap * 1000);
+        });
+        tok.wake = null;
+        if (tok.cancel) break;
+        if (record) marks.push(...repeatRecordingMarks(u, responseStart, this.recorder.elapsed()));
       }
     }
     const finished = !tok.cancel;
@@ -529,8 +560,8 @@ export class LessonView {
       const r = await this.recorder.stop();
       if (r && marks.length) {
         const rec = await saveRecording({ lesson: this.lesson, ...r, mode: 'repeat', marks });
-        toast('録音を保存しました');
-        this.showCompare(rec, this.compareSlot);
+        toast('録音を保存しました（文内のチャンク位置は概算です）');
+        if (this.step === 4) this.showCompare(rec, this.compareSlot);
       }
     }
   }

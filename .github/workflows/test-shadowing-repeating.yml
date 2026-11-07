@@ -1,0 +1,40 @@
+name: Test Shadowing Sentence Repeating
+
+on:
+  push:
+    branches:
+      - shadowing-repeat-whole-sentences-20261107
+    paths:
+      - shadowing-studio/js/repeat-units.mjs
+      - shadowing-studio/js/views/lesson.js
+      - shadowing-studio/tests/repeat-units.test.mjs
+      - shadowing-studio/tests/repeat-ui.e2e.cjs
+      - .github/workflows/test-shadowing-repeating.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify code syntax
+        run: |
+          node --check shadowing-studio/js/repeat-units.mjs
+          node --check shadowing-studio/js/views/lesson.js
+          node --check shadowing-studio/tests/e2e.cjs
+      - name: Run sentence grouping and recording timestamp tests
+        run: node --test shadowing-studio/tests/repeat-units.test.mjs
+      - name: Install browser smoke test dependencies
+        run: |
+          npm install --no-save playwright http-server
+          npx playwright install --with-deps chromium
+      - name: Browser smoke test of Step 4
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/shadowing-server.log 2>&1 &
+          node shadowing-studio/tests/repeat-ui.e2e.cjs
