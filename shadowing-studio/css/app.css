@@ -328,3 +328,10 @@ details > summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
   :root:not([data-theme="light"]) .choice.correct { background: #173d1e; color: #c6f2cf; }
   :root:not([data-theme="light"]) .choice.wrong { background: #4a1f1f; color: #ffdede; }
 }
+
+
+/* Step 1: readable, always-visible English transcript before listening. */
+.intro-script-card h3 { margin: 0 0 12px; }
+.intro-script { display: flex; flex-direction: column; gap: 9px; }
+.intro-sentence { font-size: 1.08rem; line-height: 1.75; margin: 0; padding: 0 0 9px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.intro-sentence:last-child { border-bottom: 0; padding-bottom: 0; }
