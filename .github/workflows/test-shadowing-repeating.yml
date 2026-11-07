@@ -8,6 +8,7 @@ on:
       - shadowing-studio/js/repeat-units.mjs
       - shadowing-studio/js/views/lesson.js
       - shadowing-studio/tests/repeat-units.test.mjs
+      - shadowing-studio/tests/repeat-ui.e2e.cjs
       - .github/workflows/test-shadowing-repeating.yml
   workflow_dispatch:
 
@@ -29,3 +30,11 @@ jobs:
           node --check shadowing-studio/tests/e2e.cjs
       - name: Run sentence grouping and recording timestamp tests
         run: node --test shadowing-studio/tests/repeat-units.test.mjs
+      - name: Install browser smoke test dependencies
+        run: |
+          npm install --no-save playwright http-server
+          npx playwright install --with-deps chromium
+      - name: Browser smoke test of Step 4
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/shadowing-server.log 2>&1 &
+          node shadowing-studio/tests/repeat-ui.e2e.cjs
