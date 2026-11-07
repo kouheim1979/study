@@ -7,12 +7,12 @@
   "description": "起きてから家を出るまでの朝の流れ。基本動詞と時刻表現を練習します。",
   "audio": "samples/audio/s01-morning-routine.mp3",
   "wordsAudio": "samples/audio/s01-morning-routine-words.mp3",
-  "duration": 23.615,
+  "duration": 27.376,
   "chunks": [
     {
       "id": "c1",
       "start": 0.08,
-      "end": 0.925,
+      "end": 1.186,
       "en": "I get up",
       "ja": "私は起きる",
       "note": "get up は t と u がつながり、t が弾音化して「ゲラップ」に近く聞こえます。",
@@ -20,8 +20,8 @@
     },
     {
       "id": "c2",
-      "start": 0.925,
-      "end": 2.165,
+      "start": 1.186,
+      "end": 2.672,
       "en": "at six thirty",
       "ja": "6時半に",
       "note": "at の t は次の s の前でほとんど聞こえません（脱落）。",
@@ -29,8 +29,8 @@
     },
     {
       "id": "c3",
-      "start": 2.165,
-      "end": 3.424,
+      "start": 2.672,
+      "end": 4.129,
       "en": "every morning.",
       "ja": "毎朝",
       "note": "every は「エヴリ」と2音節で。e にアクセント。",
@@ -38,8 +38,8 @@
     },
     {
       "id": "c4",
-      "start": 3.804,
-      "end": 4.874,
+      "start": 4.509,
+      "end": 5.785,
       "en": "First,",
       "ja": "まず",
       "note": "語末の st は母音を入れずに「ファースト」ではなく「ファ～スt」。",
@@ -47,8 +47,8 @@
     },
     {
       "id": "c5",
-      "start": 4.874,
-      "end": 6.703,
+      "start": 5.785,
+      "end": 7.921,
       "en": "I open the window",
       "ja": "窓を開ける",
       "note": "open the：n の舌の位置のまま th に移ります。",
@@ -56,8 +56,8 @@
     },
     {
       "id": "c6",
-      "start": 6.703,
-      "end": 8.976,
+      "start": 7.921,
+      "end": 10.596,
       "en": "and drink a glass of water.",
       "ja": "そして水を1杯飲む",
       "note": "and は弱く「ン」程度。drink a →「ドリンカ」、glass of →「グラサヴ」、water の t は弾音で「ワーラー」に近い。",
@@ -65,8 +65,8 @@
     },
     {
       "id": "c7",
-      "start": 9.356,
-      "end": 11.685,
+      "start": 10.976,
+      "end": 13.693,
       "en": "Then I make some toast",
       "ja": "それからトーストを作る",
       "note": "make some：k を軽く止めて s へ。some は弱く短く。",
@@ -74,8 +74,8 @@
     },
     {
       "id": "c8",
-      "start": 11.685,
-      "end": 12.971,
+      "start": 13.693,
+      "end": 15.242,
       "en": "and check the news",
       "ja": "ニュースを確認する",
       "note": "check the：k のあとすぐ th へ。the は弱く「ザ」。",
@@ -83,8 +83,8 @@
     },
     {
       "id": "c9",
-      "start": 12.971,
-      "end": 14.189,
+      "start": 15.242,
+      "end": 16.566,
       "en": "on my phone.",
       "ja": "スマホで",
       "note": "on my：n と m が続くので口を閉じる準備を早めに。",
@@ -92,8 +92,8 @@
     },
     {
       "id": "c10",
-      "start": 14.569,
-      "end": 16.011,
+      "start": 16.946,
+      "end": 18.688,
       "en": "I leave home",
       "ja": "家を出る",
       "note": "leave は長い「リーヴ」。live（リヴ）と区別。",
@@ -101,8 +101,8 @@
     },
     {
       "id": "c11",
-      "start": 16.011,
-      "end": 17.599,
+      "start": 18.688,
+      "end": 20.446,
       "en": "at a quarter to eight.",
       "ja": "8時15分前に",
       "note": "at a →「アラ」（t の弾音化）。to は弱形で「タ」。",
@@ -110,8 +110,8 @@
     },
     {
       "id": "c12",
-      "start": 17.979,
-      "end": 20.487,
+      "start": 20.826,
+      "end": 23.858,
       "en": "It's a simple routine,",
       "ja": "シンプルな習慣だが",
       "note": "It's a →「イツァ」とつながります。routine は後ろの「ティーン」を強く。",
@@ -119,8 +119,8 @@
     },
     {
       "id": "c13",
-      "start": 20.487,
-      "end": 21.665,
+      "start": 23.858,
+      "end": 25.232,
       "en": "but it helps me",
       "ja": "それは私の助けになる",
       "note": "but it →「バリッ」。t の弾音化と語末 t の脱落。",
@@ -128,8 +128,8 @@
     },
     {
       "id": "c14",
-      "start": 21.665,
-      "end": 23.203,
+      "start": 25.232,
+      "end": 26.965,
       "en": "start the day well.",
       "ja": "1日をうまく始めるのに",
       "note": "start the：語末の t はほぼ飲み込まれて th へ。",
@@ -210,7 +210,7 @@
       "ja": "トースト",
       "tip": "「トウスト」と二重母音で。",
       "start": 2.347,
-      "end": 3.079,
+      "end": 3.053,
       "chunkId": "c7"
     },
     {
@@ -219,8 +219,8 @@
       "pos": "動",
       "ja": "確認する",
       "tip": "語末の k は息だけ軽く。",
-      "start": 3.429,
-      "end": 4.056,
+      "start": 3.403,
+      "end": 4.03,
       "chunkId": "c8"
     },
     {
@@ -229,8 +229,8 @@
       "pos": "動",
       "ja": "出発する、去る",
       "tip": "長母音。live /lɪv/ と区別。",
-      "start": 4.406,
-      "end": 5.085,
+      "start": 4.38,
+      "end": 5.059,
       "chunkId": "c10"
     },
     {
@@ -239,8 +239,8 @@
       "pos": "名",
       "ja": "4分の1、15分",
       "tip": "t は弾音化して「クウォーラー」に近く聞こえることも。",
-      "start": 5.435,
-      "end": 6.166,
+      "start": 5.409,
+      "end": 6.14,
       "chunkId": "c11"
     }
   ],
