@@ -335,3 +335,19 @@ details > summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
 .intro-script { display: flex; flex-direction: column; gap: 9px; }
 .intro-sentence { font-size: 1.08rem; line-height: 1.75; margin: 0; padding: 0 0 9px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
 .intro-sentence:last-child { border-bottom: 0; padding-bottom: 0; }
+
+
+/* Step 4 repeating: default unit is a whole sentence, not a meaning chunk. */
+.repeat-units { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.repeat-unit {
+  display: flex; align-items: center; gap: 9px; padding: 10px 8px;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--card);
+}
+.repeat-unit .ctext { min-width: 0; flex: 1; }
+.repeat-unit-label { color: var(--sub); font-size: .78rem; font-weight: 700; margin: 0; }
+.repeat-unit .tx-en { margin-top: 4px; line-height: 1.55; overflow-wrap: anywhere; }
+.repeat-start { flex: none; white-space: nowrap; }
+@media (max-width: 390px) {
+  .repeat-unit { gap: 6px; }
+  .repeat-start { font-size: .72rem; padding: 6px; }
+}
