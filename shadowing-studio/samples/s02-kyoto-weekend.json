@@ -7,12 +7,12 @@
   "description": "過去形で旅行の思い出を語ります。to の弱形や語末 t の変化が多く出てきます。",
   "audio": "samples/audio/s02-kyoto-weekend.mp3",
   "wordsAudio": "samples/audio/s02-kyoto-weekend-words.mp3",
-  "duration": 34.952,
+  "duration": 33.776,
   "chunks": [
     {
       "id": "c1",
       "start": 0.08,
-      "end": 1.829,
+      "end": 2.114,
       "en": "Last weekend,",
       "ja": "先週末",
       "note": "Last の t は次の w の前で脱落しやすく「ラスウィークエン」。",
@@ -20,8 +20,8 @@
     },
     {
       "id": "c2",
-      "start": 1.829,
-      "end": 3.894,
+      "start": 2.114,
+      "end": 4.39,
       "en": "I took a train to Kyoto",
       "ja": "京都まで電車で行った",
       "note": "took a →「トゥカ」。to は弱く「タ」。",
@@ -29,8 +29,8 @@
     },
     {
       "id": "c3",
-      "start": 3.894,
-      "end": 5.2,
+      "start": 4.39,
+      "end": 5.827,
       "en": "with my sister.",
       "ja": "妹と",
       "note": "with my：th を短く、すぐ m へ。",
@@ -38,8 +38,8 @@
     },
     {
       "id": "c4",
-      "start": 5.58,
-      "end": 6.95,
+      "start": 6.207,
+      "end": 7.769,
       "en": "We wanted to visit",
       "ja": "訪れたかった",
       "note": "wanted to →「ウォンティッタ」。nt の t が弱まり「ウォニッタ」にも。",
@@ -47,8 +47,8 @@
     },
     {
       "id": "c5",
-      "start": 6.95,
-      "end": 8.804,
+      "start": 7.769,
+      "end": 9.662,
       "en": "some old temples",
       "ja": "古いお寺をいくつか",
       "note": "some old →「サモウルド」。m と o がつながります。",
@@ -56,8 +56,8 @@
     },
     {
       "id": "c6",
-      "start": 8.804,
-      "end": 10.7,
+      "start": 9.662,
+      "end": 11.484,
       "en": "before it got crowded.",
       "ja": "混雑する前に",
       "note": "it got：語末 t は破裂させず止めるだけ。",
@@ -65,8 +65,8 @@
     },
     {
       "id": "c7",
-      "start": 11.08,
-      "end": 13.436,
+      "start": 11.864,
+      "end": 14.009,
       "en": "So we got up early",
       "ja": "それで早起きした",
       "note": "got up →「ガラップ」。up early もつながって「アッパーリー」。",
@@ -74,8 +74,8 @@
     },
     {
       "id": "c8",
-      "start": 13.436,
-      "end": 16.114,
+      "start": 14.009,
+      "end": 16.372,
       "en": "and arrived at the first temple",
       "ja": "最初のお寺に到着した",
       "note": "arrived at →「アライヴダッ」。d と a がつながります。",
@@ -83,7 +83,7 @@
     },
     {
       "id": "c9",
-      "start": 16.114,
+      "start": 16.372,
       "end": 17.114,
       "en": "at eight.",
       "ja": "8時に",
@@ -93,7 +93,7 @@
     {
       "id": "c10",
       "start": 17.494,
-      "end": 19.011,
+      "end": 19.172,
       "en": "It was quiet,",
       "ja": "静かだった",
       "note": "It was →「イッワズ」。was は弱形。quiet は「クワイエット」の2音節。",
@@ -101,8 +101,8 @@
     },
     {
       "id": "c11",
-      "start": 19.011,
-      "end": 20.325,
+      "start": 19.172,
+      "end": 20.564,
       "en": "and the morning air",
       "ja": "そして朝の空気は",
       "note": "morning air →「モーニンゲア」。",
@@ -110,8 +110,8 @@
     },
     {
       "id": "c12",
-      "start": 20.325,
-      "end": 22.144,
+      "start": 20.564,
+      "end": 22.327,
       "en": "felt really fresh.",
       "ja": "とても新鮮に感じた",
       "note": "felt の t は次の r の前で弱まります。",
@@ -119,8 +119,8 @@
     },
     {
       "id": "c13",
-      "start": 22.524,
-      "end": 24.375,
+      "start": 22.707,
+      "end": 24.64,
       "en": "In the afternoon,",
       "ja": "午後は",
       "note": "In the：n と th は舌の位置が近いのでなめらかに。",
@@ -128,8 +128,8 @@
     },
     {
       "id": "c14",
-      "start": 24.375,
-      "end": 26.617,
+      "start": 24.64,
+      "end": 26.904,
       "en": "we tried green tea sweets",
       "ja": "抹茶のお菓子を試した",
       "note": "tried green：d を止めてすぐ gr へ。",
@@ -137,8 +137,8 @@
     },
     {
       "id": "c15",
-      "start": 26.617,
-      "end": 28.114,
+      "start": 26.904,
+      "end": 28.323,
       "en": "at a small shop.",
       "ja": "小さなお店で",
       "note": "at a →「アラ」。",
@@ -146,8 +146,8 @@
     },
     {
       "id": "c16",
-      "start": 28.494,
-      "end": 31.086,
+      "start": 28.703,
+      "end": 30.81,
       "en": "It was a short trip,",
       "ja": "短い旅行だったが",
       "note": "was a →「ワザ」。",
@@ -155,8 +155,8 @@
     },
     {
       "id": "c17",
-      "start": 31.086,
-      "end": 33.284,
+      "start": 30.81,
+      "end": 32.484,
       "en": "but I want to go back",
       "ja": "また行きたい",
       "note": "but I →「バライ」。want to →「ワナ」に近く聞こえます。",
@@ -164,8 +164,8 @@
     },
     {
       "id": "c18",
-      "start": 33.284,
-      "end": 34.529,
+      "start": 32.484,
+      "end": 33.353,
       "en": "in autumn.",
       "ja": "秋に",
       "note": "autumn の最後の n は発音しません（黙字）。",
@@ -334,5 +334,7 @@
     "credit": "Shadowing Studio original lesson; AI voice: Kokoro-82M, af_heart (American English)",
     "license": "Text CC BY 4.0; Kokoro-82M model Apache 2.0"
   },
-  "timingMethod": "kokoro_predicted_token_durations_approximate"
+  "timingMethod": "kokoro_predicted_token_durations_approximate",
+  "audioGeneration": "native_slow_kokoro_without_waveform_time_stretch",
+  "appPlaybackRateAt1x": 1.08
 }

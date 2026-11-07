@@ -7,12 +7,12 @@
   "description": "在宅勤務の良い点と難しい点を比べる説明文。論理をつなぐ表現と弱形を練習します。",
   "audio": "samples/audio/s03-working-from-home.mp3",
   "wordsAudio": "samples/audio/s03-working-from-home-words.mp3",
-  "duration": 34.22,
+  "duration": 34.952,
   "chunks": [
     {
       "id": "c1",
       "start": 0.08,
-      "end": 1.487,
+      "end": 1.473,
       "en": "These days,",
       "ja": "最近では",
       "note": "These の th は舌先を軽く歯に当てて濁らせます。",
@@ -20,8 +20,8 @@
     },
     {
       "id": "c2",
-      "start": 1.487,
-      "end": 4.22,
+      "start": 1.473,
+      "end": 3.697,
       "en": "a lot of people work from home",
       "ja": "多くの人が在宅で働く",
       "note": "a lot of →「アラロヴ」。t の弾音化と of の弱形。",
@@ -29,8 +29,8 @@
     },
     {
       "id": "c3",
-      "start": 4.22,
-      "end": 6.506,
+      "start": 3.697,
+      "end": 5.54,
       "en": "at least a few days a week.",
       "ja": "少なくとも週に数日",
       "note": "least a →「リースタ」。days a →「デイザ」。",
@@ -38,8 +38,8 @@
     },
     {
       "id": "c4",
-      "start": 6.886,
-      "end": 8.421,
+      "start": 5.92,
+      "end": 7.495,
       "en": "It saves time",
       "ja": "時間の節約になる",
       "note": "saves time：z を短くしてすぐ t へ。",
@@ -47,8 +47,8 @@
     },
     {
       "id": "c5",
-      "start": 8.421,
-      "end": 10.517,
+      "start": 7.495,
+      "end": 9.524,
       "en": "because you don't have to commute.",
       "ja": "通勤しなくていいので",
       "note": "don't の t は脱落しがち。have to →「ハフタ」。commute は後ろに強勢。",
@@ -56,8 +56,8 @@
     },
     {
       "id": "c6",
-      "start": 10.897,
-      "end": 13.137,
+      "start": 9.904,
+      "end": 12.354,
       "en": "You can also focus better",
       "ja": "より集中することもできる",
       "note": "can は弱形で「クン」。better の tt は弾音で「ベラー」。",
@@ -65,8 +65,8 @@
     },
     {
       "id": "c7",
-      "start": 13.137,
-      "end": 14.283,
+      "start": 12.354,
+      "end": 13.561,
       "en": "without the noise",
       "ja": "騒音なしで",
       "note": "without the：t は止めるだけで th へ。",
@@ -74,8 +74,8 @@
     },
     {
       "id": "c8",
-      "start": 14.283,
-      "end": 15.73,
+      "start": 13.561,
+      "end": 14.946,
       "en": "of a busy office.",
       "ja": "忙しいオフィスの",
       "note": "of a →「オヴァ」。",
@@ -83,8 +83,8 @@
     },
     {
       "id": "c9",
-      "start": 16.11,
-      "end": 17.665,
+      "start": 15.326,
+      "end": 16.979,
       "en": "On the other hand,",
       "ja": "一方で",
       "note": "On the other →「オンジアザー」。hand の d は弱まります。",
@@ -92,8 +92,8 @@
     },
     {
       "id": "c10",
-      "start": 17.665,
-      "end": 19.809,
+      "start": 16.979,
+      "end": 19.102,
       "en": "some people feel lonely",
       "ja": "孤独を感じる人もいる",
       "note": "feel lonely：L が2回続くので一度でつなげます。",
@@ -101,8 +101,8 @@
     },
     {
       "id": "c11",
-      "start": 19.809,
-      "end": 20.905,
+      "start": 19.102,
+      "end": 20.136,
       "en": "and find it hard",
       "ja": "そして難しいと感じる",
       "note": "find it →「ファインディッ」。",
@@ -110,8 +110,8 @@
     },
     {
       "id": "c12",
-      "start": 20.905,
-      "end": 22.144,
+      "start": 20.136,
+      "end": 21.387,
       "en": "to stop working.",
       "ja": "仕事をやめるのが",
       "note": "stop working：p は破裂させず口を閉じるだけ。",
@@ -119,8 +119,8 @@
     },
     {
       "id": "c13",
-      "start": 22.524,
-      "end": 24.121,
+      "start": 21.767,
+      "end": 23.534,
       "en": "That's why it's important",
       "ja": "だからこそ大切だ",
       "note": "why it's →「ワイイッツ」。it's important は s と i をつなげて。",
@@ -128,8 +128,8 @@
     },
     {
       "id": "c14",
-      "start": 24.121,
-      "end": 26.063,
+      "start": 23.534,
+      "end": 25.57,
       "en": "to set clear rules,",
       "ja": "明確なルールを決めることが",
       "note": "set clear：t を止めて cl へ。",
@@ -137,8 +137,8 @@
     },
     {
       "id": "c15",
-      "start": 26.063,
-      "end": 28.167,
+      "start": 25.57,
+      "end": 27.749,
       "en": "like when to start and finish.",
       "ja": "いつ始めて終えるかなど",
       "note": "start and →「スターラン(ド)」。and は弱形。",
@@ -146,7 +146,7 @@
     },
     {
       "id": "c16",
-      "start": 28.547,
+      "start": 28.129,
       "end": 30.029,
       "en": "With the right balance,",
       "ja": "適切なバランスがあれば",
@@ -156,7 +156,7 @@
     {
       "id": "c17",
       "start": 30.029,
-      "end": 31.657,
+      "end": 31.995,
       "en": "working from home can be",
       "ja": "在宅勤務は〜になりうる",
       "note": "can be：can は弱く短く。",
@@ -164,8 +164,8 @@
     },
     {
       "id": "c18",
-      "start": 31.657,
-      "end": 33.797,
+      "start": 31.995,
+      "end": 34.529,
       "en": "both productive and comfortable.",
       "ja": "生産的で快適な",
       "note": "productive and →「プロダクティヴァン」。comfortable は「カンフタブル」の3音節。",
@@ -334,5 +334,7 @@
     "credit": "Shadowing Studio original lesson; AI voice: Kokoro-82M, af_heart (American English)",
     "license": "Text CC BY 4.0; Kokoro-82M model Apache 2.0"
   },
-  "timingMethod": "kokoro_predicted_token_durations_approximate"
+  "timingMethod": "kokoro_predicted_token_durations_approximate",
+  "audioGeneration": "native_slow_kokoro_without_waveform_time_stretch",
+  "appPlaybackRateAt1x": 1.08
 }

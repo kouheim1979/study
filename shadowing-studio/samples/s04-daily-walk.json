@@ -7,12 +7,12 @@
   "description": "散歩を習慣にした体験談。黙字（walk の l、listen の t）や前置詞のつながりを練習します。",
   "audio": "samples/audio/s04-daily-walk.mp3",
   "wordsAudio": "samples/audio/s04-daily-walk-words.mp3",
-  "duration": 32.209,
+  "duration": 32.575,
   "chunks": [
     {
       "id": "c1",
       "start": 0.08,
-      "end": 2.07,
+      "end": 1.973,
       "en": "My doctor told me",
       "ja": "医者に言われた",
       "note": "told me：d を止めてすぐ m へ。",
@@ -20,8 +20,8 @@
     },
     {
       "id": "c2",
-      "start": 2.07,
-      "end": 5.2,
+      "start": 1.973,
+      "end": 4.651,
       "en": "to walk for thirty minutes a day.",
       "ja": "1日30分歩くように",
       "note": "walk の l は発音しません。minutes a →「ミニッツァ」。",
@@ -29,8 +29,8 @@
     },
     {
       "id": "c3",
-      "start": 5.58,
-      "end": 6.899,
+      "start": 5.031,
+      "end": 6.347,
       "en": "At first,",
       "ja": "最初は",
       "note": "At first：t は止めるだけ。",
@@ -38,8 +38,8 @@
     },
     {
       "id": "c4",
-      "start": 6.899,
-      "end": 9.316,
+      "start": 6.347,
+      "end": 8.427,
       "en": "I thought it would be boring.",
       "ja": "退屈だろうと思った",
       "note": "thought it →「ソーリッ」。would は弱形「ウド」。",
@@ -47,8 +47,8 @@
     },
     {
       "id": "c5",
-      "start": 9.696,
-      "end": 12.263,
+      "start": 8.807,
+      "end": 11.582,
       "en": "But now I really enjoy it,",
       "ja": "今では本当に楽しんでいる",
       "note": "enjoy it →「エンジョイイッ」。y の音でつながります。",
@@ -56,8 +56,8 @@
     },
     {
       "id": "c6",
-      "start": 12.263,
-      "end": 14.345,
+      "start": 11.582,
+      "end": 13.692,
       "en": "especially in the evening.",
       "ja": "特に夕方に",
       "note": "especially in →「イスペシャリーイン」。",
@@ -65,8 +65,8 @@
     },
     {
       "id": "c7",
-      "start": 14.725,
-      "end": 17.363,
+      "start": 14.072,
+      "end": 16.609,
       "en": "I listen to podcasts",
       "ja": "ポッドキャストを聞く",
       "note": "listen の t は黙字。",
@@ -74,8 +74,8 @@
     },
     {
       "id": "c8",
-      "start": 17.363,
-      "end": 19.093,
+      "start": 16.609,
+      "end": 18.268,
       "en": "and look at the trees",
       "ja": "そして木を見る",
       "note": "look at the →「ルッカッザ」。",
@@ -83,8 +83,8 @@
     },
     {
       "id": "c9",
-      "start": 19.093,
-      "end": 20.316,
+      "start": 18.268,
+      "end": 19.375,
       "en": "and the sky.",
       "ja": "そして空を",
       "note": "and the：d を落として「アンザ」。",
@@ -92,8 +92,8 @@
     },
     {
       "id": "c10",
-      "start": 20.696,
-      "end": 22.37,
+      "start": 19.755,
+      "end": 21.775,
       "en": "After a few weeks,",
       "ja": "数週間後",
       "note": "After a →「アフタラ」。",
@@ -101,8 +101,8 @@
     },
     {
       "id": "c11",
-      "start": 22.37,
-      "end": 24.372,
+      "start": 21.775,
+      "end": 23.949,
       "en": "I started sleeping better",
       "ja": "よく眠れるようになった",
       "note": "started の ed は「ティッド」。better は「ベラー」。",
@@ -110,8 +110,8 @@
     },
     {
       "id": "c12",
-      "start": 24.372,
-      "end": 26.286,
+      "start": 23.949,
+      "end": 25.946,
       "en": "and feeling less tired.",
       "ja": "そして疲れにくくなった",
       "note": "less tired：s から t へなめらかに。",
@@ -119,8 +119,8 @@
     },
     {
       "id": "c13",
-      "start": 26.666,
-      "end": 29.172,
+      "start": 26.326,
+      "end": 29.275,
       "en": "Walking is easy, free,",
       "ja": "歩くことは簡単で無料",
       "note": "Walking is →「ウォーキンギズ」。",
@@ -128,8 +128,8 @@
     },
     {
       "id": "c14",
-      "start": 29.172,
-      "end": 31.786,
+      "start": 29.275,
+      "end": 32.151,
       "en": "and good for both body and mind.",
       "ja": "体にも心にも良い",
       "note": "good for：d を止めて f へ。body and →「バディアン」。",
@@ -294,5 +294,7 @@
     "credit": "Shadowing Studio original lesson; AI voice: Kokoro-82M, af_heart (American English)",
     "license": "Text CC BY 4.0; Kokoro-82M model Apache 2.0"
   },
-  "timingMethod": "kokoro_predicted_token_durations_approximate"
+  "timingMethod": "kokoro_predicted_token_durations_approximate",
+  "audioGeneration": "native_slow_kokoro_without_waveform_time_stretch",
+  "appPlaybackRateAt1x": 1.08
 }
