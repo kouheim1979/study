@@ -243,6 +243,10 @@ export class LessonView {
     if (!playing) this.saveResume();
     if (this.step === 1 && playing && this.player.time < 0.5) this.countListen();
     if (this.step === 4 && !this.tok) this.updateRepeatHighlightFromPlayer();
+    if (this.step === 5 && playing && this.lastChunkId) {
+      const row = this.body.querySelector(`[data-cid="${this.lastChunkId}"]`);
+      if (row) this.ensureShadowChunkVisible(row);
+    }
   }
   onTime() {
     const t = this.player.time;
