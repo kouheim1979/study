@@ -1,13 +1,13 @@
 // Offline cache: app shell + bundled samples. Network-first for code, cache-first for audio.
-const VERSION = 'ss-v6-repeat-sentences';
+const VERSION = 'ss-v7-repeat-active-glow';
 const PRECACHE = [
  "./",
  "index.html",
- "css/app.css?v=repeat-sentence-v1",
+ "css/app.css?v=repeat-glow-v2",
  "manifest.webmanifest",
  "icon.svg",
  "icon-180.png","icon-512.png",
- "js/app.js?v=repeat-sentence-v1",
+ "js/app.js?v=repeat-glow-v2",
  "js/util.js",
  "js/db.js",
  "js/lessons.js",
@@ -17,7 +17,7 @@ const PRECACHE = [
  "js/recordings.js",
  "js/compare.js",
  "js/settings.js",
- "js/views/lesson.js?v=repeat-sentence-v1",
+ "js/views/lesson.js?v=repeat-glow-v2",
  "js/repeat-units.mjs",
  "js/views/library.js",
  "js/views/editor.js",
