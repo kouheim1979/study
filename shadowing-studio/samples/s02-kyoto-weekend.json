@@ -336,5 +336,196 @@
   },
   "timingMethod": "kokoro_predicted_token_durations_approximate",
   "audioGeneration": "native_slow_kokoro_without_waveform_time_stretch",
-  "appPlaybackRateAt1x": 1.08
+  "appPlaybackRateAt1x": 1.08,
+  "repeatAudio": "samples/audio/s02-kyoto-weekend-repeat.mp3",
+  "repeatAudioDuration": 35.8139,
+  "repeatAudioGeneration": "independent_kokoro_clause_synthesis_v1_no_audio_cropping",
+  "repeatUnits": [
+    {
+      "sentenceIndex": 0,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c1",
+        "c2"
+      ],
+      "en": "Last weekend, I took a train to Kyoto",
+      "ja": "先週末／京都まで電車で行った",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s01-p01.mp3",
+      "start": 0.12,
+      "end": 4.48,
+      "duration": 4.36,
+      "stemDuration": 4.389
+    },
+    {
+      "sentenceIndex": 0,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c3"
+      ],
+      "en": "with my sister.",
+      "ja": "妹と",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s01-p02.mp3",
+      "start": 4.72,
+      "end": 6.45,
+      "duration": 1.73,
+      "stemDuration": 1.776
+    },
+    {
+      "sentenceIndex": 1,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c4",
+        "c5"
+      ],
+      "en": "We wanted to visit some old temples",
+      "ja": "訪れたかった／古いお寺をいくつか",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s02-p01.mp3",
+      "start": 6.69,
+      "end": 9.88,
+      "duration": 3.19,
+      "stemDuration": 3.239
+    },
+    {
+      "sentenceIndex": 1,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c6"
+      ],
+      "en": "before it got crowded.",
+      "ja": "混雑する前に",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s02-p02.mp3",
+      "start": 10.12,
+      "end": 12.25,
+      "duration": 2.13,
+      "stemDuration": 2.168
+    },
+    {
+      "sentenceIndex": 2,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c7"
+      ],
+      "en": "So we got up early",
+      "ja": "それで早起きした",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s03-p01.mp3",
+      "start": 12.49,
+      "end": 14.64,
+      "duration": 2.15,
+      "stemDuration": 2.194
+    },
+    {
+      "sentenceIndex": 2,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c8",
+        "c9"
+      ],
+      "en": "and arrived at the first temple at eight.",
+      "ja": "最初のお寺に到着した／8時に",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s03-p02.mp3",
+      "start": 14.88,
+      "end": 18.19,
+      "duration": 3.31,
+      "stemDuration": 3.344
+    },
+    {
+      "sentenceIndex": 3,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c10"
+      ],
+      "en": "It was quiet,",
+      "ja": "静かだった",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s04-p01.mp3",
+      "start": 18.43,
+      "end": 20.1,
+      "duration": 1.67,
+      "stemDuration": 1.698
+    },
+    {
+      "sentenceIndex": 3,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c11",
+        "c12"
+      ],
+      "en": "and the morning air felt really fresh.",
+      "ja": "そして朝の空気は／とても新鮮に感じた",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s04-p02.mp3",
+      "start": 20.34,
+      "end": 23.6,
+      "duration": 3.26,
+      "stemDuration": 3.291
+    },
+    {
+      "sentenceIndex": 4,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c13",
+        "c14"
+      ],
+      "en": "In the afternoon, we tried green tea sweets",
+      "ja": "午後は／抹茶のお菓子を試した",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s05-p01.mp3",
+      "start": 23.84,
+      "end": 28.08,
+      "duration": 4.24,
+      "stemDuration": 4.284
+    },
+    {
+      "sentenceIndex": 4,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c15"
+      ],
+      "en": "at a small shop.",
+      "ja": "小さなお店で",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s05-p02.mp3",
+      "start": 28.32,
+      "end": 30.14,
+      "duration": 1.82,
+      "stemDuration": 1.855
+    },
+    {
+      "sentenceIndex": 5,
+      "part": 1,
+      "partCount": 2,
+      "chunkIds": [
+        "c16"
+      ],
+      "en": "It was a short trip,",
+      "ja": "短い旅行だったが",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s06-p01.mp3",
+      "start": 30.38,
+      "end": 32.35,
+      "duration": 1.97,
+      "stemDuration": 2.011
+    },
+    {
+      "sentenceIndex": 5,
+      "part": 2,
+      "partCount": 2,
+      "chunkIds": [
+        "c17",
+        "c18"
+      ],
+      "en": "but I want to go back in autumn.",
+      "ja": "また行きたい／秋に",
+      "audioStem": "samples/audio/repeat/s02-kyoto-weekend-s06-p02.mp3",
+      "start": 32.59,
+      "end": 35.32,
+      "duration": 2.73,
+      "stemDuration": 2.769
+    }
+  ]
 }
