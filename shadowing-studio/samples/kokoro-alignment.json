@@ -1,0 +1,263 @@
+{
+  "model": "Kokoro-82M",
+  "voice": "af_heart",
+  "chunk_timings": "Kokoro predicted token durations; approximate; not manually verified",
+  "lessons": {
+    "s01-morning-routine": [
+      {
+        "file": "s01-morning-routine_01.mp3",
+        "duration": 3.736,
+        "sentence_start": 0.08,
+        "estimated_chunk_bounds": [
+          0.08,
+          0.84,
+          2.314,
+          3.816
+        ]
+      },
+      {
+        "file": "s01-morning-routine_02.mp3",
+        "duration": 5.12,
+        "sentence_start": 4.196,
+        "estimated_chunk_bounds": [
+          4.196,
+          5.189,
+          7.03,
+          9.316
+        ]
+      },
+      {
+        "file": "s01-morning-routine_03.mp3",
+        "duration": 5.59,
+        "sentence_start": 9.696,
+        "estimated_chunk_bounds": [
+          9.696,
+          12.31,
+          13.855,
+          15.286
+        ]
+      },
+      {
+        "file": "s01-morning-routine_04.mp3",
+        "duration": 3.736,
+        "sentence_start": 15.666,
+        "estimated_chunk_bounds": [
+          15.666,
+          17.314,
+          19.401
+        ]
+      },
+      {
+        "file": "s01-morning-routine_05.mp3",
+        "duration": 5.59,
+        "sentence_start": 19.781,
+        "estimated_chunk_bounds": [
+          19.781,
+          22.4,
+          23.631,
+          25.371
+        ]
+      }
+    ],
+    "s02-kyoto-weekend": [
+      {
+        "file": "s02-kyoto-weekend_01.mp3",
+        "duration": 5.12,
+        "sentence_start": 0.08,
+        "estimated_chunk_bounds": [
+          0.08,
+          1.829,
+          3.894,
+          5.2
+        ]
+      },
+      {
+        "file": "s02-kyoto-weekend_02.mp3",
+        "duration": 5.12,
+        "sentence_start": 5.58,
+        "estimated_chunk_bounds": [
+          5.58,
+          6.95,
+          8.804,
+          10.7
+        ]
+      },
+      {
+        "file": "s02-kyoto-weekend_03.mp3",
+        "duration": 6.034,
+        "sentence_start": 11.08,
+        "estimated_chunk_bounds": [
+          11.08,
+          13.436,
+          16.114,
+          17.114
+        ]
+      },
+      {
+        "file": "s02-kyoto-weekend_04.mp3",
+        "duration": 4.65,
+        "sentence_start": 17.494,
+        "estimated_chunk_bounds": [
+          17.494,
+          19.011,
+          20.325,
+          22.144
+        ]
+      },
+      {
+        "file": "s02-kyoto-weekend_05.mp3",
+        "duration": 5.59,
+        "sentence_start": 22.524,
+        "estimated_chunk_bounds": [
+          22.524,
+          24.375,
+          26.617,
+          28.114
+        ]
+      },
+      {
+        "file": "s02-kyoto-weekend_06.mp3",
+        "duration": 6.034,
+        "sentence_start": 28.494,
+        "estimated_chunk_bounds": [
+          28.494,
+          31.086,
+          33.284,
+          34.529
+        ]
+      }
+    ],
+    "s03-working-from-home": [
+      {
+        "file": "s03-working-from-home_01.mp3",
+        "duration": 6.426,
+        "sentence_start": 0.08,
+        "estimated_chunk_bounds": [
+          0.08,
+          1.487,
+          4.22,
+          6.506
+        ]
+      },
+      {
+        "file": "s03-working-from-home_02.mp3",
+        "duration": 3.631,
+        "sentence_start": 6.886,
+        "estimated_chunk_bounds": [
+          6.886,
+          8.421,
+          10.517
+        ]
+      },
+      {
+        "file": "s03-working-from-home_03.mp3",
+        "duration": 4.833,
+        "sentence_start": 10.897,
+        "estimated_chunk_bounds": [
+          10.897,
+          13.137,
+          14.283,
+          15.73
+        ]
+      },
+      {
+        "file": "s03-working-from-home_04.mp3",
+        "duration": 6.034,
+        "sentence_start": 16.11,
+        "estimated_chunk_bounds": [
+          16.11,
+          17.665,
+          19.809,
+          20.905,
+          22.144
+        ]
+      },
+      {
+        "file": "s03-working-from-home_05.mp3",
+        "duration": 5.642,
+        "sentence_start": 22.524,
+        "estimated_chunk_bounds": [
+          22.524,
+          24.121,
+          26.063,
+          28.167
+        ]
+      },
+      {
+        "file": "s03-working-from-home_06.mp3",
+        "duration": 5.251,
+        "sentence_start": 28.547,
+        "estimated_chunk_bounds": [
+          28.547,
+          30.029,
+          31.657,
+          33.797
+        ]
+      }
+    ],
+    "s04-daily-walk": [
+      {
+        "file": "s04-daily-walk_01.mp3",
+        "duration": 5.12,
+        "sentence_start": 0.08,
+        "estimated_chunk_bounds": [
+          0.08,
+          2.07,
+          5.2
+        ]
+      },
+      {
+        "file": "s04-daily-walk_02.mp3",
+        "duration": 3.736,
+        "sentence_start": 5.58,
+        "estimated_chunk_bounds": [
+          5.58,
+          6.899,
+          9.316
+        ]
+      },
+      {
+        "file": "s04-daily-walk_03.mp3",
+        "duration": 4.65,
+        "sentence_start": 9.696,
+        "estimated_chunk_bounds": [
+          9.696,
+          12.263,
+          14.345
+        ]
+      },
+      {
+        "file": "s04-daily-walk_04.mp3",
+        "duration": 5.59,
+        "sentence_start": 14.725,
+        "estimated_chunk_bounds": [
+          14.725,
+          17.363,
+          19.093,
+          20.316
+        ]
+      },
+      {
+        "file": "s04-daily-walk_05.mp3",
+        "duration": 5.59,
+        "sentence_start": 20.696,
+        "estimated_chunk_bounds": [
+          20.696,
+          22.37,
+          24.372,
+          26.286
+        ]
+      },
+      {
+        "file": "s04-daily-walk_06.mp3",
+        "duration": 5.12,
+        "sentence_start": 26.666,
+        "estimated_chunk_bounds": [
+          26.666,
+          29.172,
+          31.786
+        ]
+      }
+    ]
+  }
+}
