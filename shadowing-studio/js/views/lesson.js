@@ -16,7 +16,7 @@ const STEP_GUIDE = {
   1: '最初に英文全体を読み、英文を見ながら音声を通して聞きましょう。意味がすべて分からなくても大丈夫です。2〜3回聞いてもかまいません。',
   2: '知らない単語・発音があいまいな単語を確認します。「単語」で単独の発音、「文中」で実際の文の中での聞こえ方を比べましょう。',
   3: 'チャンク（意味のかたまり）ごとに、英語の語順のまま意味をとります。和訳をOFFにすると、タップするまで訳を隠せます。',
-  4: 'お手本を1文まるごと聞いたら、ポーズの間に同じ文を声に出します。特に長い文だけ意味の切れ目で分けます。',
+  4: '節・意味のかたまりごとに、新しく録音したお手本を聞いてから同じ部分を発声します。長い文も短く区切って練習できます。',
   5: 'お手本を聞きながら、少し遅れて同時に声に出します（シャドーイング）。慣れたら英文をOFFに。録音して自分の声と聞き比べましょう。イヤホン推奨。',
   6: '文ごとの和訳で理解を確かめ、内容の確認問題に答えます。最初のリスニングと比べてどれくらい聞き取れるようになったか振り返りましょう。',
 };
@@ -223,7 +223,7 @@ export class LessonView {
     p.play();
   }
   jumpChunk(dir) {
-    const cs = this.lesson.chunks;
+    const cs = this.step === 4 ? (this.repeatUnits || []) : this.lesson.chunks;
     if (!cs.length) return;
     const t = this.player.time;
     let i = cs.findIndex(c => t >= c.start && t < c.end);
@@ -254,7 +254,7 @@ export class LessonView {
     this.durLbl.textContent = fmtTime(this.player.duration || this.lesson.duration);
     // In Step 5, keep the just-spoken phrase highlighted through short
     // natural pauses between chunks instead of flashing the glow off.
-    let c = chunkAt(this.lesson, t);
+    let c = this.step === 4 ? null : chunkAt(this.lesson, t);
     if (!c && this.step === 5 && !this.player.paused) {
       const cs = this.lesson.chunks;
       const previous = [...cs].reverse().find(x => t >= x.start);
@@ -401,6 +401,13 @@ export class LessonView {
     this.togglesEl.hidden = n === 1 || n === 2;
     this.root.classList.toggle('step-1', n === 1);
     this.root.classList.toggle('step-5', n === 5);
+    // Step 4 plays a separate recording composed from freshly synthesized
+    // clauses. All other steps restore the original full-lesson recording.
+    const dedicatedRepeat = n === 4 && !!this.lesson.repeatAudioUrl;
+    const track = dedicatedRepeat ? this.lesson.repeatAudioUrl : this.lesson.audioUrl;
+    if (track && this.player.src !== track) {
+      await this.player.load(track, dedicatedRepeat ? this.lesson.repeatAudioDuration : this.lesson.duration);
+    }
     const s = STEPS[n - 1];
     const body = this.body;
     body.replaceChildren(
@@ -529,7 +536,7 @@ export class LessonView {
       h('div.chunks', this.lesson.chunks.map(c => this.chunkRow(c))));
   }
 
-  // Step 4: repeating full sentences rather than short meaning chunks.
+  // Step 4: repetition of independently re-synthesized natural clause groups.
   step4(body) {
     const s = settings();
     this.repeatUnits = buildRepeatUnits(this.lesson);
@@ -574,7 +581,9 @@ export class LessonView {
           Recorder.supported() ? h('label.check', this.recCheck, ' 練習を録音する') : null),
         h('div.row.center', this.startBtn),
         this.status),
-      h('p.hint', '基本は1文ずつ練習。長い文だけ途中で分けます。▶で文全体を聞き、英文や「ここから練習」を押すとその文からリピーティングを始めます。'),
+      h('p.hint', this.lesson.repeatAudioUrl
+        ? '節ごとに最初から生成し直した専用音声を使用しています。▶でその節を聞き、「ここから練習」で節単位のリピーティングを開始します。'
+        : '節・意味のかたまりごとに練習します。▶でその部分を再生し、「ここから練習」で練習を開始します。'),
       units,
       this.compareSlot = h('div'));
   }
@@ -589,7 +598,7 @@ export class LessonView {
     fill.style.width = '0%';
     if (kind === 'model') label.textContent = `🔊 お手本: ${u.label}　${settings().showEn ? u.en : '（英文非表示）'}`;
     else if (kind === 'you') {
-      label.textContent = `🎤 ${u.label}：同じ文を声に出しましょう`;
+      label.textContent = `🎤 ${u.label}：同じ節を声に出しましょう`;
       fill.getBoundingClientRect();
       fill.style.transition = `width ${sec}s linear`;
       fill.style.width = '100%';
