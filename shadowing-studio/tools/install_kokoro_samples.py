@@ -42,7 +42,7 @@ def write_mp3(path, pieces):
     run([
         "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", "-y",
         "-f", "f32le", "-ar", str(FRAME_RATE), "-ac", "1", "-i", "-",
-        "-c:a", "libmp3lame", "-b:a", "96k", "-ar", str(FRAME_RATE),
+        "-c:a", "libmp3lame", "-b:a", "128k", "-ar", str(FRAME_RATE),
         "-ac", "1", "-write_xing", "0", str(path)
     ], input=audio.tobytes())
     duration = subprocess.check_output([
@@ -175,26 +175,31 @@ def main():
             "license":"Text CC BY 4.0; Kokoro-82M model Apache 2.0"
         }
         lesson["timingMethod"]="kokoro_predicted_token_durations_approximate"
+        lesson["audioGeneration"]="native_slow_kokoro_without_waveform_time_stretch"
+        lesson["appPlaybackRateAt1x"]=1.08
         check_lesson(lesson)
         path.write_text(json.dumps(lesson,ensure_ascii=False,indent=2)+"\n", encoding="utf-8")
         derived["lessons"][sid] = measured
         print(f"Integrated {sid}: {len(expected_sents)} sentences, {len(lesson['words'])} words, "
               f"{len(chunks)} phrase chunks, total {lesson['duration']:.2f}s", flush=True)
 
-    index["version"]=2
+    index["version"]=3
     index_path.write_text(json.dumps(index,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     (SAMPLE / "kokoro-alignment.json").write_text(
         json.dumps(derived,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-    # Force the installed PWA to discard the former cached synthetic voice.
+    # The current service worker already caches the 50 stems. Make the installer
+    # re-runnable without appending duplicate entries or reverting cache version.
     sw=ROOT/"sw.js"
     content=sw.read_text(encoding="utf-8")
-    content=re.sub(r"const VERSION = '[^']+';", "const VERSION = 'ss-v2-kokoro';", content)
-    # Pre-cache 50 stems for offline use as well as continuous 8 track files.
-    marker='"\u0073amples/audio/s04-daily-walk-words.mp3"'
-    if marker not in content:
-        raise ValueError("Unexpected service-worker cache list")
-    paths=[f'"samples/audio/{name}"' for name in sorted(by_file)]
-    content=content.replace(marker, marker+",\n "+",\n ".join(paths))
+    content=re.sub(r"const VERSION = '[^']+';", "const VERSION = 'ss-v4-kokoro-native';", content)
+    content=content.replace("kokoro-af-heart-v2", "kokoro-native-v3")
+    for name in sorted(by_file):
+        if f'"samples/audio/{name}"' not in content:
+            raise ValueError("Missing offline-cache entry for "+name)
+    for sid in sorted(x["id"] for x in index["lessons"]):
+        for suffix in (".mp3", "-words.mp3"):
+            if f'"samples/audio/{sid}{suffix}?v=kokoro-native-v3"' not in content:
+                raise ValueError("Missing versioned playback track: "+sid+suffix)
     sw.write_text(content,encoding="utf-8")
     assert len(list(AUDIO.glob("*_w_*.mp3")))==27
     assert len(list(AUDIO.glob("s??-*_??.mp3")))==23
