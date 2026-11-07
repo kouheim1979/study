@@ -3,7 +3,7 @@ import { h, $, $$, toast } from './util.js';
 import { Recorder } from './recorder.js';
 import { getLesson } from './lessons.js';
 import { requestPersist } from './db.js';
-import { LessonView } from './views/lesson.js?v=step1-script-v1';
+import { LessonView } from './views/lesson.js?v=repeat-sentence-v1';
 import { libraryView } from './views/library.js';
 import { mineView, newLessonView, editLessonView, destroyEditor } from './views/editor.js';
 import { recordingsView, recordingDetailView, destroyRecView } from './views/recview.js';
