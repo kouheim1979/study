@@ -60,16 +60,20 @@ ELLLO（A2 など）や QQEnglish Basic English Book 3 など、**利用規約�
 
 ### 同梱サンプルを追加・作り直す（開発者向け）
 
-サンプルは `tools/samples_content.py` に本文・和訳・解説・単語・確認問題を書き、`tools/build_samples.py` で音声と JSON を生成しています。
-文ごとに音声合成し、合成エンジンの単語タイミングからチャンクの開始・終了を求めるので、時刻がずれません。
+サンプル本文・和訳・解説・単語は `tools/samples_content.py` に記録しています。新しいお手本音声は **Kokoro-82M / af_heart（アメリカ英語）** で生成しており、元の教材の文を一語も書き換えず、音声のある23文と27単語を別々のMP3として保持します。既存プレーヤーのチャンク再生・録音比較を使えるよう、4教材それぞれに文章用と単語用の連続MP3（計8ファイル）も自動生成しています。
 
 ```bash
-sudo apt-get install festival festvox-us-slt-hts ffmpeg
-python3 shadowing-studio/tools/build_samples.py
+# GitHub Actions で自動生成: .github/workflows/build-shadowing-kokoro.yml
+# 手動なら Python 3.11+, ffmpeg, espeak-ng, kokoro, soundfile, numpy が必要
+python3 shadowing/generate_shadowing_kokoro.py
+python3 shadowing-studio/tools/install_kokoro_samples.py
 ```
 
-生成物: `samples/<id>.json`、`samples/audio/<id>.mp3`（本文）、`samples/audio/<id>-words.mp3`（単語）、`samples/index.json`（一覧）。
-配布の許諾がない教材をここに追加しないでください。サンプルを追加・変更したら `sw.js` の `VERSION` と `PRECACHE` も更新してください。
+生成物: `samples/audio/<教材ID>_01.mp3` 等の文23ファイル、`samples/audio/<教材ID>_w_<単語>.mp3` の単語27ファイル、教材用の8連続音声、教材JSON、`samples/index.json`、`samples/kokoro-alignment.json`。キャッシュ版は `sw.js` で管理します。
+
+**チャンク時刻について:** Kokoroの音素継続時間予測から求めたモデル推定値を使用しています。人手や音響的強制アラインメントで検証済みの「正確な時刻」ではありません。チャンク再生では数十〜数百ミリ秒程度のずれが生じる可能性があります。元の50音声ZIPの `chunk_timings.csv` では、検証できない位置を「出せない」としています。公開前の試聴・調整を推奨します。
+
+古いFestival版の再生成スクリプト `tools/build_samples.py` は参照用に残していますが、実行すると旧音声で上書きされるので注意してください。
 
 ## GitHub Pages の設定手順
 
@@ -121,4 +125,4 @@ BASE=http://127.0.0.1:8080/shadowing-studio/ node shadowing-studio/tests/e2e.cjs
 
 - 学習手順（台本なしリスニング → 単語 → チャンク理解 → リピーティング → シャドーイング → 理解確認）は、ENGLISH COMPANY が公開している「シャドプラス」のトレーニングの流れを参考にしています。本アプリは同社とは無関係の独立したアプリで、名称・画面・教材はすべて独自に作成したものです。同サービスの教材・音声・画像は含みません。
 - 同梱サンプルの英文・和訳・解説・確認問題はこのアプリのためのオリジナルです（[LICENSE-SAMPLES.md](LICENSE-SAMPLES.md)）。
-- サンプル音声は CMU ARCTIC「slt」話者の HTS 音声（Festival / `festvox-us-slt-hts`、目的を問わず使用・複製・改変を認めるライセンス）による合成音声です。合成音声のため、解説にある弾音化・連結などの音声変化は完全には再現されません。解説は一般的な傾向として読んでください。
+- サンプル音声は Kokoro-82M（Apache-2.0）の `af_heart` 話者によるAI合成音声です。50個の単体MP3と8本のアプリ用連続音声を含みます。ネイティブ話者の録音ではなく、自然な連結・弱形をすべて保証するものではありません。チャンク境界はモデル推定で、精密な実測値ではありません。詳しくは [LICENSE-SAMPLES.md](LICENSE-SAMPLES.md) を参照してください。

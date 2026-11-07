@@ -1,281 +1,282 @@
 {
- "id": "s01-morning-routine",
- "title": "My Morning Routine",
- "titleJa": "わたしの朝の習慣",
- "level": "A1",
- "theme": "日常",
- "description": "起きてから家を出るまでの朝の流れ。基本動詞と時刻表現を練習します。",
- "audio": "samples/audio/s01-morning-routine.mp3",
- "wordsAudio": "samples/audio/s01-morning-routine-words.mp3",
- "duration": 18.51,
- "chunks": [
-  {
-   "id": "c1",
-   "start": 0.405,
-   "end": 1.02,
-   "en": "I get up",
-   "ja": "私は起きる",
-   "note": "get up は t と u がつながり、t が弾音化して「ゲラップ」に近く聞こえます。",
-   "sentence": 0
+  "id": "s01-morning-routine",
+  "title": "My Morning Routine",
+  "titleJa": "わたしの朝の習慣",
+  "level": "A1",
+  "theme": "日常",
+  "description": "起きてから家を出るまでの朝の流れ。基本動詞と時刻表現を練習します。",
+  "audio": "samples/audio/s01-morning-routine.mp3",
+  "wordsAudio": "samples/audio/s01-morning-routine-words.mp3",
+  "duration": 25.783,
+  "chunks": [
+    {
+      "id": "c1",
+      "start": 0.08,
+      "end": 0.84,
+      "en": "I get up",
+      "ja": "私は起きる",
+      "note": "get up は t と u がつながり、t が弾音化して「ゲラップ」に近く聞こえます。",
+      "sentence": 0
+    },
+    {
+      "id": "c2",
+      "start": 0.84,
+      "end": 2.314,
+      "en": "at six thirty",
+      "ja": "6時半に",
+      "note": "at の t は次の s の前でほとんど聞こえません（脱落）。",
+      "sentence": 0
+    },
+    {
+      "id": "c3",
+      "start": 2.314,
+      "end": 3.816,
+      "en": "every morning.",
+      "ja": "毎朝",
+      "note": "every は「エヴリ」と2音節で。e にアクセント。",
+      "sentence": 0
+    },
+    {
+      "id": "c4",
+      "start": 4.196,
+      "end": 5.189,
+      "en": "First,",
+      "ja": "まず",
+      "note": "語末の st は母音を入れずに「ファースト」ではなく「ファ～スt」。",
+      "sentence": 1
+    },
+    {
+      "id": "c5",
+      "start": 5.189,
+      "end": 7.03,
+      "en": "I open the window",
+      "ja": "窓を開ける",
+      "note": "open the：n の舌の位置のまま th に移ります。",
+      "sentence": 1
+    },
+    {
+      "id": "c6",
+      "start": 7.03,
+      "end": 9.316,
+      "en": "and drink a glass of water.",
+      "ja": "そして水を1杯飲む",
+      "note": "and は弱く「ン」程度。drink a →「ドリンカ」、glass of →「グラサヴ」、water の t は弾音で「ワーラー」に近い。",
+      "sentence": 1
+    },
+    {
+      "id": "c7",
+      "start": 9.696,
+      "end": 12.31,
+      "en": "Then I make some toast",
+      "ja": "それからトーストを作る",
+      "note": "make some：k を軽く止めて s へ。some は弱く短く。",
+      "sentence": 2
+    },
+    {
+      "id": "c8",
+      "start": 12.31,
+      "end": 13.855,
+      "en": "and check the news",
+      "ja": "ニュースを確認する",
+      "note": "check the：k のあとすぐ th へ。the は弱く「ザ」。",
+      "sentence": 2
+    },
+    {
+      "id": "c9",
+      "start": 13.855,
+      "end": 15.286,
+      "en": "on my phone.",
+      "ja": "スマホで",
+      "note": "on my：n と m が続くので口を閉じる準備を早めに。",
+      "sentence": 2
+    },
+    {
+      "id": "c10",
+      "start": 15.666,
+      "end": 17.314,
+      "en": "I leave home",
+      "ja": "家を出る",
+      "note": "leave は長い「リーヴ」。live（リヴ）と区別。",
+      "sentence": 3
+    },
+    {
+      "id": "c11",
+      "start": 17.314,
+      "end": 19.401,
+      "en": "at a quarter to eight.",
+      "ja": "8時15分前に",
+      "note": "at a →「アラ」（t の弾音化）。to は弱形で「タ」。",
+      "sentence": 3
+    },
+    {
+      "id": "c12",
+      "start": 19.781,
+      "end": 22.4,
+      "en": "It's a simple routine,",
+      "ja": "シンプルな習慣だが",
+      "note": "It's a →「イツァ」とつながります。routine は後ろの「ティーン」を強く。",
+      "sentence": 4
+    },
+    {
+      "id": "c13",
+      "start": 22.4,
+      "end": 23.631,
+      "en": "but it helps me",
+      "ja": "それは私の助けになる",
+      "note": "but it →「バリッ」。t の弾音化と語末 t の脱落。",
+      "sentence": 4
+    },
+    {
+      "id": "c14",
+      "start": 23.631,
+      "end": 25.371,
+      "en": "start the day well.",
+      "ja": "1日をうまく始めるのに",
+      "note": "start the：語末の t はほぼ飲み込まれて th へ。",
+      "sentence": 4
+    }
+  ],
+  "sentences": [
+    {
+      "en": "I get up at six thirty every morning.",
+      "ja": "私は毎朝6時半に起きます。",
+      "chunkIds": [
+        "c1",
+        "c2",
+        "c3"
+      ]
+    },
+    {
+      "en": "First, I open the window and drink a glass of water.",
+      "ja": "まず窓を開けて、水を1杯飲みます。",
+      "chunkIds": [
+        "c4",
+        "c5",
+        "c6"
+      ]
+    },
+    {
+      "en": "Then I make some toast and check the news on my phone.",
+      "ja": "それからトーストを焼いて、スマホでニュースを確認します。",
+      "chunkIds": [
+        "c7",
+        "c8",
+        "c9"
+      ]
+    },
+    {
+      "en": "I leave home at a quarter to eight.",
+      "ja": "8時15分前（7時45分）に家を出ます。",
+      "chunkIds": [
+        "c10",
+        "c11"
+      ]
+    },
+    {
+      "en": "It's a simple routine, but it helps me start the day well.",
+      "ja": "シンプルな習慣ですが、1日をうまく始めるのに役立っています。",
+      "chunkIds": [
+        "c12",
+        "c13",
+        "c14"
+      ]
+    }
+  ],
+  "words": [
+    {
+      "w": "routine",
+      "ipa": "/ruːˈtiːn/",
+      "pos": "名",
+      "ja": "日課、決まった手順",
+      "tip": "後半の「ティーン」に強勢。",
+      "start": 0.08,
+      "end": 0.916,
+      "chunkId": "c12"
+    },
+    {
+      "w": "glass",
+      "ipa": "/ɡlæs/",
+      "pos": "名",
+      "ja": "コップ、グラス1杯",
+      "tip": "a は「ア」と「エ」の中間の口で。",
+      "start": 1.266,
+      "end": 1.997,
+      "chunkId": "c6"
+    },
+    {
+      "w": "toast",
+      "ipa": "/toʊst/",
+      "pos": "名",
+      "ja": "トースト",
+      "tip": "「トウスト」と二重母音で。",
+      "start": 2.347,
+      "end": 3.079,
+      "chunkId": "c7"
+    },
+    {
+      "w": "check",
+      "ipa": "/tʃek/",
+      "pos": "動",
+      "ja": "確認する",
+      "tip": "語末の k は息だけ軽く。",
+      "start": 3.429,
+      "end": 4.056,
+      "chunkId": "c8"
+    },
+    {
+      "w": "leave",
+      "ipa": "/liːv/",
+      "pos": "動",
+      "ja": "出発する、去る",
+      "tip": "長母音。live /lɪv/ と区別。",
+      "start": 4.406,
+      "end": 5.085,
+      "chunkId": "c10"
+    },
+    {
+      "w": "quarter",
+      "ipa": "/ˈkwɔːrtər/",
+      "pos": "名",
+      "ja": "4分の1、15分",
+      "tip": "t は弾音化して「クウォーラー」に近く聞こえることも。",
+      "start": 5.435,
+      "end": 6.166,
+      "chunkId": "c11"
+    }
+  ],
+  "quiz": [
+    {
+      "q": "話し手は何時に起きますか。",
+      "choices": [
+        "6時",
+        "6時半",
+        "7時45分"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "話し手が最初にすることは何ですか。",
+      "choices": [
+        "窓を開けて水を飲む",
+        "トーストを作る",
+        "ニュースを確認する"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "話し手は何時に家を出ますか。",
+      "choices": [
+        "7時15分",
+        "7時45分",
+        "8時15分"
+      ],
+      "answer": 1
+    }
+  ],
+  "source": {
+    "type": "sample",
+    "credit": "Shadowing Studio original lesson; AI voice: Kokoro-82M, af_heart (American English)",
+    "license": "Text CC BY 4.0; Kokoro-82M model Apache 2.0"
   },
-  {
-   "id": "c2",
-   "start": 1.02,
-   "end": 1.88,
-   "en": "at six thirty",
-   "ja": "6時半に",
-   "note": "at の t は次の s の前でほとんど聞こえません（脱落）。",
-   "sentence": 0
-  },
-  {
-   "id": "c3",
-   "start": 1.88,
-   "end": 2.93,
-   "en": "every morning.",
-   "ja": "毎朝",
-   "note": "every は「エヴリ」と2音節で。e にアクセント。",
-   "sentence": 0
-  },
-  {
-   "id": "c4",
-   "start": 3.535,
-   "end": 4.2,
-   "en": "First,",
-   "ja": "まず",
-   "note": "語末の st は母音を入れずに「ファースト」ではなく「ファ～スt」。",
-   "sentence": 1
-  },
-  {
-   "id": "c5",
-   "start": 4.2,
-   "end": 5.503,
-   "en": "I open the window",
-   "ja": "窓を開ける",
-   "note": "open the：n の舌の位置のまま th に移ります。",
-   "sentence": 1
-  },
-  {
-   "id": "c6",
-   "start": 5.503,
-   "end": 7.245,
-   "en": "and drink a glass of water.",
-   "ja": "そして水を1杯飲む",
-   "note": "and は弱く「ン」程度。drink a →「ドリンカ」、glass of →「グラサヴ」、water の t は弾音で「ワーラー」に近い。",
-   "sentence": 1
-  },
-  {
-   "id": "c7",
-   "start": 7.845,
-   "end": 9.263,
-   "en": "Then I make some toast",
-   "ja": "それからトーストを作る",
-   "note": "make some：k を軽く止めて s へ。some は弱く短く。",
-   "sentence": 2
-  },
-  {
-   "id": "c8",
-   "start": 9.263,
-   "end": 10.09,
-   "en": "and check the news",
-   "ja": "ニュースを確認する",
-   "note": "check the：k のあとすぐ th へ。the は弱く「ザ」。",
-   "sentence": 2
-  },
-  {
-   "id": "c9",
-   "start": 10.09,
-   "end": 11.035,
-   "en": "on my phone.",
-   "ja": "スマホで",
-   "note": "on my：n と m が続くので口を閉じる準備を早めに。",
-   "sentence": 2
-  },
-  {
-   "id": "c10",
-   "start": 11.645,
-   "end": 12.265,
-   "en": "I leave home",
-   "ja": "家を出る",
-   "note": "leave は長い「リーヴ」。live（リヴ）と区別。",
-   "sentence": 3
-  },
-  {
-   "id": "c11",
-   "start": 12.265,
-   "end": 13.705,
-   "en": "at a quarter to eight.",
-   "ja": "8時15分前に",
-   "note": "at a →「アラ」（t の弾音化）。to は弱形で「タ」。",
-   "sentence": 3
-  },
-  {
-   "id": "c12",
-   "start": 14.31,
-   "end": 15.823,
-   "en": "It's a simple routine,",
-   "ja": "シンプルな習慣だが",
-   "note": "It's a →「イツァ」とつながります。routine は後ろの「ティーン」を強く。",
-   "sentence": 4
-  },
-  {
-   "id": "c13",
-   "start": 15.823,
-   "end": 16.635,
-   "en": "but it helps me",
-   "ja": "それは私の助けになる",
-   "note": "but it →「バリッ」。t の弾音化と語末 t の脱落。",
-   "sentence": 4
-  },
-  {
-   "id": "c14",
-   "start": 16.635,
-   "end": 17.9,
-   "en": "start the day well.",
-   "ja": "1日をうまく始めるのに",
-   "note": "start the：語末の t はほぼ飲み込まれて th へ。",
-   "sentence": 4
-  }
- ],
- "sentences": [
-  {
-   "en": "I get up at six thirty every morning.",
-   "ja": "私は毎朝6時半に起きます。",
-   "chunkIds": [
-    "c1",
-    "c2",
-    "c3"
-   ]
-  },
-  {
-   "en": "First, I open the window and drink a glass of water.",
-   "ja": "まず窓を開けて、水を1杯飲みます。",
-   "chunkIds": [
-    "c4",
-    "c5",
-    "c6"
-   ]
-  },
-  {
-   "en": "Then I make some toast and check the news on my phone.",
-   "ja": "それからトーストを焼いて、スマホでニュースを確認します。",
-   "chunkIds": [
-    "c7",
-    "c8",
-    "c9"
-   ]
-  },
-  {
-   "en": "I leave home at a quarter to eight.",
-   "ja": "8時15分前（7時45分）に家を出ます。",
-   "chunkIds": [
-    "c10",
-    "c11"
-   ]
-  },
-  {
-   "en": "It's a simple routine, but it helps me start the day well.",
-   "ja": "シンプルな習慣ですが、1日をうまく始めるのに役立っています。",
-   "chunkIds": [
-    "c12",
-    "c13",
-    "c14"
-   ]
-  }
- ],
- "words": [
-  {
-   "w": "routine",
-   "ipa": "/ruːˈtiːn/",
-   "pos": "名",
-   "ja": "日課、決まった手順",
-   "tip": "後半の「ティーン」に強勢。",
-   "start": 0.345,
-   "end": 1.1,
-   "chunkId": "c12"
-  },
-  {
-   "w": "glass",
-   "ipa": "/ɡlæs/",
-   "pos": "名",
-   "ja": "コップ、グラス1杯",
-   "tip": "a は「ア」と「エ」の中間の口で。",
-   "start": 1.68,
-   "end": 2.26,
-   "chunkId": "c6"
-  },
-  {
-   "w": "toast",
-   "ipa": "/toʊst/",
-   "pos": "名",
-   "ja": "トースト",
-   "tip": "「トウスト」と二重母音で。",
-   "start": 2.795,
-   "end": 3.355,
-   "chunkId": "c7"
-  },
-  {
-   "w": "check",
-   "ipa": "/tʃek/",
-   "pos": "動",
-   "ja": "確認する",
-   "tip": "語末の k は息だけ軽く。",
-   "start": 3.89,
-   "end": 4.44,
-   "chunkId": "c8"
-  },
-  {
-   "w": "leave",
-   "ipa": "/liːv/",
-   "pos": "動",
-   "ja": "出発する、去る",
-   "tip": "長母音。live /lɪv/ と区別。",
-   "start": 4.985,
-   "end": 5.625,
-   "chunkId": "c10"
-  },
-  {
-   "w": "quarter",
-   "ipa": "/ˈkwɔːrtər/",
-   "pos": "名",
-   "ja": "4分の1、15分",
-   "tip": "t は弾音化して「クウォーラー」に近く聞こえることも。",
-   "start": 6.17,
-   "end": 6.965,
-   "chunkId": "c11"
-  }
- ],
- "quiz": [
-  {
-   "q": "話し手は何時に起きますか。",
-   "choices": [
-    "6時",
-    "6時半",
-    "7時45分"
-   ],
-   "answer": 1
-  },
-  {
-   "q": "話し手が最初にすることは何ですか。",
-   "choices": [
-    "窓を開けて水を飲む",
-    "トーストを作る",
-    "ニュースを確認する"
-   ],
-   "answer": 0
-  },
-  {
-   "q": "話し手は何時に家を出ますか。",
-   "choices": [
-    "7時15分",
-    "7時45分",
-    "8時15分"
-   ],
-   "answer": 1
-  }
- ],
- "source": {
-  "type": "sample",
-  "credit": "Shadowing Studio オリジナル教材。音声は CMU ARCTIC slt 音声（Festival HTS）による合成。",
-  "license": "CC BY 4.0（本文・訳・解説）／音声は合成音声（再配布可）"
- }
+  "timingMethod": "kokoro_predicted_token_durations_approximate"
 }

@@ -1,337 +1,338 @@
 {
- "id": "s02-kyoto-weekend",
- "title": "A Weekend in Kyoto",
- "titleJa": "京都で過ごした週末",
- "level": "A2",
- "theme": "旅行",
- "description": "過去形で旅行の思い出を語ります。to の弱形や語末 t の変化が多く出てきます。",
- "audio": "samples/audio/s02-kyoto-weekend.mp3",
- "wordsAudio": "samples/audio/s02-kyoto-weekend-words.mp3",
- "duration": 25.795,
- "chunks": [
-  {
-   "id": "c1",
-   "start": 0.395,
-   "end": 1.523,
-   "en": "Last weekend,",
-   "ja": "先週末",
-   "note": "Last の t は次の w の前で脱落しやすく「ラスウィークエン」。",
-   "sentence": 0
+  "id": "s02-kyoto-weekend",
+  "title": "A Weekend in Kyoto",
+  "titleJa": "京都で過ごした週末",
+  "level": "A2",
+  "theme": "旅行",
+  "description": "過去形で旅行の思い出を語ります。to の弱形や語末 t の変化が多く出てきます。",
+  "audio": "samples/audio/s02-kyoto-weekend.mp3",
+  "wordsAudio": "samples/audio/s02-kyoto-weekend-words.mp3",
+  "duration": 34.952,
+  "chunks": [
+    {
+      "id": "c1",
+      "start": 0.08,
+      "end": 1.829,
+      "en": "Last weekend,",
+      "ja": "先週末",
+      "note": "Last の t は次の w の前で脱落しやすく「ラスウィークエン」。",
+      "sentence": 0
+    },
+    {
+      "id": "c2",
+      "start": 1.829,
+      "end": 3.894,
+      "en": "I took a train to Kyoto",
+      "ja": "京都まで電車で行った",
+      "note": "took a →「トゥカ」。to は弱く「タ」。",
+      "sentence": 0
+    },
+    {
+      "id": "c3",
+      "start": 3.894,
+      "end": 5.2,
+      "en": "with my sister.",
+      "ja": "妹と",
+      "note": "with my：th を短く、すぐ m へ。",
+      "sentence": 0
+    },
+    {
+      "id": "c4",
+      "start": 5.58,
+      "end": 6.95,
+      "en": "We wanted to visit",
+      "ja": "訪れたかった",
+      "note": "wanted to →「ウォンティッタ」。nt の t が弱まり「ウォニッタ」にも。",
+      "sentence": 1
+    },
+    {
+      "id": "c5",
+      "start": 6.95,
+      "end": 8.804,
+      "en": "some old temples",
+      "ja": "古いお寺をいくつか",
+      "note": "some old →「サモウルド」。m と o がつながります。",
+      "sentence": 1
+    },
+    {
+      "id": "c6",
+      "start": 8.804,
+      "end": 10.7,
+      "en": "before it got crowded.",
+      "ja": "混雑する前に",
+      "note": "it got：語末 t は破裂させず止めるだけ。",
+      "sentence": 1
+    },
+    {
+      "id": "c7",
+      "start": 11.08,
+      "end": 13.436,
+      "en": "So we got up early",
+      "ja": "それで早起きした",
+      "note": "got up →「ガラップ」。up early もつながって「アッパーリー」。",
+      "sentence": 2
+    },
+    {
+      "id": "c8",
+      "start": 13.436,
+      "end": 16.114,
+      "en": "and arrived at the first temple",
+      "ja": "最初のお寺に到着した",
+      "note": "arrived at →「アライヴダッ」。d と a がつながります。",
+      "sentence": 2
+    },
+    {
+      "id": "c9",
+      "start": 16.114,
+      "end": 17.114,
+      "en": "at eight.",
+      "ja": "8時に",
+      "note": "at eight →「アレイ(ト)」。",
+      "sentence": 2
+    },
+    {
+      "id": "c10",
+      "start": 17.494,
+      "end": 19.011,
+      "en": "It was quiet,",
+      "ja": "静かだった",
+      "note": "It was →「イッワズ」。was は弱形。quiet は「クワイエット」の2音節。",
+      "sentence": 3
+    },
+    {
+      "id": "c11",
+      "start": 19.011,
+      "end": 20.325,
+      "en": "and the morning air",
+      "ja": "そして朝の空気は",
+      "note": "morning air →「モーニンゲア」。",
+      "sentence": 3
+    },
+    {
+      "id": "c12",
+      "start": 20.325,
+      "end": 22.144,
+      "en": "felt really fresh.",
+      "ja": "とても新鮮に感じた",
+      "note": "felt の t は次の r の前で弱まります。",
+      "sentence": 3
+    },
+    {
+      "id": "c13",
+      "start": 22.524,
+      "end": 24.375,
+      "en": "In the afternoon,",
+      "ja": "午後は",
+      "note": "In the：n と th は舌の位置が近いのでなめらかに。",
+      "sentence": 4
+    },
+    {
+      "id": "c14",
+      "start": 24.375,
+      "end": 26.617,
+      "en": "we tried green tea sweets",
+      "ja": "抹茶のお菓子を試した",
+      "note": "tried green：d を止めてすぐ gr へ。",
+      "sentence": 4
+    },
+    {
+      "id": "c15",
+      "start": 26.617,
+      "end": 28.114,
+      "en": "at a small shop.",
+      "ja": "小さなお店で",
+      "note": "at a →「アラ」。",
+      "sentence": 4
+    },
+    {
+      "id": "c16",
+      "start": 28.494,
+      "end": 31.086,
+      "en": "It was a short trip,",
+      "ja": "短い旅行だったが",
+      "note": "was a →「ワザ」。",
+      "sentence": 5
+    },
+    {
+      "id": "c17",
+      "start": 31.086,
+      "end": 33.284,
+      "en": "but I want to go back",
+      "ja": "また行きたい",
+      "note": "but I →「バライ」。want to →「ワナ」に近く聞こえます。",
+      "sentence": 5
+    },
+    {
+      "id": "c18",
+      "start": 33.284,
+      "end": 34.529,
+      "en": "in autumn.",
+      "ja": "秋に",
+      "note": "autumn の最後の n は発音しません（黙字）。",
+      "sentence": 5
+    }
+  ],
+  "sentences": [
+    {
+      "en": "Last weekend, I took a train to Kyoto with my sister.",
+      "ja": "先週末、妹と電車で京都へ行きました。",
+      "chunkIds": [
+        "c1",
+        "c2",
+        "c3"
+      ]
+    },
+    {
+      "en": "We wanted to visit some old temples before it got crowded.",
+      "ja": "混雑する前に古いお寺をいくつか訪れたかったのです。",
+      "chunkIds": [
+        "c4",
+        "c5",
+        "c6"
+      ]
+    },
+    {
+      "en": "So we got up early and arrived at the first temple at eight.",
+      "ja": "そこで早起きして、8時に最初のお寺に着きました。",
+      "chunkIds": [
+        "c7",
+        "c8",
+        "c9"
+      ]
+    },
+    {
+      "en": "It was quiet, and the morning air felt really fresh.",
+      "ja": "静かで、朝の空気がとても新鮮に感じられました。",
+      "chunkIds": [
+        "c10",
+        "c11",
+        "c12"
+      ]
+    },
+    {
+      "en": "In the afternoon, we tried green tea sweets at a small shop.",
+      "ja": "午後は小さなお店で抹茶のお菓子を食べてみました。",
+      "chunkIds": [
+        "c13",
+        "c14",
+        "c15"
+      ]
+    },
+    {
+      "en": "It was a short trip, but I want to go back in autumn.",
+      "ja": "短い旅行でしたが、秋にまた行きたいです。",
+      "chunkIds": [
+        "c16",
+        "c17",
+        "c18"
+      ]
+    }
+  ],
+  "words": [
+    {
+      "w": "weekend",
+      "ipa": "/ˈwiːkend/",
+      "pos": "名",
+      "ja": "週末",
+      "tip": "前の「ウィーク」に強勢。",
+      "start": 0.08,
+      "end": 0.942,
+      "chunkId": "c1"
+    },
+    {
+      "w": "temple",
+      "ipa": "/ˈtempəl/",
+      "pos": "名",
+      "ja": "寺",
+      "tip": "語末は「ポー」ではなく暗い L で軽く。",
+      "start": 1.292,
+      "end": 1.997,
+      "chunkId": "c8"
+    },
+    {
+      "w": "crowded",
+      "ipa": "/ˈkraʊdɪd/",
+      "pos": "形",
+      "ja": "混雑した",
+      "tip": "「クラウディッド」。ow は「アウ」。",
+      "start": 2.347,
+      "end": 3.027,
+      "chunkId": "c6"
+    },
+    {
+      "w": "arrive",
+      "ipa": "/əˈraɪv/",
+      "pos": "動",
+      "ja": "到着する",
+      "tip": "後ろの「ライヴ」に強勢。",
+      "start": 3.377,
+      "end": 4.134,
+      "chunkId": null
+    },
+    {
+      "w": "quiet",
+      "ipa": "/ˈkwaɪət/",
+      "pos": "形",
+      "ja": "静かな",
+      "tip": "2音節。quite（クワイト）と区別。",
+      "start": 4.484,
+      "end": 5.189,
+      "chunkId": "c10"
+    },
+    {
+      "w": "fresh",
+      "ipa": "/freʃ/",
+      "pos": "形",
+      "ja": "新鮮な",
+      "tip": "sh は唇を少し突き出して。",
+      "start": 5.539,
+      "end": 6.245,
+      "chunkId": "c12"
+    },
+    {
+      "w": "autumn",
+      "ipa": "/ˈɔːtəm/",
+      "pos": "名",
+      "ja": "秋",
+      "tip": "最後の n は読まない。",
+      "start": 6.595,
+      "end": 7.274,
+      "chunkId": "c18"
+    }
+  ],
+  "quiz": [
+    {
+      "q": "話し手は誰と京都へ行きましたか。",
+      "choices": [
+        "友だち",
+        "妹",
+        "母"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "なぜ早起きしたのですか。",
+      "choices": [
+        "混む前にお寺を訪れるため",
+        "電車に乗り遅れないため",
+        "お菓子を買うため"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "話し手はいつまた行きたいと言っていますか。",
+      "choices": [
+        "春",
+        "夏",
+        "秋"
+      ],
+      "answer": 2
+    }
+  ],
+  "source": {
+    "type": "sample",
+    "credit": "Shadowing Studio original lesson; AI voice: Kokoro-82M, af_heart (American English)",
+    "license": "Text CC BY 4.0; Kokoro-82M model Apache 2.0"
   },
-  {
-   "id": "c2",
-   "start": 1.523,
-   "end": 3.225,
-   "en": "I took a train to Kyoto",
-   "ja": "京都まで電車で行った",
-   "note": "took a →「トゥカ」。to は弱く「タ」。",
-   "sentence": 0
-  },
-  {
-   "id": "c3",
-   "start": 3.225,
-   "end": 4.35,
-   "en": "with my sister.",
-   "ja": "妹と",
-   "note": "with my：th を短く、すぐ m へ。",
-   "sentence": 0
-  },
-  {
-   "id": "c4",
-   "start": 4.96,
-   "end": 6.155,
-   "en": "We wanted to visit",
-   "ja": "訪れたかった",
-   "note": "wanted to →「ウォンティッタ」。nt の t が弱まり「ウォニッタ」にも。",
-   "sentence": 1
-  },
-  {
-   "id": "c5",
-   "start": 6.155,
-   "end": 7.415,
-   "en": "some old temples",
-   "ja": "古いお寺をいくつか",
-   "note": "some old →「サモウルド」。m と o がつながります。",
-   "sentence": 1
-  },
-  {
-   "id": "c6",
-   "start": 7.415,
-   "end": 8.9,
-   "en": "before it got crowded.",
-   "ja": "混雑する前に",
-   "note": "it got：語末 t は破裂させず止めるだけ。",
-   "sentence": 1
-  },
-  {
-   "id": "c7",
-   "start": 9.505,
-   "end": 10.947,
-   "en": "So we got up early",
-   "ja": "それで早起きした",
-   "note": "got up →「ガラップ」。up early もつながって「アッパーリー」。",
-   "sentence": 2
-  },
-  {
-   "id": "c8",
-   "start": 10.947,
-   "end": 12.788,
-   "en": "and arrived at the first temple",
-   "ja": "最初のお寺に到着した",
-   "note": "arrived at →「アライヴダッ」。d と a がつながります。",
-   "sentence": 2
-  },
-  {
-   "id": "c9",
-   "start": 12.788,
-   "end": 13.33,
-   "en": "at eight.",
-   "ja": "8時に",
-   "note": "at eight →「アレイ(ト)」。",
-   "sentence": 2
-  },
-  {
-   "id": "c10",
-   "start": 13.935,
-   "end": 14.897,
-   "en": "It was quiet,",
-   "ja": "静かだった",
-   "note": "It was →「イッワズ」。was は弱形。quiet は「クワイエット」の2音節。",
-   "sentence": 3
-  },
-  {
-   "id": "c11",
-   "start": 14.897,
-   "end": 15.74,
-   "en": "and the morning air",
-   "ja": "そして朝の空気は",
-   "note": "morning air →「モーニンゲア」。",
-   "sentence": 3
-  },
-  {
-   "id": "c12",
-   "start": 15.74,
-   "end": 16.91,
-   "en": "felt really fresh.",
-   "ja": "とても新鮮に感じた",
-   "note": "felt の t は次の r の前で弱まります。",
-   "sentence": 3
-  },
-  {
-   "id": "c13",
-   "start": 17.515,
-   "end": 18.613,
-   "en": "In the afternoon,",
-   "ja": "午後は",
-   "note": "In the：n と th は舌の位置が近いのでなめらかに。",
-   "sentence": 4
-  },
-  {
-   "id": "c14",
-   "start": 18.613,
-   "end": 20.17,
-   "en": "we tried green tea sweets",
-   "ja": "抹茶のお菓子を試した",
-   "note": "tried green：d を止めてすぐ gr へ。",
-   "sentence": 4
-  },
-  {
-   "id": "c15",
-   "start": 20.17,
-   "end": 21.35,
-   "en": "at a small shop.",
-   "ja": "小さなお店で",
-   "note": "at a →「アラ」。",
-   "sentence": 4
-  },
-  {
-   "id": "c16",
-   "start": 21.985,
-   "end": 23.208,
-   "en": "It was a short trip,",
-   "ja": "短い旅行だったが",
-   "note": "was a →「ワザ」。",
-   "sentence": 5
-  },
-  {
-   "id": "c17",
-   "start": 23.208,
-   "end": 24.38,
-   "en": "but I want to go back",
-   "ja": "また行きたい",
-   "note": "but I →「バライ」。want to →「ワナ」に近く聞こえます。",
-   "sentence": 5
-  },
-  {
-   "id": "c18",
-   "start": 24.38,
-   "end": 25.19,
-   "en": "in autumn.",
-   "ja": "秋に",
-   "note": "autumn の最後の n は発音しません（黙字）。",
-   "sentence": 5
-  }
- ],
- "sentences": [
-  {
-   "en": "Last weekend, I took a train to Kyoto with my sister.",
-   "ja": "先週末、妹と電車で京都へ行きました。",
-   "chunkIds": [
-    "c1",
-    "c2",
-    "c3"
-   ]
-  },
-  {
-   "en": "We wanted to visit some old temples before it got crowded.",
-   "ja": "混雑する前に古いお寺をいくつか訪れたかったのです。",
-   "chunkIds": [
-    "c4",
-    "c5",
-    "c6"
-   ]
-  },
-  {
-   "en": "So we got up early and arrived at the first temple at eight.",
-   "ja": "そこで早起きして、8時に最初のお寺に着きました。",
-   "chunkIds": [
-    "c7",
-    "c8",
-    "c9"
-   ]
-  },
-  {
-   "en": "It was quiet, and the morning air felt really fresh.",
-   "ja": "静かで、朝の空気がとても新鮮に感じられました。",
-   "chunkIds": [
-    "c10",
-    "c11",
-    "c12"
-   ]
-  },
-  {
-   "en": "In the afternoon, we tried green tea sweets at a small shop.",
-   "ja": "午後は小さなお店で抹茶のお菓子を食べてみました。",
-   "chunkIds": [
-    "c13",
-    "c14",
-    "c15"
-   ]
-  },
-  {
-   "en": "It was a short trip, but I want to go back in autumn.",
-   "ja": "短い旅行でしたが、秋にまた行きたいです。",
-   "chunkIds": [
-    "c16",
-    "c17",
-    "c18"
-   ]
-  }
- ],
- "words": [
-  {
-   "w": "weekend",
-   "ipa": "/ˈwiːkend/",
-   "pos": "名",
-   "ja": "週末",
-   "tip": "前の「ウィーク」に強勢。",
-   "start": 0.345,
-   "end": 1.135,
-   "chunkId": "c1"
-  },
-  {
-   "w": "temple",
-   "ipa": "/ˈtempəl/",
-   "pos": "名",
-   "ja": "寺",
-   "tip": "語末は「ポー」ではなく暗い L で軽く。",
-   "start": 1.705,
-   "end": 2.51,
-   "chunkId": "c8"
-  },
-  {
-   "w": "crowded",
-   "ipa": "/ˈkraʊdɪd/",
-   "pos": "形",
-   "ja": "混雑した",
-   "tip": "「クラウディッド」。ow は「アウ」。",
-   "start": 3.095,
-   "end": 3.88,
-   "chunkId": "c6"
-  },
-  {
-   "w": "arrive",
-   "ipa": "/əˈraɪv/",
-   "pos": "動",
-   "ja": "到着する",
-   "tip": "後ろの「ライヴ」に強勢。",
-   "start": 4.465,
-   "end": 5.285,
-   "chunkId": null
-  },
-  {
-   "w": "quiet",
-   "ipa": "/ˈkwaɪət/",
-   "pos": "形",
-   "ja": "静かな",
-   "tip": "2音節。quite（クワイト）と区別。",
-   "start": 5.83,
-   "end": 6.49,
-   "chunkId": "c10"
-  },
-  {
-   "w": "fresh",
-   "ipa": "/freʃ/",
-   "pos": "形",
-   "ja": "新鮮な",
-   "tip": "sh は唇を少し突き出して。",
-   "start": 7.035,
-   "end": 7.695,
-   "chunkId": "c12"
-  },
-  {
-   "w": "autumn",
-   "ipa": "/ˈɔːtəm/",
-   "pos": "名",
-   "ja": "秋",
-   "tip": "最後の n は読まない。",
-   "start": 8.24,
-   "end": 8.91,
-   "chunkId": "c18"
-  }
- ],
- "quiz": [
-  {
-   "q": "話し手は誰と京都へ行きましたか。",
-   "choices": [
-    "友だち",
-    "妹",
-    "母"
-   ],
-   "answer": 1
-  },
-  {
-   "q": "なぜ早起きしたのですか。",
-   "choices": [
-    "混む前にお寺を訪れるため",
-    "電車に乗り遅れないため",
-    "お菓子を買うため"
-   ],
-   "answer": 0
-  },
-  {
-   "q": "話し手はいつまた行きたいと言っていますか。",
-   "choices": [
-    "春",
-    "夏",
-    "秋"
-   ],
-   "answer": 2
-  }
- ],
- "source": {
-  "type": "sample",
-  "credit": "Shadowing Studio オリジナル教材。音声は CMU ARCTIC slt 音声（Festival HTS）による合成。",
-  "license": "CC BY 4.0（本文・訳・解説）／音声は合成音声（再配布可）"
- }
+  "timingMethod": "kokoro_predicted_token_durations_approximate"
 }

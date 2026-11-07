@@ -1,46 +1,31 @@
-# 同梱サンプル教材のライセンス
+# 同梱シャドーイング教材のライセンス・音声クレジット
 
-`samples/` に含まれる4本の教材
+## オリジナル教材テキスト
 
-- s01-morning-routine「My Morning Routine」
-- s02-kyoto-weekend「A Weekend in Kyoto」
-- s03-working-from-home「Working from Home」
-- s04-daily-walk「A Short Walk Every Day」
+`samples/` に含まれる4本の教材（My Morning Routine / A Weekend in Kyoto / Working from Home / A Short Walk Every Day）の英文、和訳、チャンクの意味、音声変化の解説、単語説明および確認問題は、Shadowing Studio 用に作成したオリジナルです。
 
-の英文・和訳・チャンクの意味・音声変化の解説・単語説明・確認問題は、Shadowing Studio のために書き下ろしたオリジナルです。
-これらのテキストは [クリエイティブ・コモンズ 表示 4.0 国際（CC BY 4.0）](https://creativecommons.org/licenses/by/4.0/deed.ja) で提供します。
-クレジット表記例: 「Shadowing Studio サンプル教材」
+テキストを [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.ja) で提供します。クレジット表記例: 「Shadowing Studio サンプル教材」。
 
-## 音声
+## お手本音声
 
-`samples/audio/*.mp3` は、上記の英文を Festival 音声合成システムと CMU ARCTIC「slt」話者の HTS 音声（Debian パッケージ `festvox-us-slt-hts`）で合成したものです。
-この音声モデルは、どの目的でも無償で使用・複製・改変・ライセンス付与が認められています（著作権表示と免責の保持、改変箇所の明示、原著者名を削除しないこと、が条件）。
-本アプリは音声モデルそのものは改変・同梱しておらず、その出力（合成音声）のみを同梱しています。
-以下は Debian パッケージの copyright ファイルからの抜粋です。
+50個の単体MP3（文23件、単語27件）およびそれらから合成された8本の教材用MP3は、**Kokoro-82M** のアメリカ英語音声 **af_heart** を用いて生成したAI合成音声です。人間のネイティブ話者の録音ではありません。
 
-```
-festvox_us_slt_arctic_hts
-Copyright: 2003 Carnegie Mellon University            License: EST-2003
-Copyright: 2001-2010 Nagoya Institute of Technology, Department of Computer Science
-           2001-2008 Tokyo Institute of Technology    License: BSD-3-clause (feat.list)
+- 音声モデル: [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)
+- モデルライセンス: [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- 生成器: `shadowing/generate_shadowing_kokoro.py`
+- アプリ統合器: `shadowing-studio/tools/install_kokoro_samples.py`
+- 出力仕様: MP3、44.1kHz、モノラル、96kbps
 
-License: EST-2003
-                       All Rights Reserved.
- Permission to use, copy, modify,  and licence this software and its
- documentation for any purpose, is hereby granted without fee,
- subject to the following conditions:
-  1. The code must retain the above copyright notice, this list of
-     conditions and the following disclaimer.
-  2. Any modifications must be clearly marked as such.
-  3. Original authors' names are not deleted.
- THE AUTHORS OF THIS WORK DISCLAIM ALL WARRANTIES WITH REGARD TO
- THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
- AND FITNESS, IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
- SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
- AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
- ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
- THIS SOFTWARE.
-```
+音声モデル自体の重みやソースコードはアプリに含めておらず、生成されたMP3のみ同梱しています。Apache-2.0 ライセンスは商用利用・改変・配布を許可します。モデル再配布時にはライセンスおよび該当する著作権通知の同梱が必要ですが、このリポジトリではモデル自体は再配布していません。
 
-生成手順は `tools/build_samples.py` を参照してください。
+「AI生成音声を使用しています」という明示はモデルのApache-2.0ライセンスだけからは義務付けられません。ただし学習者への透明性のため、本アプリではモデル名を明記しています。
+
+## チャンク位置の精度
+
+文単位の再生と単語単位の区切りは、実際に結合したMP3データから長さを計算しています。一方、文中の意味チャンク（例: get up / at six thirty）はKokoroの**予測トークン継続時間**を用いた概算です。厳密な音響境界として保証しません。
+
+手動または強制アラインメントで正確性を検証した数値が必要な用途では、音声を試聴してチャンク境界を調整してください。音声自体についても、各弱形・連結・脱落音の再現を保証するものではありません。
+
+## 旧音声について
+
+このアプリの初期版は Festival / CMU ARCTIC slt（HTS）で合成した音声を使用していました。現在の配布音声はKokoro版に置き換えられています。旧版生成コード `tools/build_samples.py` は履歴として残しています。
