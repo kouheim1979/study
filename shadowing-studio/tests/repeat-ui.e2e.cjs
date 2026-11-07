@@ -38,6 +38,13 @@ const assert = require('node:assert/strict');
     await page.locator('button:has-text("■ 停止")').click();
     await page.waitForTimeout(300);
     await list.nth(3).locator('.repeat-play').click();
+    console.log('Fourth playback state', await page.evaluate(() => {
+      const v = window.__app.lessonView;
+      return { step: v.step, tok: !!v.tok, time: v.player.time,
+        paused: v.player.paused, range: v.player.range, activeIndex: v.activeRepeatIndex,
+        status: document.querySelector('.repeat-status')?.dataset.kind,
+        rowClasses: document.querySelector('.repeat-unit[data-repeat-index="3"]')?.className };
+    }));
     await page.waitForFunction(() => document.querySelector('.repeat-unit[data-repeat-index="3"]')?.classList.contains('now'), null, { timeout: 5000 });
     await page.waitForTimeout(800);
     const visible = await list.nth(3).evaluate(el => {
