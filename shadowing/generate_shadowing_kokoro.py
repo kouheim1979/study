@@ -79,8 +79,8 @@ def mp3(audio, filename, target_duration=None):
         cmd = ["ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y","-i",str(wav)]
         if target_duration:
             tempo = (len(audio)/24000)/target_duration
-            if .86 < tempo < 1.16:
-                cmd += ["-af", "atempo=%.6f"%tempo]
+            if .4 < tempo < 1.6:
+                cmd += ["-af", "rubberband=tempo=%.6f:transients=smooth"%tempo]
         cmd += ["-ar","44100","-ac","1","-c:a","libmp3lame","-b:a","96k","-write_xing","0",str(filename)]
         subprocess.run(cmd,check=True)
         out = subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=nokey=1:noprint_wrappers=1",str(filename)])
