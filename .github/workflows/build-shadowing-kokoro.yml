@@ -2,7 +2,7 @@ name: Build Kokoro Shadowing Audio ZIP
 on:
   push:
     branches:
-      - shadowing-kokoro-voices-20261107
+      - shadowing-native-slow-better-audio-20261107
     paths:
       - shadowing/generate_shadowing_kokoro.py
       - shadowing-studio/tools/install_kokoro_samples.py
@@ -40,6 +40,12 @@ jobs:
           PY
       - name: Integrate Kokoro audio into Shadowing Studio
         run: python shadowing-studio/tools/install_kokoro_samples.py
+      - name: Check JavaScript syntax
+        run: |
+          node --check shadowing-studio/js/player.js
+          node --check shadowing-studio/js/views/lesson.js
+          node --check shadowing-studio/js/compare.js
+          node --check shadowing-studio/js/lessons.js
       - name: Validate app media and metadata
         run: |
           python - <<'PY'
@@ -48,6 +54,7 @@ jobs:
           root=Path('shadowing-studio/samples')
           idx=json.loads((root/'index.json').read_text())
           assert len(idx['lessons'])==4
+          assert idx['version']==3
           audio=root/'audio'
           assert len(list(audio.glob('*_w_*.mp3')))==27
           assert len(list(audio.glob('s??-*_??.mp3')))==23
@@ -56,10 +63,15 @@ jobs:
             lesson=json.loads((root/(sid+'.json')).read_text())
             assert abs(lesson['duration']-item['duration']) < .02
             assert lesson['timingMethod'].endswith('approximate')
+            assert lesson['audioGeneration']=='native_slow_kokoro_without_waveform_time_stretch'
+            assert lesson['appPlaybackRateAt1x']==1.08
             assert (audio/(sid+'.mp3')).is_file()
             assert (audio/(sid+'-words.mp3')).is_file()
             assert all(c['start'] < c['end'] for c in lesson['chunks'])
-          print('Four lessons, 50 stems, 8 continuous audio files, and timestamps validated')
+          m=json.loads(Path('shadowing_kokoro_out/mp3/manifest.json').read_text())
+          assert not m['slowed_waveform_postprocessing']
+          assert m['format'].endswith('128 kbps')
+          print('Four lessons, 50 stems, 8 continuous tracks, native slow synthesis validated')
           PY
       - name: Commit generated app assets to working branch
         run: |
@@ -68,7 +80,7 @@ jobs:
           git add shadowing-studio/samples shadowing-studio/sw.js
           if ! git diff --cached --quiet; then
             git commit -m "Install Kokoro voices and aligned practice audio for all four lessons"
-            git push origin HEAD:shadowing-kokoro-voices-20261107
+            git push origin HEAD:$GITHUB_REF_NAME
           fi
       - name: Upload downloadable ZIP
         uses: actions/upload-artifact@v4
