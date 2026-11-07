@@ -1,0 +1,53 @@
+{
+ "version": 1,
+ "lessons": [
+  {
+   "id": "s01-morning-routine",
+   "title": "My Morning Routine",
+   "titleJa": "わたしの朝の習慣",
+   "level": "A1",
+   "theme": "日常",
+   "description": "起きてから家を出るまでの朝の流れ。基本動詞と時刻表現を練習します。",
+   "duration": 18.51,
+   "file": "samples/s01-morning-routine.json",
+   "chunkCount": 14,
+   "text": "I get up at six thirty every morning. First, I open the window and drink a glass of water. Then I make some toast and check the news on my phone. I leave home at a quarter to eight. It's a simple routine, but it helps me start the day well."
+  },
+  {
+   "id": "s02-kyoto-weekend",
+   "title": "A Weekend in Kyoto",
+   "titleJa": "京都で過ごした週末",
+   "level": "A2",
+   "theme": "旅行",
+   "description": "過去形で旅行の思い出を語ります。to の弱形や語末 t の変化が多く出てきます。",
+   "duration": 25.795,
+   "file": "samples/s02-kyoto-weekend.json",
+   "chunkCount": 18,
+   "text": "Last weekend, I took a train to Kyoto with my sister. We wanted to visit some old temples before it got crowded. So we got up early and arrived at the first temple at eight. It was quiet, and the morning air felt really fresh. In the afternoon, we tried green tea sweets at a small shop. It was a short trip, but I want to go back in autumn."
+  },
+  {
+   "id": "s03-working-from-home",
+   "title": "Working from Home",
+   "titleJa": "在宅勤務のメリットと課題",
+   "level": "B1",
+   "theme": "仕事",
+   "description": "在宅勤務の良い点と難しい点を比べる説明文。論理をつなぐ表現と弱形を練習します。",
+   "duration": 29.32,
+   "file": "samples/s03-working-from-home.json",
+   "chunkCount": 18,
+   "text": "These days, a lot of people work from home at least a few days a week. It saves time because you don't have to commute. You can also focus better without the noise of a busy office. On the other hand, some people feel lonely and find it hard to stop working. That's why it's important to set clear rules, like when to start and finish. With the right balance, working from home can be both productive and comfortable."
+  },
+  {
+   "id": "s04-daily-walk",
+   "title": "A Short Walk Every Day",
+   "titleJa": "毎日少し歩く",
+   "level": "A2",
+   "theme": "健康",
+   "description": "散歩を習慣にした体験談。黙字（walk の l、listen の t）や前置詞のつながりを練習します。",
+   "duration": 24.67,
+   "file": "samples/s04-daily-walk.json",
+   "chunkCount": 14,
+   "text": "My doctor told me to walk for thirty minutes a day. At first, I thought it would be boring. But now I really enjoy it, especially in the evening. I listen to podcasts and look at the trees and the sky. After a few weeks, I started sleeping better and feeling less tired. Walking is easy, free, and good for both body and mind."
+  }
+ ]
+}
