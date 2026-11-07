@@ -351,3 +351,28 @@ details > summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
   .repeat-unit { gap: 6px; }
   .repeat-start { font-size: .72rem; padding: 6px; }
 }
+
+
+/* Step 4: unmistakable active-sentence glow, retained during the speaking pause. */
+.repeat-unit { scroll-margin-top: 90px; scroll-margin-bottom: 170px; }
+.repeat-unit.now {
+  background: var(--now);
+  border: 2px solid var(--now-line);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--now-line) 30%, transparent),
+              0 0 18px color-mix(in srgb, var(--now-line) 35%, transparent);
+  animation: repeat-glow 1.8s ease-in-out infinite;
+}
+.repeat-unit.now .repeat-unit-label { color: var(--ink); }
+.repeat-unit.now.speaking {
+  animation: none;
+  border-color: var(--rec);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rec) 25%, transparent),
+              0 0 18px color-mix(in srgb, var(--rec) 30%, transparent);
+}
+@keyframes repeat-glow {
+  50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--now-line) 15%, transparent),
+                      0 0 24px color-mix(in srgb, var(--now-line) 45%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .repeat-unit.now { animation: none; }
+}
