@@ -24,7 +24,7 @@ export class LessonView {
   constructor(lesson, app) {
     this.lesson = lesson;
     this.app = app;
-    this.player = new Player();
+    this.player = new Player({ baseRate: lesson.kind === 'sample' ? (lesson.appPlaybackRateAt1x || 1.08) : 1 });
     this.player.setRate(settings().rate || 1);
     this.wordPlayer = null;
     this.step = 0;
@@ -164,7 +164,9 @@ export class LessonView {
     this.durLbl = h('span.time.dur', fmtTime(this.lesson.duration));
     this.playBtn = h('button.btn.round.primary', { 'aria-label': '再生', onclick: () => this.togglePlay() }, '▶');
     const rateSel = h('select.rate', { 'aria-label': '再生速度', onchange: e => { p.setRate(+e.target.value); setSetting('rate', +e.target.value); } },
-      RATES.map(r => h('option', { value: r, selected: r === p.rate }, `${r}x`)));
+      RATES.map(r => h('option', { value: r, selected: r === p.rate },
+        this.lesson.kind === 'sample' && r === 0.9 ? '0.9x（ゆっくり）' :
+        this.lesson.kind === 'sample' && r === 1 ? '1.0x（標準）' : `${r}x`)));
     this.abLbl = h('span.ab-lbl');
     this.abClear = h('button.btn.sm', { onclick: () => p.clearAB(), 'aria-label': 'A–B解除' }, '✕');
     this.abNudge = h('span.ab-nudge',
@@ -505,7 +507,7 @@ export class LessonView {
         await new Promise(res => { this.player._cancel = res; this.player.playRange(c.start, c.end, { onEnd: res }); });
         this.player._cancel = null;
         if (tok.cancel) break;
-        const gap = ((c.end - c.start) / this.player.rate) * repeatGap + 0.4;
+        const gap = ((c.end - c.start) / this.player.effectiveRate) * repeatGap + 0.4;
         const s = this.recorder.elapsed();
         this.setStatus('you', c, gap);
         await new Promise(res => { tok.wake = res; setTimeout(res, gap * 1000); });
@@ -565,7 +567,7 @@ export class LessonView {
     try { await this.recorder.start(); } catch (e) { toast(micErrorMessage(e), 6000); return; }
     this.recBtn.textContent = '■ 録音を終了';
     this.recBtn.classList.add('on');
-    this.recRun = { from, to, rate: p.rate, leadIn: 0 };
+    this.recRun = { from, to, rate: p.effectiveRate, leadIn: 0 };
     const ok = await p.playRange(from, to, { onEnd: () => setTimeout(() => this.finishShadowRec(), 400) });
     this.recRun.leadIn = this.recorder.elapsed();
     if (!ok) {
