@@ -9,7 +9,14 @@ const assert = require('node:assert/strict');
     const failures = [];
     page.on('pageerror', err => failures.push(err.message));
     await page.goto('http://127.0.0.1:8080/shadowing-studio/#/lesson/s01-morning-routine/4');
-    await page.waitForSelector('.repeat-unit', { timeout: 20000 });
+    try {
+      await page.waitForSelector('.repeat-unit', { timeout: 20000 });
+    } catch (error) {
+      console.error('Current URL:', page.url());
+      console.error('Screen text:', (await page.locator('body').innerText().catch(() => '')).slice(0, 3000));
+      console.error('Browser errors:', failures);
+      throw error;
+    }
     const list = page.locator('.repeat-unit');
     assert.equal(await list.count(), 5, 'My Morning Routine should repeat 5 full sentences, not 14 chunks');
     assert.match(await list.first().locator('.tx-en').textContent(), /I get up at six thirty every morning/);
