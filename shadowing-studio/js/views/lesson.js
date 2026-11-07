@@ -251,7 +251,7 @@ export class LessonView {
     const id = c ? c.id : null;
     if (id !== this.lastChunkId) {
       this.lastChunkId = id;
-      $('[data-cid]', this.body).forEach(r => r.classList.toggle('now', r.dataset.cid === id));
+      $$('[data-cid]', this.body).forEach(r => r.classList.toggle('now', r.dataset.cid === id));
       if (id && !this.player.paused && this.follow) {
         const row = this.body.querySelector(`[data-cid="${id}"]`);
         if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
