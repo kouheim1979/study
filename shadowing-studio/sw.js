@@ -1,13 +1,13 @@
 // Offline cache: app shell + bundled samples. Network-first for code, cache-first for audio.
-const VERSION = 'ss-v7-repeat-active-glow';
+const VERSION = 'ss-v8-shadow-follow';
 const PRECACHE = [
  "./",
  "index.html",
- "css/app.css?v=repeat-glow-v2",
+ "css/app.css?v=shadow-follow-v1",
  "manifest.webmanifest",
  "icon.svg",
  "icon-180.png","icon-512.png",
- "js/app.js?v=repeat-glow-v2",
+ "js/app.js?v=shadow-follow-v1",
  "js/util.js",
  "js/db.js",
  "js/lessons.js",
@@ -17,7 +17,7 @@ const PRECACHE = [
  "js/recordings.js",
  "js/compare.js",
  "js/settings.js",
- "js/views/lesson.js?v=repeat-glow-v2",
+ "js/views/lesson.js?v=shadow-follow-v1",
  "js/repeat-units.mjs",
  "js/views/library.js",
  "js/views/editor.js",

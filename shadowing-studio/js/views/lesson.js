@@ -131,6 +131,7 @@ export class LessonView {
         e.currentTarget.setAttribute('aria-pressed', String(settings()[key]));
         $$('.revealed', this.body).forEach(x => x.classList.remove('revealed'));
         this.applyToggles();
+        if (this.step === 5) this.updateShadowFollow();
       },
     }, label);
   }
@@ -242,22 +243,62 @@ export class LessonView {
     if (!playing) this.saveResume();
     if (this.step === 1 && playing && this.player.time < 0.5) this.countListen();
     if (this.step === 4 && !this.tok) this.updateRepeatHighlightFromPlayer();
+    if (this.step === 5 && playing && this.lastChunkId) {
+      const row = this.body.querySelector(`[data-cid="${this.lastChunkId}"]`);
+      if (row) this.ensureShadowChunkVisible(row);
+    }
   }
   onTime() {
     const t = this.player.time;
     if (!this.dragging) { this.seek.max = this.player.duration || this.lesson.duration || 1; this.seek.value = t; this.timeLbl.textContent = fmtTime(t); }
     this.durLbl.textContent = fmtTime(this.player.duration || this.lesson.duration);
-    const c = chunkAt(this.lesson, t);
+    // In Step 5, keep the just-spoken phrase highlighted through short
+    // natural pauses between chunks instead of flashing the glow off.
+    let c = chunkAt(this.lesson, t);
+    if (!c && this.step === 5 && !this.player.paused) {
+      const cs = this.lesson.chunks;
+      const previous = [...cs].reverse().find(x => t >= x.start);
+      if (previous && t < previous.end + 1) c = previous;
+    }
     const id = c ? c.id : null;
     if (id !== this.lastChunkId) {
       this.lastChunkId = id;
       $$('[data-cid]', this.body).forEach(r => r.classList.toggle('now', r.dataset.cid === id));
       if (id && !this.player.paused && this.follow) {
         const row = this.body.querySelector(`[data-cid="${id}"]`);
-        if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        if (row) {
+          if (this.step === 5) this.ensureShadowChunkVisible(row);
+          else row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
       }
     }
+    if (this.step === 5) this.updateShadowFollow(c);
     if (this.step === 4 && !this.tok) this.updateRepeatHighlightFromPlayer();
+  }
+
+  /** A persistent strip shows the current shadowing phrase even when its
+   * original row is obscured by a sticky audio bar on a small iPhone screen. */
+  updateShadowFollow(chunk = null) {
+    if (this.step !== 5 || !this.shadowFollow) return;
+    const c = chunk || this.lesson.chunks.find(x => x.id === this.lastChunkId);
+    this.shadowFollow.dataset.active = c ? 'true' : 'false';
+    this.shadowFollowLabel.textContent = c ? '🔊 今のフレーズ' : '🔊 シャドーイング';
+    this.shadowFollowText.textContent = c
+      ? (settings().showEn ? c.en : '英文は非表示です（上の「英文」で表示できます）')
+      : '▶ を押すと、読み上げ中の英文がここに表示されます';
+  }
+
+  /** Only scroll when the highlighted chunk is actually hidden behind the
+   * top header, sticky phrase strip or bottom player bar. */
+  ensureShadowChunkVisible(row) {
+    const r = row.getBoundingClientRect();
+    const headerBottom = document.querySelector('.topbar')?.getBoundingClientRect().bottom || 0;
+    const follow = this.shadowFollow?.getBoundingClientRect();
+    const top = Math.max(headerBottom, follow?.bottom || 0) + 12;
+    const bottom = Math.min(window.innerHeight, this.bar?.getBoundingClientRect().top || window.innerHeight) - 16;
+    if (r.top < top || r.bottom > bottom) {
+      row.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
   }
 
   /** Highlight the current whole sentence, not the old meaning-chunk rows. */
@@ -359,6 +400,7 @@ export class LessonView {
     this.follow = n === 3 || n === 5;
     this.togglesEl.hidden = n === 1 || n === 2;
     this.root.classList.toggle('step-1', n === 1);
+    this.root.classList.toggle('step-5', n === 5);
     const s = STEPS[n - 1];
     const body = this.body;
     body.replaceChildren(
@@ -611,6 +653,10 @@ export class LessonView {
     this.recState = h('div.rec-state', { 'aria-live': 'polite' });
     this.compareSlot = h('div');
     const recent = h('div.recent');
+    this.shadowFollowLabel = h('strong.shadow-follow-label', '🔊 シャドーイング');
+    this.shadowFollowText = h('span.shadow-follow-text', '▶ を押すと、読み上げ中の英文がここに表示されます');
+    this.shadowFollow = h('div.shadow-follow', { role: 'status', 'aria-live': 'off' },
+      this.shadowFollowLabel, this.shadowFollowText);
     body.append(
       h('div.card',
         h('div.row.wrap.center',
@@ -624,6 +670,7 @@ export class LessonView {
           h('button.btn.sm', { onclick: () => this.importRecording() }, '📁 録音ファイルを取り込む'),
           h('a.btn.sm', { href: '#/recordings' }, '録音一覧'))),
       this.compareSlot,
+      this.shadowFollow,
       h('div.chunks', this.lesson.chunks.map(c => this.chunkRow(c))),
       recent);
     const recs = (await listRecordings(this.lesson.id)).slice(0, 5);
