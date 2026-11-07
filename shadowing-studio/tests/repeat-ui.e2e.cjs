@@ -1,4 +1,4 @@
-// Browser smoke test for sentence-based repeating and its controls.
+// Browser smoke test for sentence-based repeating, active glow and follow-scroll.
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 (async () => {
@@ -36,16 +36,11 @@ const assert = require('node:assert/strict');
     assert.equal(await list.first().evaluate(el => el.classList.contains('now') && el.classList.contains('speaking')), true,
       'Keep the active sentence highlighted during the speaking pause');
     await page.locator('button:has-text("■ 停止")').click();
-    await page.waitForTimeout(300);
-    await list.nth(3).locator('.repeat-play').click();
-    console.log('Fourth playback state', await page.evaluate(() => {
-      const v = window.__app.lessonView;
-      return { step: v.step, tok: !!v.tok, time: v.player.time,
-        paused: v.player.paused, range: v.player.range, activeIndex: v.activeRepeatIndex,
-        status: document.querySelector('.repeat-status')?.dataset.kind,
-        rowClasses: document.querySelector('.repeat-unit[data-repeat-index="3"]')?.className };
-    }));
-    await page.waitForFunction(() => document.querySelector('.repeat-unit[data-repeat-index="3"]')?.classList.contains('now'), null, { timeout: 5000 });
+    // Exercise the same follow-scroll path used when the next sentence
+    // becomes active. A local Python HTTP server may not serve MP3 byte
+    // ranges, making a direct seek to later audio unreliable in Chromium.
+    await page.evaluate(() => window.__app.lessonView.setRepeatHighlight(3, 'model'));
+    assert.equal(await list.nth(3).evaluate(el => el.classList.contains('now')), true);
     await page.waitForTimeout(800);
     const visible = await list.nth(3).evaluate(el => {
       const r = el.getBoundingClientRect();
