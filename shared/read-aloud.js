@@ -6,7 +6,7 @@
   "use strict";
   const TESSERACT = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
   const PREF_KEY = "read-aloud-v1";
-  let pref = { rate: 0.85, times: 2, wait: 1.3, auto: true };
+  let pref = { rate: 0.85, times: 2, wait: 1.3, auto: true, main: true };
   try { Object.assign(pref, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); } catch (e) {}
   const savePref = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(pref)); } catch (e) {} };
 
@@ -39,11 +39,11 @@
   const JA = /[぀-ヿ㐀-鿿！-｠]/g;
   function cleanLine(s) {
     return s.replace(/(^|\s)[|l1](?=\s+[a-z])/g, "$1I") /* OCRの I の読み違い */
-      .replace(/[\u3040-\u30ff\u3400-\u9fff\uff01-\uff60]+[0-9０-９]*/g, " ").replace(/[•●▪■□◆◇★☆▶►→⇒※]/g, " ").replace(/[“”]/g, '"').replace(/[‘’]/g, "'")
+      .replace(/[\u3000-\u30ff\u3400-\u9fff\uff01-\uff60]+[0-9０-９]*/g, " ").replace(/[•●▪■□◆◇★☆▶►→⇒※]/g, " ").replace(/[“”]/g, '"').replace(/[‘’]/g, "'")
       .replace(/\s+([,.!?;:])/g, "$1").replace(/\s+/g, " ").trim();
   }
-  function toSentences(lines) {
-    const out = [];
+  function toSentences(lines, keepLines) {
+    const out = [], whole = new Set();
     let buf = "";
     const push = s => {
       s = s.trim().replace(/^[\-–—:;,.\d\)\(\[\]\s]+(?=[A-Za-z"'])/, "");
@@ -62,14 +62,21 @@
         line.replace(/^\d+[.)]\s+/, "").split(/\s+\d+[.)]\s+/).forEach(x => push(x)); continue;
       }
       if (!line || !/[A-Za-z]/.test(line)) { if (buf) { push(buf); buf = ""; } continue; }
+      /* 「Change 〜」の行は分けずに1つのまま */
+      if (/^change\b/i.test(line)) { if (buf) { if (keepLines) whole.add(buf); push(buf); buf = ""; } whole.add(line.trim()); push(line); continue; }
+      if (keepLines) { /* 行ごとにまとめる（折り返しはつなげる） */
+        if (buf && !/[.!?]["')]?$/.test(buf)) buf += " " + line; else { if (buf) { whole.add(buf); push(buf); } buf = line; }
+        continue;
+      }
+      if (false) { if (buf) { push(buf); buf = ""; } whole.add(line.trim()); push(line); continue; }
       /* 前の行が文の途中で、この行が小文字で始まるならつなげる */
       if (buf && !/[.!?:"')]$/.test(buf) && /^[a-z]/.test(line)) buf += " " + line;
       else { if (buf) push(buf); buf = line; }
       if (/[.!?]["')]?$/.test(buf)) { push(buf); buf = ""; }
     }
-    if (buf) push(buf);
+    if (buf) { if (keepLines) whole.add(buf); push(buf); }
     /* 1行に複数の文があれば分ける */
-    return out.flatMap(s => s.split(/(?<=[a-z0-9"')][.!?])\s+(?=[A-Z"'])/)).map(s => s.trim()).filter(s => /[A-Za-z]{2,}/.test(s));
+    return out.flatMap(s => whole.has(s) ? [s] : s.split(/(?<=[a-z0-9"')][.!?])\s+(?=[A-Z"'])/)).map(s => s.trim()).filter(s => /[A-Za-z]{2,}/.test(s));
   }
   async function textFromDoc(doc, n) {
     const pg = await doc.getPage(n);
@@ -79,11 +86,22 @@
       if (!it.str || !it.str.trim()) continue;
       const y = it.transform[5], x = it.transform[4], h = Math.abs(it.transform[3]) || it.height || 10;
       let L = lines.find(l => Math.abs(l.y - y) <= Math.max(2, h * 0.45));
-      if (!L) { L = { y, parts: [] }; lines.push(L); }
+      if (!L) { L = { y, h: 0, parts: [] }; lines.push(L); }
+      L.h = Math.max(L.h, h);
       L.parts.push({ x, s: it.str });
     }
     lines.sort((a, b) => b.y - a.y);
-    return lines.map(l => l.parts.sort((a, b) => a.x - b.x).map(p => p.s).join(" "));
+    const [, y0, , y1] = pg.view, H = (y1 - y0) || 1;
+    return lines.map(l => ({ s: l.parts.sort((a, b) => a.x - b.x).map(p => p.s).join(" "), h: l.h, cy: 1 - (l.y - y0) / H }));
+  }
+  /* まん中の文だけ：ページ中央付近でいちばん大きい文字の行を選ぶ */
+  function pickMain(lines) {
+    const en = lines.filter(l => (l.s.match(/[A-Za-z]/g) || []).length >= 2);
+    const mid = en.filter(l => l.cy > 0.1 && l.cy < 0.92);
+    const pool = mid.length ? mid : en;
+    const maxH = Math.max(0, ...pool.map(l => l.h));
+    const main = pool.filter(l => l.h >= maxH * 0.78 || /^\W*change\b/i.test(l.s));
+    return main.length ? main : en;
   }
   function loadTesseract() {
     return ocrP || (ocrP = new Promise((ok, ng) => {
@@ -97,7 +115,10 @@
   async function textFromImage(src) {
     const T = await loadTesseract();
     const r = await T.recognize(src, "eng");
-    return (r.data.lines && r.data.lines.length ? r.data.lines.map(l => l.text) : r.data.text.split("\n")).filter(l => (l.match(/[A-Za-z]/g) || []).length >= 2);
+    const ls = (r.data.lines || []).filter(l => (l.text.match(/[A-Za-z]/g) || []).length >= 2);
+    if (!ls.length) return r.data.text.split("\n").map(t => ({ s: t, h: 1, cy: .5 })).filter(l => (l.s.match(/[A-Za-z]/g) || []).length >= 2);
+    const H = (src.height || src.naturalHeight || Math.max(...ls.map(l => l.bbox.y1)) * 1.05) || 1;
+    return ls.map(l => ({ s: l.text, h: l.bbox.y1 - l.bbox.y0, cy: (l.bbox.y0 + l.bbox.y1) / 2 / H }));
   }
 
   /* ===== 画面 ===== */
@@ -134,17 +155,20 @@
         <label>はやさ<select class="ra-rate"><option value="0.7">ゆっくり</option><option value="0.85">ふつう</option><option value="1">はやい</option></select></label>
         <label>きく<select class="ra-times"><option value="1">1回</option><option value="2">2回</option><option value="3">3回</option></select></label>
         <label>いう時間<select class="ra-wait"><option value="1">みじかめ</option><option value="1.3">ふつう</option><option value="1.8">ながめ</option></select></label>
+        <label><input type="checkbox" class="ra-main"> まん中の文だけ</label>
         <label><input type="checkbox" class="ra-auto"> 次のページも</label>
       </div>
       <div class="ra-list"></div>`;
     document.body.append(p);
     const q = s => p.querySelector(s);
-    ui = { p, status: q(".ra-status"), bar: q(".ra-bar i"), go: q(".ra-go"), list: q(".ra-list"), rate: q(".ra-rate"), times: q(".ra-times"), wait: q(".ra-wait"), auto: q(".ra-auto") };
+    ui = { p, status: q(".ra-status"), bar: q(".ra-bar i"), go: q(".ra-go"), list: q(".ra-list"), rate: q(".ra-rate"), times: q(".ra-times"), wait: q(".ra-wait"), auto: q(".ra-auto"), main: q(".ra-main") };
     ui.rate.value = String(pref.rate); ui.times.value = String(pref.times); ui.wait.value = String(pref.wait); ui.auto.checked = !!pref.auto;
     ui.rate.onchange = () => { pref.rate = +ui.rate.value; savePref(); };
     ui.times.onchange = () => { pref.times = +ui.times.value; savePref(); };
     ui.wait.onchange = () => { pref.wait = +ui.wait.value; savePref(); };
     ui.auto.onchange = () => { pref.auto = ui.auto.checked; savePref(); };
+    ui.main.checked = pref.main !== false;
+    ui.main.onchange = () => { pref.main = ui.main.checked; savePref(); stop(); load(); };
     q(".ra-x").onclick = close;
     ui.go.onclick = () => playing ? stop() : start(idx);
   }
@@ -211,14 +235,15 @@
       curKey = src && src.key || "";
       if (src && src.doc) lines = await textFromDoc(src.doc, src.n);
     } catch (e) {}
-    let list = toSentences(lines);
+    const pick = ls => (pref.main ? pickMain(ls) : ls).map(l => typeof l === "string" ? l : l.s);
+    let list = toSentences(pick(lines), pref.main);
     if (list.length < 1 && src && (src.canvas || src.imageUrl)) {
       setStatus("🔍 文字を よみとっています…（はじめは少し時間がかかります）");
       try {
         const img = src.canvas && src.canvas.width ? src.canvas : src.imageUrl;
         const ocr = await textFromImage(img);
         if (my !== loadId) return;
-        list = toSentences(ocr);
+        list = toSentences(pick(ocr), pref.main);
       } catch (e) { if (my !== loadId) return; setStatus("文字を よみとれませんでした（" + (e.message || e) + "）"); return; }
     }
     if (my !== loadId) return;
