@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>食生活アドバイザー2級 問題集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* Layout: 一列の学習ノート。ホーム＝分野ごとの判子付きリスト、問題＝カード1枚 */
+:root{color-scheme:light;
+  --bg:#f1f4ee; --surface:#ffffff; --line:#d9e0d5; --ink:#1d2820; --muted:#5b6a5f;
+  --accent:#2e6a4e; --accent-soft:#e2ede6; --stamp:#b0412e;
+  --ok:#2e7d4f; --ok-soft:#e1f1e6; --ng:#b8402d; --ng-soft:#f8e4df;
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic",sans-serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Noto Sans JP",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#131915; --surface:#1b231e; --line:#2e3a32; --ink:#e4ebe5; --muted:#99a89d;
+  --accent:#73c296; --accent-soft:#223429; --stamp:#e2806c;
+  --ok:#6fcb93; --ok-soft:#1f3328; --ng:#ec8572; --ng-soft:#3a2420; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131915; --surface:#1b231e; --line:#2e3a32; --ink:#e4ebe5; --muted:#99a89d;
+  --accent:#73c296; --accent-soft:#223429; --stamp:#e2806c;
+  --ok:#6fcb93; --ok-soft:#1f3328; --ng:#ec8572; --ng-soft:#3a2420; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.35}
+h1{font-size:1.6rem;font-weight:900}
+h2{font-size:1.05rem;font-weight:700}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:700;background:var(--accent);color:var(--surface);font-family:var(--display);font-size:1rem}
+.btn.sub{background:var(--accent-soft);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row .btn{flex:1 1 180px}
+
+/* 概況 */
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.summary div{background:var(--surface);padding:12px 10px;text-align:center}
+.summary b{display:block;font-family:var(--display);font-size:1.4rem;font-variant-numeric:tabular-nums}
+.summary span{font-size:.75rem;color:var(--muted)}
+
+/* 分野リスト */
+.cats{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.cat{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;padding:14px 16px;background:none;border:0;border-top:1px solid var(--line);text-align:left;width:100%}
+.cat:first-child{border-top:0}
+.cat:hover{background:var(--accent-soft)}
+.stamp{width:44px;height:44px;border:2px solid var(--stamp);color:var(--stamp);border-radius:8px;display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:1.3rem;transform:rotate(-4deg)}
+.cat-name{font-weight:700;font-family:var(--display)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.cat-meta{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.reset{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:.85rem;padding:4px 0;align-self:flex-start}
+
+/* 問題 */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.back{background:none;border:0;color:var(--muted);padding:6px 0;font-size:.9rem}
+.count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem}
+.prog{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.qtag{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--stamp);font-weight:700}
+.qtext{font-size:1.1rem;font-weight:700;margin:0}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;text-align:left;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);width:100%}
+.choice:hover:not(:disabled){border-color:var(--accent)}
+.choice .k{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--muted);display:grid;place-items:center;font-size:.85rem;font-weight:700;color:var(--muted)}
+.choice:disabled{cursor:default}
+.choice.ok{border-color:var(--ok);background:var(--ok-soft)}
+.choice.ok .k{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.choice.ng{border-color:var(--ng);background:var(--ng-soft)}
+.choice.ng .k{background:var(--ng);border-color:var(--ng);color:var(--surface)}
+.fb{border-radius:12px;padding:14px 16px;background:var(--accent-soft)}
+.fb h2{margin-bottom:4px}
+.fb.ok h2{color:var(--ok)} .fb.ng h2{color:var(--ng)}
+.fb p{margin:0}
+
+/* 結果 */
+.score{font-family:var(--display);font-weight:900;font-size:3rem;line-height:1;font-variant-numeric:tabular-nums}
+.score small{font-size:1.1rem;color:var(--muted);font-weight:700}
+.miss{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.miss li{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--ng);border-radius:10px;padding:12px 14px}
+.miss .a{color:var(--ok);font-weight:700}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <section id="home">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <header>
+        <div class="eyebrow">FOOD LIFE ADVISOR · 2級対策</div>
+        <h1>食生活アドバイザー2級 問題集</h1>
+        <p class="muted" style="margin:6px 0 0">6分野・全<span id="total"></span>問の4択問題。解説つき、間違えた問題は自動で「苦手」に入ります。</p>
+      </header>
+      <div class="summary">
+        <div><b id="s-done">0</b><span>解いた問題</span></div>
+        <div><b id="s-rate">–</b><span>正答率</span></div>
+        <div><b id="s-weak">0</b><span>苦手</span></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="b-mix">全分野から20問</button>
+        <button class="btn sub" id="b-weak">苦手を復習</button>
+      </div>
+      <div>
+        <h2 style="margin-bottom:8px">分野別に解く</h2>
+        <div class="cats" id="cats"></div>
+      </div>
+      <button class="reset" id="b-reset">学習記録をリセット</button>
+    </div>
+  </section>
+
+  <section id="quiz" hidden>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="qhead"><button class="back" id="b-quit">← やめる</button><span class="count" id="q-count"></span></div>
+      <div class="prog"><i id="q-prog"></i></div>
+      <div class="card">
+        <span class="qtag" id="q-tag"></span>
+        <p class="qtext" id="q-text"></p>
+        <div class="choices" id="q-choices"></div>
+        <div class="fb" id="q-fb" hidden><h2 id="fb-h"></h2><p id="fb-p"></p></div>
+        <button class="btn" id="b-next" hidden>次の問題へ</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" hidden>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="eyebrow" id="r-title"></div>
+      <div class="score"><span id="r-score"></span><small id="r-of"></small></div>
+      <p class="muted" id="r-msg" style="margin:0"></p>
+      <div class="row">
+        <button class="btn" id="b-retry-miss">間違えた問題をもう一度</button>
+        <button class="btn sub" id="b-home">ホームへ</button>
+      </div>
+      <div id="r-misswrap"><h2 style="margin-bottom:10px">間違えた問題</h2><ul class="miss" id="r-miss"></ul></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const CATS={n:{name:'栄養と健康',mark:'栄'},c:{name:'食文化と食習慣',mark:'文'},f:{name:'食品学',mark:'品'},h:{name:'衛生管理',mark:'衛'},m:{name:'食マーケット',mark:'市'},s:{name:'社会生活',mark:'社'}};
+// [分野, 問題, [正解, 誤答, 誤答, 誤答], 解説]
+const Q=[
+['n','1gあたり約9kcalのエネルギーを生じる栄養素はどれか。',['脂質','炭水化物','たんぱく質','食物繊維'],'脂質は約9kcal/g。炭水化物とたんぱく質は約4kcal/gです。'],
+['n','脂溶性ビタミンの組み合わせとして正しいものはどれか。',['A・D・E・K','B1・B2・C・D','A・C・E・K','B6・B12・葉酸・D'],'脂溶性ビタミンはA・D・E・Kの4種類。B群とCは水溶性で、とりすぎた分は尿中に排出されやすい。'],
+['n','ビタミンB1の欠乏によって起こる病気はどれか。',['脚気','壊血病','くる病','ペラグラ'],'壊血病はビタミンC、くる病はビタミンD、ペラグラはナイアシンの欠乏で起こります。'],
+['n','鉄（非ヘム鉄）の吸収率を高める栄養素はどれか。',['ビタミンC','ビタミンK','タンニン','食物繊維'],'ビタミンCは非ヘム鉄の吸収を助けます。お茶のタンニンは吸収を妨げる方向に働きます。'],
+['n','カルシウムの吸収を促進するビタミンはどれか。',['ビタミンD','ビタミンA','ビタミンB2','ビタミンE'],'ビタミンDは腸管でのカルシウム吸収を促します。日光を浴びると皮膚でも合成されます。'],
+['n','不足すると味覚障害を起こしやすいミネラルはどれか。',['亜鉛','ナトリウム','カリウム','リン'],'亜鉛は味を感じる味蕾の細胞の新陳代謝に関わります。牡蠣などに多く含まれます。'],
+['n','成人の必須アミノ酸は何種類か。',['9種類','5種類','12種類','20種類'],'体内で合成できず食事からとる必要があるアミノ酸は9種類。たんぱく質を構成するアミノ酸は約20種類です。'],
+['n','でんぷんを分解する消化酵素はどれか。',['アミラーゼ','ペプシン','リパーゼ','トリプシン'],'アミラーゼは唾液やすい液に含まれます。ペプシンとトリプシンはたんぱく質、リパーゼは脂肪を分解します。'],
+['n','胆汁をつくる臓器はどれか。',['肝臓','胆のう','すい臓','十二指腸'],'胆汁は肝臓でつくられ、胆のうで濃縮・貯蔵されます。消化酵素は含まず、脂肪を乳化して消化を助けます。'],
+['n','栄養素の大部分が吸収される器官はどれか。',['小腸','胃','大腸','食道'],'栄養素の大部分は小腸の柔毛から吸収されます。大腸では主に水分が吸収されます。'],
+['n','BMIの求め方として正しいものはどれか。',['体重(kg)÷身長(m)÷身長(m)','体重(kg)÷身長(cm)','身長(cm)−100','体重(kg)×身長(m)'],'日本肥満学会の基準では18.5未満が低体重、25以上が肥満。22が最も病気になりにくい標準とされます。'],
+['n','水溶性食物繊維に分類されるものはどれか。',['ペクチン','セルロース','キチン','リグニン'],'ペクチン（果物）やアルギン酸（海藻）は水溶性。セルロース・リグニン・キチンは不溶性食物繊維です。'],
+['n','n-3系脂肪酸に分類されるものはどれか。',['ドコサヘキサエン酸（DHA）','リノール酸','オレイン酸','パルミチン酸'],'n-3系はDHA・EPA・α-リノレン酸。リノール酸はn-6系、オレイン酸は一価不飽和（n-9系）、パルミチン酸は飽和脂肪酸です。'],
+['n','日本のメタボリックシンドローム診断基準における腹囲の基準はどれか。',['男性85cm以上・女性90cm以上','男性90cm以上・女性85cm以上','男女とも80cm以上','男性100cm以上・女性90cm以上'],'腹囲の基準に加え、血圧・血糖・脂質のうち2項目以上が基準に当てはまると診断されます。'],
+['n','食事バランスガイドのコマのイラストで「回転」が表しているものはどれか。',['運動','水・お茶','菓子・嗜好飲料','主食'],'コマの軸は水・お茶、ヒモは菓子・嗜好飲料。料理区分は主食・副菜・主菜・牛乳乳製品・果物の5つです。'],
+['n','甲状腺ホルモンの構成成分となるミネラルはどれか。',['ヨウ素','鉄','マグネシウム','銅'],'ヨウ素は昆布などの海藻に多く含まれ、甲状腺ホルモンの材料になります。'],
+
+['c','「和食；日本人の伝統的な食文化」がユネスコ無形文化遺産に登録された年はどれか。',['2013年','2005年','2010年','2020年'],'2013年12月に登録されました。多様で新鮮な食材の尊重、栄養バランス、自然の美しさの表現、年中行事との関わりが特徴とされます。'],
+['c','一汁三菜の「三菜」が指すものはどれか。',['主菜1品と副菜2品','汁物3品','主食・主菜・副菜','漬物3品'],'汁物1品とおかず3品（主菜1・副菜2）が基本形。ご飯と香の物（漬物）は品数に数えません。'],
+['c','人日の節句（1月7日）に食べる行事食はどれか。',['七草がゆ','ちまき','菊酒','ひしもち'],'上巳（3月3日）はひしもち・はまぐりの吸い物、端午（5月5日）はちまき・柏餅、重陽（9月9日）は菊酒です。'],
+['c','五節句のうち「重陽の節句」の日付はどれか。',['9月9日','7月7日','5月5日','3月3日'],'五節句は人日（1/7）・上巳（3/3）・端午（5/5）・七夕（7/7）・重陽（9/9）。重陽は菊の節句とも呼ばれます。'],
+['c','冬至に食べる風習があるものはどれか。',['かぼちゃ','うなぎ','ぼたもち','千歳飴'],'うなぎは土用の丑の日、ぼたもちは春の彼岸、千歳飴は七五三。冬至にはかぼちゃを食べ、ゆず湯に入ります。'],
+['c','郷土料理と都道府県の組み合わせとして正しいものはどれか。',['きりたんぽ鍋 ― 秋田県','ほうとう ― 長野県','治部煮 ― 富山県','皿鉢料理 ― 愛媛県'],'ほうとうは山梨県、治部煮は石川県（金沢）、皿鉢（さわち）料理は高知県の郷土料理です。'],
+['c','器を箸で手前に引き寄せる、箸使いのタブーはどれか。',['寄せ箸','迷い箸','刺し箸','渡し箸'],'迷い箸は料理の上で箸をさまよわせること、刺し箸は料理に突き刺すこと、渡し箸は器の上に箸を渡して置くことです。'],
+['c','茶の湯で、茶をいただく前に出される料理の様式はどれか。',['懐石料理','本膳料理','会席料理','普茶料理'],'本膳料理は室町時代の武家の儀礼料理、会席料理は酒宴向けの料理、普茶料理は黄檗宗が伝えた中国風の精進料理です。'],
+['c','精進料理の特徴として正しいものはどれか。',['動物性の食材を使わない','大皿に盛って取り分ける','茶の前に出す軽い食事である','酒宴を楽しむための料理である'],'仏教の殺生戒に基づき、肉や魚を使わず野菜・豆・穀物などでつくります。大皿で取り分けるのは卓袱料理や普茶料理です。'],
+['c','長崎で発達した、円卓を囲んで大皿料理を取り分ける様式はどれか。',['卓袱（しっぽく）料理','普茶料理','本膳料理','有職料理'],'和・華（中国）・蘭（オランダ）の要素が混ざった料理で、円卓を囲んで大皿から取り分けます。'],
+['c','「中食（なかしょく）」の例として正しいものはどれか。',['スーパーで買った惣菜を家で食べる','家で材料から調理して食べる','レストランで食事をする','社員食堂で食事をする'],'中食は調理済みの食品を買って家などで食べる形態。家庭で調理するのは内食、飲食店で食べるのは外食です。'],
+['c','家族が同じ食卓にいながら、それぞれ別々のものを食べることを何というか。',['個食','孤食','固食','粉食'],'孤食は一人で食べること、固食は同じものばかり食べること、粉食はパンや麺など粉製品中心の食事です。'],
+['c','和食の基本的な配膳で、ご飯と汁物の位置として正しいものはどれか。',['ご飯は左手前、汁物は右手前','ご飯は右手前、汁物は左手前','ご飯は左奥、汁物は右奥','ご飯は中央、汁物は左手前'],'ご飯は左手前、汁物は右手前、主菜は右奥、副菜は左奥（または中央）に置くのが基本です。'],
+['c','尾頭付きの焼き魚を皿に盛るときの向きとして正しいものはどれか。',['頭を左、腹を手前','頭を右、腹を手前','頭を左、背を手前','頭を右、背を手前'],'頭を左、腹を手前に盛るのが基本です（かれいなど一部の魚は例外があります）。'],
+['c','かつお節に多く含まれるうま味成分はどれか。',['イノシン酸','グルタミン酸','グアニル酸','コハク酸'],'昆布はグルタミン酸、干し椎茸はグアニル酸、貝類はコハク酸。昆布とかつお節の合わせだしはうま味の相乗効果を生みます。'],
+['c','調味料の「さしすせそ」の「せ」が表すものはどれか。',['しょうゆ','酢','塩','背脂'],'しょうゆを旧仮名で「せうゆ」と書いたことに由来します。砂糖・塩・酢・しょうゆ・みその順に入れると味がしみやすいとされます。'],
+['c','一般に秋が旬とされる食材はどれか。',['さんま','たけのこ','はまぐり','菜の花'],'たけのこ・はまぐり・菜の花は春が旬です。'],
+
+['f','食品表示法が施行された年はどれか。',['2015年','2003年','2009年','2020年'],'食品衛生法・JAS法・健康増進法の表示に関する部分を一元化した法律で、2015年4月に施行。所管は消費者庁です。'],
+['f','消費期限の説明として正しいものはどれか。',['品質の劣化が早い食品に表示する、安全に食べられる期限','おいしく食べられる期限で、過ぎてもすぐに食べられなくなるわけではない','製造から3か月以上もつ食品にだけ表示する期限','開封後も有効な期限'],'2番目の説明は賞味期限です。どちらの期限も「未開封で表示どおりに保存した場合」の期限です。'],
+['f','アレルギー表示で、表示が義務づけられた「特定原材料」でないものはどれか。',['大豆','えび','そば','落花生'],'大豆は表示が推奨される「特定原材料に準ずるもの」です。えび・かに・くるみ・小麦・そば・卵・乳・落花生などが表示義務の対象です。'],
+['f','国が個別に審査し、許可する保健機能食品はどれか。',['特定保健用食品（トクホ）','機能性表示食品','栄養機能食品','健康補助食品'],'機能性表示食品は事業者の届出制、栄養機能食品は国の規格基準に合えば届出も不要な自己認証制です。「健康補助食品」は法律上の区分ではありません。'],
+['f','遺伝子組換え表示の義務対象農産物でないものはどれか。',['小麦','大豆','とうもろこし','パパイヤ'],'対象は大豆・とうもろこし・ばれいしょ・なたね・綿実・アルファルファ・てん菜・パパイヤ・からしなの9品目です。'],
+['f','豆腐を固めるのに使う「にがり」の主成分はどれか。',['塩化マグネシウム','硫酸カルシウム','炭酸水素ナトリウム','クエン酸'],'にがりは海水からとれる塩化マグネシウムが主成分。硫酸カルシウム（すまし粉）も凝固剤として使われますが、にがりではありません。'],
+['f','強力粉を使うのに最も適しているものはどれか。',['パン','天ぷらの衣','スポンジケーキ','クッキー'],'強力粉はたんぱく質（グルテン）が多く、粘りと弾力が出るのでパンに向きます。天ぷらや菓子には薄力粉を使います。'],
+['f','緑黄色野菜の基準とされる、可食部100gあたりのカロテン含有量はどれか。',['600μg以上','60μg以上','1000μg以上','6000μg以上'],'トマトやピーマンは基準に満たないものの、食べる量や頻度が多いため緑黄色野菜として扱われます。'],
+['f','白身魚に分類されるものはどれか。',['サケ','マグロ','カツオ','サバ'],'サケの身の色はえさ由来のアスタキサンチンによるもので、筋肉の性質は白身魚です。マグロ・カツオ・サバは赤身魚です。'],
+['f','納豆をつくるのに用いる微生物はどれか。',['納豆菌','麹かび','乳酸菌','酵母'],'みそ・しょうゆ・日本酒は麹かび、ヨーグルトは乳酸菌、パンやビールは酵母を利用します。'],
+['f','食品添加物のうち、発色剤として使われるものはどれか。',['亜硝酸ナトリウム','ソルビン酸カリウム','アスパルテーム','L-アスコルビン酸'],'ハムやソーセージの色を保ちます。ソルビン酸カリウムは保存料、アスパルテームは甘味料、L-アスコルビン酸は酸化防止剤です。'],
+['f','人が一生涯毎日摂取しても健康に悪影響がないとされる量を何というか。',['ADI（一日摂取許容量）','HACCP','JAS','GAP'],'食品添加物や残留農薬の基準を決める根拠になる値です。HACCPは衛生管理手法、GAPは農業生産工程管理です。'],
+['f','りんごなどの長期保存に使われる、酸素を減らし二酸化炭素を増やした環境で貯蔵する方法はどれか。',['CA貯蔵','氷温貯蔵','フリーズドライ','レトルト殺菌'],'CAはControlled Atmosphereの略。青果物の呼吸を抑えて鮮度を長く保ちます。'],
+['f','玄米からぬか層を取り除き、胚芽を残した米はどれか。',['胚芽精米','精白米','発芽玄米','無洗米'],'精白米はぬか層と胚芽の両方を取り除いたもの。胚芽にはビタミンB1やビタミンEが多く含まれます。'],
+['f','容器包装に入れずに販売される生鮮食品で、共通して必要な表示はどれか。',['名称と原産地','名称と製造者','原材料名と内容量','栄養成分表示'],'生鮮食品は名称と原産地の表示が基本。栄養成分表示は加工食品に義務づけられています（一部例外あり）。'],
+['f','加工食品の栄養成分表示で、義務表示の5項目に含まれないものはどれか。',['食物繊維','熱量','食塩相当量','脂質'],'義務は熱量・たんぱく質・脂質・炭水化物・食塩相当量の5項目。食物繊維や飽和脂肪酸は表示が推奨される項目です。'],
+
+['h','毒素型食中毒の原因菌はどれか。',['黄色ブドウ球菌','サルモネラ属菌','腸炎ビブリオ','カンピロバクター'],'毒素型は食品の中で菌がつくった毒素を食べて発症します。ほかにボツリヌス菌など。残り3つは菌が腸内で増える感染型です。'],
+['h','黄色ブドウ球菌がつくる毒素（エンテロトキシン）の性質として正しいものはどれか。',['加熱しても分解されにくい','75℃で1分加熱すれば分解される','冷凍すると分解される','酢を加えると分解される'],'毒素は熱に強いため、つくられてからでは加熱で防げません。手指の傷が主な汚染源なので、傷がある人は手袋を使います。'],
+['h','鶏肉の生食や加熱不足が主な原因で、潜伏期間が2〜7日と長い食中毒菌はどれか。',['カンピロバクター','腸炎ビブリオ','セレウス菌','ボツリヌス菌'],'少ない菌量でも発症します。まれにギラン・バレー症候群を引き起こすことがあります。'],
+['h','腸炎ビブリオの特徴として正しいものはどれか。',['海水程度の塩分を好み、真水に弱い','酸素のない環境でしか増殖できない','芽胞をつくり熱に強い','鶏卵が主な原因食品である'],'夏場の魚介類が主な原因です。真水でよく洗い、低温で保存することで予防できます。'],
+['h','1歳未満の乳児にはちみつを与えてはいけない理由はどれか。',['乳児ボツリヌス症のおそれがある','サルモネラ食中毒のおそれがある','ノロウイルスに感染するおそれがある','アニサキス症のおそれがある'],'はちみつにボツリヌス菌の芽胞が含まれていることがあり、腸内環境が未熟な乳児の腸で増えて毒素をつくることがあります。'],
+['h','ノロウイルスを不活化するための加熱条件（食品の中心部）として推奨されるものはどれか。',['85〜90℃で90秒以上','60℃で1分以上','75℃で1分以上','100℃で10秒以上'],'75℃1分以上は一般的な細菌の目安。ノロウイルスは85〜90℃で90秒以上が必要です。冬に多く、二枚貝が原因になりやすい。'],
+['h','ノロウイルスによる嘔吐物の消毒に適したものはどれか。',['次亜塩素酸ナトリウム','消毒用アルコール','逆性石けん','中性洗剤'],'ノロウイルスはアルコールや逆性石けんが効きにくいため、塩素系の次亜塩素酸ナトリウムを使います。'],
+['h','腸管出血性大腸菌O157がつくる毒素はどれか。',['ベロ毒素','テトロドトキシン','エンテロトキシン','ソラニン'],'ベロ毒素は溶血性尿毒症症候群（HUS）を引き起こすことがあります。75℃1分以上の加熱で菌は死滅します。'],
+['h','大量につくったカレーやシチューを室温で放置すると増えやすい、酸素を嫌う菌はどれか。',['ウェルシュ菌','腸炎ビブリオ','カンピロバクター','黄色ブドウ球菌'],'熱に強い芽胞が加熱後も残り、ゆっくり冷める間に増殖します。小分けにして急速に冷ますことが予防になります。'],
+['h','ふぐ毒の成分はどれか。',['テトロドトキシン','ソラニン','アミグダリン','ムスカリン'],'ソラニンはじゃがいもの芽、アミグダリンは青梅、ムスカリンは毒きのこに含まれる成分です。'],
+['h','じゃがいもの芽や緑色になった部分に含まれる自然毒はどれか。',['ソラニン（チャコニン）','テトロドトキシン','ヒスタミン','ベロ毒素'],'芽や緑化した皮は厚めに取り除きます。家庭菜園や学校で育てた未熟ないもでの食中毒例があります。'],
+['h','寄生虫アニサキスについて正しいものはどれか。',['−20℃で24時間以上冷凍すると死滅する','酢じめにすれば死滅する','しょうゆやわさびをつければ死滅する','淡水魚にだけ寄生する'],'サバ・イカ・サンマなどの海の魚介類に寄生します。加熱（70℃以上、60℃なら1分）か冷凍で死滅し、酢や調味料では死にません。'],
+['h','ヒスタミン食中毒について正しいものはどれか。',['サバやマグロなどの赤身魚で起こり、加熱しても分解されない','二枚貝で起こり、加熱で防げる','鶏肉で起こり、加熱で防げる','生野菜で起こり、洗えば防げる'],'鮮度が落ちた赤身魚でヒスチジンがヒスタミンに変わり、アレルギーのような症状を起こす化学性食中毒です。低温管理が予防になります。'],
+['h','食中毒予防の三原則として正しいものはどれか。',['つけない・増やさない・やっつける','洗う・切る・焼く','冷やす・温める・混ぜる','見る・嗅ぐ・味わう'],'菌を「つけない」（手洗い・洗浄）、「増やさない」（低温保存）、「やっつける」（加熱・殺菌）です。'],
+['h','HACCPに沿った衛生管理が、原則すべての食品等事業者に義務化された時期はどれか。',['2021年6月','2003年4月','2015年4月','2009年9月'],'2018年の食品衛生法改正で制度化され、猶予期間を経て2021年6月に完全施行されました。'],
+['h','食品のリスク評価を行う機関はどれか。',['食品安全委員会','消費者庁','農林水産省','保健所'],'食品安全基本法（2003年）に基づき内閣府に設置。リスク管理は厚生労働省・農林水産省・消費者庁などが担います。'],
+['h','残留農薬の「ポジティブリスト制度」の説明として正しいものはどれか。',['基準が定められていない農薬も、一律基準を超えて残留する食品の流通を禁止する','使用禁止の農薬だけをリスト化して規制する','有機食品だけを対象にする','輸入食品は対象外とする'],'2006年に導入。基準のない農薬には一律基準（0.01ppm）が適用されます。'],
+['h','細菌が増殖するための3条件として正しいものはどれか。',['栄養・水分・温度','光・酸素・塩分','酸・糖・光','二酸化炭素・光・湿度'],'3つのうちどれかを断てば増殖を抑えられます。乾燥・塩漬け・低温保存はこの原理を利用しています。'],
+['h','家庭での食品保存温度の目安として正しいものはどれか。',['冷蔵10℃以下、冷凍−15℃以下','冷蔵15℃以下、冷凍−5℃以下','冷蔵5℃以下、冷凍0℃以下','冷蔵20℃以下、冷凍−10℃以下'],'多くの細菌は10℃以下で増殖が遅くなり、−15℃以下で止まります。ただし死滅するわけではありません。'],
+
+['m','流通のうち、商品の所有権の移転に関わる流れはどれか。',['商的流通（商流）','物的流通（物流）','情報流通','補助的流通'],'物流は商品そのものの移動・保管、情報流通は受発注や販売データなどの流れです。'],
+['m','卸売市場で、売り手と買い手が1対1で価格や数量を決める取引方法はどれか。',['相対（あいたい）取引','せり売り','入札取引','先物取引'],'せり売りは複数の買い手が値を競う方法。現在の卸売市場では相対取引が主流です。'],
+['m','生産から消費まで、低温を保ったまま食品を流通させる仕組みはどれか。',['コールドチェーン','サプライチェーン','バリューチェーン','フードチェーン'],'生鮮食品や冷凍食品の品質を保つために欠かせない仕組みです。'],
+['m','POSシステムの日本語訳として正しいものはどれか。',['販売時点情報管理','電子発注システム','自動倉庫管理','電子決済'],'レジで売れた商品の情報を記録・集計し、品ぞろえや発注に活用します。電子発注はEOSです。'],
+['m','小売業者や卸売業者が企画し、自社のブランドで販売する商品はどれか。',['プライベートブランド（PB）','ナショナルブランド（NB）','ロスリーダー','スクランブル化'],'NBはメーカーが全国展開するブランド商品。PBは広告費などを抑えられるため低価格にしやすいのが特徴です。'],
+['m','「6次産業化」の説明として正しいものはどれか。',['農林漁業者が加工や販売まで手がけ、付加価値を高める','6つの産業を1つの企業に統合する','食品の輸送を6段階に分けて管理する','6種類の作物を輪作する'],'1次（生産）×2次（加工）×3次（販売・サービス）を掛け合わせる考え方です。'],
+['m','マーケティングの4Pに含まれないものはどれか。',['Person（人）','Product（製品）','Price（価格）','Promotion（販売促進）'],'4PはProduct・Price・Place（流通）・Promotionです。'],
+['m','980円のように端数をつけて安く感じさせる価格設定はどれか。',['端数価格','名声価格','慣習価格','均一価格'],'名声価格は高価格で高級感を出す設定、慣習価格は長く定着した価格（缶飲料など）です。'],
+['m','客寄せのため、利益をほとんど度外視して安く売る商品を何というか。',['ロスリーダー','プライベートブランド','定番商品','ナショナルブランド'],'目玉商品やおとり商品とも呼ばれます。来店客がほかの商品も買うことで全体の利益を確保します。'],
+['m','牛トレーサビリティ法により国産牛に付けられる個体識別番号の桁数はどれか。',['10桁','8桁','12桁','13桁'],'耳標に表示され、牛肉の販売時にも表示されます。米にも米トレーサビリティ法があります。'],
+['m','JANコード（標準タイプ）の桁数はどれか。',['13桁','10桁','12桁','15桁'],'標準は13桁、短縮タイプは8桁です。先頭の国コードは日本の場合45または49です。'],
+['m','フードマイレージの求め方として正しいものはどれか。',['食料の輸送量×輸送距離','生産量÷消費量','輸入額×為替レート','価格÷重量'],'単位はt・km。数値が大きいほど輸送にかかる環境負荷が大きいと考えられます。'],
+['m','近年の日本の食料自給率（カロリーベース）に最も近いものはどれか。',['4割に満たない（30%台後半）','約6割','約8割','約2割'],'カロリーベースは38%前後で推移しています。生産額ベースはこれより高く6割台です。'],
+['m','「地産地消」の説明として正しいものはどれか。',['地域で生産されたものをその地域で消費する','地域の特産品を全国に出荷する','輸入食品を地域で加工する','産地と消費地を直結させて輸出する'],'輸送距離が短くなり、鮮度の良さや環境負荷の低減、地域経済の活性化につながります。'],
+['m','衣料品・食料品・住関連品を総合的に扱う大型の小売業態はどれか。',['GMS（総合スーパー）','CVS（コンビニエンスストア）','SM（食品スーパー）','専門店'],'GMSはGeneral Merchandise Storeの略。SMは食料品中心のセルフサービス店です。'],
+['m','食品ロス削減推進法が施行された年はどれか。',['2019年','2001年','2013年','2023年'],'2019年10月施行。国や自治体、事業者、消費者が一体となって食品ロスの削減に取り組むことを定めています。'],
+
+['s','訪問販売のクーリング・オフ期間はどれか。',['8日間','20日間','14日間','30日間'],'契約書面を受け取った日から数えます。連鎖販売取引（マルチ商法）や業務提供誘引販売取引は20日間です。'],
+['s','通信販売とクーリング・オフについて正しいものはどれか。',['クーリング・オフの対象外で、返品できるかは事業者の返品特約による','8日間クーリング・オフできる','20日間クーリング・オフできる','購入金額によって期間が変わる'],'返品特約の表示がない場合は、商品受け取りから8日以内なら送料自己負担で返品できます。'],
+['s','製造物責任法（PL法）の説明として正しいものはどれか。',['製品の欠陥で損害を受けたとき、製造業者の過失を証明しなくても賠償を求められる','製品を買ってから8日以内なら無条件で返品できる','不当な表示を行った事業者に罰金を科す','欠陥製品のリコールを義務づける'],'1995年施行。被害者は「欠陥」を証明すればよく、製造業者の過失の証明は不要です（無過失責任）。'],
+['s','消費者庁が設置された年はどれか。',['2009年','2001年','2004年','2015年'],'消費者行政の司令塔として2009年9月に設置されました。'],
+['s','消費者基本法の説明として正しいものはどれか。',['消費者保護基本法を改正して2004年に成立し、消費者の権利を明記した','2015年に食品表示を一元化した','クーリング・オフ制度を初めて定めた','製造物の欠陥による損害賠償を定めた'],'消費者を「保護される存在」から「自立した主体」と位置づけ直した法律です。'],
+['s','注文していない商品が一方的に送られてきた場合（送り付け商法）の扱いとして正しいものはどれか。',['直ちに処分してよい','14日間保管しなければならない','代金を支払わなければならない','送料を払って返送しなければならない'],'2021年の特定商取引法改正で保管義務がなくなり、すぐに処分できるようになりました。'],
+['s','無料の催しなどで人を集め、閉め切った会場で高額商品を買わせる悪質商法はどれか。',['催眠商法（SF商法）','キャッチセールス','マルチ商法','アポイントメントセールス'],'キャッチセールスは路上で呼び止める手口、アポイントメントセールスは電話などで呼び出す手口です。'],
+['s','消費者ホットラインの電話番号はどれか。',['188','110','119','189'],'「いやや！」と覚えます。最寄りの消費生活センターなどにつながります。189は児童相談所の番号です。'],
+['s','エンゲル係数の説明として正しいものはどれか。',['消費支出に占める食料費の割合','所得に占める税金の割合','消費支出に占める住居費の割合','貯蓄に占める預金の割合'],'食料費÷消費支出×100で求めます。一般に生活水準が高いほど低くなるとされます。'],
+['s','「超高齢社会」と呼ばれるのは、高齢化率（65歳以上の割合）が何%を超えた社会か。',['21%','7%','14%','30%'],'7%超で高齢化社会、14%超で高齢社会、21%超で超高齢社会。日本は2007年に21%を超えました。'],
+['s','循環型社会形成推進基本法で、最も優先順位が高いとされる取り組みはどれか。',['リデュース（発生抑制）','リユース（再使用）','リサイクル（再生利用）','熱回収'],'優先順位は発生抑制→再使用→再生利用→熱回収→適正処分です。'],
+['s','食品リサイクル法で再生利用などの取り組みを求められる主な対象はどれか。',['食品関連事業者','一般家庭','農家','地方自治体'],'食品の製造・卸売・小売・外食などの事業者に、発生抑制や再生利用（飼料化・肥料化など）を求めています。'],
+['s','SDGsの説明として正しいものはどれか。',['2015年に国連で採択された、17の目標からなる国際目標','2000年に採択された8つの目標','日本政府が独自に定めた食育目標','2020年に採択された気候変動だけの目標'],'目標12「つくる責任 つかう責任」で、世界の食品廃棄を半減させることが掲げられています。2000年の8目標はMDGsです。'],
+['s','食育基本法が施行された年はどれか。',['2005年','2000年','2010年','2013年'],'食育を「生きる上での基本」と位置づけ、国は食育推進基本計画を定めています。'],
+['s','景品表示法の「優良誤認表示」の説明として正しいものはどれか。',['品質や規格などを実際より著しく良いと誤認させる表示','価格や取引条件を実際より著しく有利と誤認させる表示','過大な景品をつけて販売すること','原産地を表示しないこと'],'2番目は「有利誤認表示」です。'],
+['s','消費者契約法で、契約を取り消せる場合の例として正しいものはどれか。',['事業者が重要な事項について事実と違う説明をした','購入した商品に飽きた','インターネットで購入した','友人に反対された'],'不実告知のほか、断定的判断の提供、不退去、退去妨害などによる契約は取り消せます。'],
+];
+
+const KEY='fla2-stats-v1', KANA=['ア','イ','ウ','エ'];
+const $=id=>document.getElementById(id);
+let stats=load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(stats))}catch(e){}}
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const weakIds=()=>Q.map((_,i)=>i).filter(i=>stats[i]&&stats[i].last===0);
+
+function show(id){['home','quiz','result'].forEach(s=>$(s).hidden=s!==id);window.scrollTo(0,0)}
+
+function renderHome(){
+  $('total').textContent=Q.length;
+  let done=0,c=0,w=0;
+  Object.values(stats).forEach(s=>{done++;c+=s.c;w+=s.w});
+  $('s-done').textContent=done;
+  $('s-rate').textContent=(c+w)?Math.round(c/(c+w)*100)+'%':'–';
+  const weak=weakIds().length;
+  $('s-weak').textContent=weak;
+  $('b-weak').disabled=!weak;
+  $('b-weak').textContent=weak?`苦手を復習（${weak}問）`:'苦手はまだありません';
+  const box=$('cats');box.innerHTML='';
+  Object.entries(CATS).forEach(([k,v])=>{
+    const ids=Q.map((q,i)=>q[0]===k?i:-1).filter(i=>i>=0);
+    const mastered=ids.filter(i=>stats[i]&&stats[i].last===1).length;
+    const b=document.createElement('button');b.className='cat';b.id='cat-'+k;
+    b.innerHTML=`<span class="stamp">${v.mark}</span><span style="min-width:0"><span class="cat-name">${v.name}</span><span class="bar"><i style="width:${mastered/ids.length*100}%"></i></span></span><span class="cat-meta">${mastered} / ${ids.length}<br>正解済</span>`;
+    b.onclick=()=>start(shuffle(ids),v.name);
+    box.appendChild(b);
+  });
+}
+
+let S=null;
+function start(ids,title){S={ids,title,i:0,ok:0,miss:[]};show('quiz');renderQ()}
+function renderQ(){
+  const id=S.ids[S.i],q=Q[id];
+  $('q-count').textContent=`${S.i+1} / ${S.ids.length}`;
+  $('q-prog').style.width=(S.i/S.ids.length*100)+'%';
+  $('q-tag').innerHTML=`<span class="stamp" style="width:24px;height:24px;font-size:.8rem;border-width:1.5px">${CATS[q[0]].mark}</span>${CATS[q[0]].name}`;
+  $('q-text').textContent=q[1];
+  const order=shuffle([0,1,2,3]);
+  const box=$('q-choices');box.innerHTML='';
+  order.forEach((oi,n)=>{
+    const b=document.createElement('button');b.className='choice';b.id='ch-'+n;b.dataset.o=oi;
+    b.innerHTML=`<span class="k">${KANA[n]}</span><span></span>`;
+    b.lastChild.textContent=q[2][oi];
+    b.onclick=()=>answer(oi);
+    box.appendChild(b);
+  });
+  $('q-fb').hidden=true;$('b-next').hidden=true;
+}
+function answer(oi){
+  const id=S.ids[S.i],q=Q[id],right=oi===0;
+  document.querySelectorAll('.choice').forEach(b=>{
+    b.disabled=true;const o=+b.dataset.o;
+    if(o===0)b.classList.add('ok');else if(o===oi)b.classList.add('ng');
+  });
+  const s=stats[id]||{c:0,w:0,last:0};
+  right?s.c++:s.w++;s.last=right?1:0;stats[id]=s;save();
+  if(right)S.ok++;else S.miss.push(id);
+  const fb=$('q-fb');fb.hidden=false;fb.className='fb '+(right?'ok':'ng');
+  $('fb-h').textContent=right?'正解':'不正解　正解は「'+q[2][0]+'」';
+  $('fb-p').textContent=q[3];
+  const nb=$('b-next');nb.hidden=false;nb.textContent=S.i+1<S.ids.length?'次の問題へ':'結果を見る';nb.focus();
+}
+$('b-next').onclick=()=>{S.i++;S.i<S.ids.length?renderQ():renderResult()};
+$('b-quit').onclick=()=>{S&&S.i>0&&!$('b-next').hidden?renderResult(true):(renderHome(),show('home'))};
+
+function renderResult(partial){
+  const n=partial?S.i+1:S.ids.length;
+  $('r-title').textContent=S.title+(partial?'（途中終了）':'');
+  $('r-score').textContent=S.ok;$('r-of').textContent=` / ${n}問`;
+  const r=S.ok/n;
+  $('r-msg').textContent=r>=.9?'よくできました。この調子で他の分野も固めましょう。':r>=.6?'合格ラインの目安（6割）は超えています。間違えた問題を見直しましょう。':'解説を読み込んでから、もう一度挑戦しましょう。';
+  const ul=$('r-miss');ul.innerHTML='';
+  S.miss.forEach(id=>{const q=Q[id],li=document.createElement('li');
+    li.innerHTML='<div></div><div class="a"></div><div class="muted" style="font-size:.9rem"></div>';
+    li.children[0].textContent=q[1];li.children[1].textContent='正解：'+q[2][0];li.children[2].textContent=q[3];ul.appendChild(li)});
+  $('r-misswrap').hidden=!S.miss.length;$('b-retry-miss').hidden=!S.miss.length;
+  show('result');
+}
+$('b-retry-miss').onclick=()=>start(shuffle(S.miss),'間違えた問題の復習');
+$('b-home').onclick=()=>{renderHome();show('home')};
+$('b-mix').onclick=()=>start(shuffle(Q.map((_,i)=>i)).slice(0,20),'全分野ミックス');
+$('b-weak').onclick=()=>start(shuffle(weakIds()),'苦手の復習');
+let armed=false;
+$('b-reset').onclick=e=>{if(!armed){armed=true;e.target.textContent='本当にリセットする（もう一度タップ）';setTimeout(()=>{armed=false;e.target.textContent='学習記録をリセット'},4000);return}
+  stats={};save();armed=false;e.target.textContent='学習記録をリセット';renderHome()};
+renderHome();
+</script>
+</body>
+</html>

@@ -15,6 +15,7 @@ GitHub Pages: https://kouheim1979.github.io/study/
 | [eigo-quest](eigo-quest/) | えいごヒマつぶしクエスト | 英語 |
 | [Turn-method](Turn-method/) | ターンメソッド（英語発話トレーニング） | 英語 |
 | [eiken3-mensetsu](eiken3-mensetsu/) | 英検3級 面接ルーム（二次試験の面接練習） | 英語 |
+| [shokuseikatsu2](shokuseikatsu2/) | 食生活アドバイザー2級 問題集（6分野100問・解説つき） | 資格 |
 
 そのほか、英語練習用のAIバックエンドと、ローカルAI相談室のコードが同居しています。
 
