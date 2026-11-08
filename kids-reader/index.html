@@ -63,7 +63,7 @@ h2.step .n{display:inline-grid;place-items:center;width:28px;height:28px;border-
 @keyframes r{to{transform:rotate(360deg)}}
 #pages,#imgwrap{padding:8px}
 #canvas,#pageimg{display:block;margin:auto;max-width:100%;height:auto;background:#fff;border-radius:6px;box-shadow:0 2px 10px #0002}
-#pageimg{min-height:240px;transition:opacity .15s}#pageimg.loading{opacity:.35}
+#pageimg{transition:opacity .15s}#pageimg.loading{opacity:.35;min-height:240px}
 #frame{display:block;width:100%;height:min(76vh,1000px);border:0;background:#fff}
 .navs{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
 .big{border:0;border-radius:18px;min-height:62px;font-size:1.15rem;font-weight:900;color:#fff;background:var(--sky);box-shadow:0 4px 0 #2a83b8}
@@ -423,7 +423,7 @@ function syncAuto(){$("fs-auto").textContent="自動で大きく: "+(autoOn()?"O
 $("fs-auto").onclick=()=>{try{localStorage.setItem("reader-auto-full",autoOn()?"0":"1");}catch(e){}syncAuto();};
 syncAuto();
 window.ReadAloud&&ReadAloud.init({
- getPage:()=>({key:state.id+"/"+state.page,doc:current.mode==="pdf"?docs.get(state.id):null,n:state.page,canvas:current.mode==="pdf"?$("canvas"):null,imageUrl:current.mode==="img"?$("pageimg").src:null}),
+ getPage:()=>({key:state.id+"/"+state.page,doc:current.mode==="pdf"?docs.get(state.id):null,n:state.page,canvas:current.mode==="pdf"?$("canvas"):null,imageUrl:current.mode==="img"?$("pageimg").src:null,img:current.mode==="img"?$("pageimg"):null}),
  next:()=>{const T=total();if(T&&state.page>=T)return false;go(1);return true;}
 });
 $("ra-open").onclick=()=>ReadAloud.toggle();$("fs-ra").onclick=()=>ReadAloud.toggle();

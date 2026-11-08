@@ -66,7 +66,7 @@ button{cursor:pointer}
 @keyframes r{to{transform:rotate(360deg)}}
 #pages{padding:8px}
 #canvas{display:block;margin:auto;background:#fff;box-shadow:0 1px 8px #0002;max-width:100%;height:auto}
-#imgwrap{padding:8px}#pageimg{display:block;margin:auto;max-width:100%;height:auto;background:#fff;box-shadow:0 1px 8px #0002;min-height:300px;transition:opacity .15s}#pageimg.loading{opacity:.35}
+#imgwrap{padding:8px}#pageimg{display:block;margin:auto;max-width:100%;height:auto;background:#fff;box-shadow:0 1px 8px #0002;transition:opacity .15s}#pageimg.loading{opacity:.35;min-height:300px}
 #frame{display:block;width:100%;height:min(78vh,1050px);border:0;background:#fff}
 .hint{position:absolute;left:8px;right:8px;bottom:8px;background:rgba(18,60,64,.92);color:#fff;font-size:.76rem;padding:7px 10px;border-radius:9px;text-align:center;pointer-events:none}
 
@@ -479,7 +479,7 @@ function syncAuto(){$("fs-auto").textContent="自動で大きく: "+(autoOn()?"O
 $("fs-auto").onclick=()=>{try{localStorage.setItem("reader-auto-full",autoOn()?"0":"1");}catch(e){}syncAuto();};
 syncAuto();
 window.ReadAloud&&ReadAloud.init({
- getPage:()=>{const s=segOf(state.unit,state.page);return{key:state.unit+"/"+state.page+"/"+state.ans,doc:current.mode==="pdf"?docs.get(current.key):null,n:state.page-s.start+1,canvas:current.mode==="pdf"?$("canvas"):null,imageUrl:current.mode==="img"?$("pageimg").src:null};},
+ getPage:()=>{const s=segOf(state.unit,state.page);return{key:state.unit+"/"+state.page+"/"+state.ans,doc:current.mode==="pdf"?docs.get(current.key):null,n:state.page-s.start+1,canvas:current.mode==="pdf"?$("canvas"):null,imageUrl:current.mode==="img"?$("pageimg").src:null,img:current.mode==="img"?$("pageimg"):null};},
  next:()=>{if(state.page>=maxPage(state.unit))return false;$("next").click();return true;}
 });
 $("ra-open").onclick=()=>ReadAloud.toggle();$("fs-ra").onclick=()=>ReadAloud.toggle();

@@ -86,13 +86,48 @@
       if (!it.str || !it.str.trim()) continue;
       const y = it.transform[5], x = it.transform[4], h = Math.abs(it.transform[3]) || it.height || 10;
       let L = lines.find(l => Math.abs(l.y - y) <= Math.max(2, h * 0.45));
-      if (!L) { L = { y, h: 0, parts: [] }; lines.push(L); }
+      if (!L) { L = { y, h: 0, parts: [], x0: Infinity, x1: -Infinity, top: -Infinity, bot: Infinity }; lines.push(L); }
       L.h = Math.max(L.h, h);
+      L.x0 = Math.min(L.x0, x); L.x1 = Math.max(L.x1, x + (it.width || h * it.str.length * 0.5));
+      L.top = Math.max(L.top, y + h * 0.85); L.bot = Math.min(L.bot, y - h * 0.22);
       L.parts.push({ x, s: it.str });
     }
     lines.sort((a, b) => b.y - a.y);
-    const [, y0, , y1] = pg.view, H = (y1 - y0) || 1;
-    return lines.map(l => ({ s: l.parts.sort((a, b) => a.x - b.x).map(p => p.s).join(" "), h: l.h, cy: 1 - (l.y - y0) / H }));
+    const [, y0, , y1] = pg.view, H = (y1 - y0) || 1, vp = pg.getViewport({ scale: 1 });
+    const out = lines.map(l => {
+      const r = vp.convertToViewportRectangle([l.x0, l.bot, l.x1, l.top]);
+      return { s: l.parts.sort((a, b) => a.x - b.x).map(p => p.s).join(" "), h: l.h, cy: 1 - (l.y - y0) / H,
+        rect: [Math.min(r[0], r[2]), Math.min(r[1], r[3]), Math.max(r[0], r[2]), Math.max(r[1], r[3])] };
+    });
+    out.refW = vp.width; out.refH = vp.height; return out;
+  }
+  /* ===== ページ上の印（緑＝読む、赤点線＝読まない、オレンジ＝読んでいるところ） ===== */
+  let marks = [], markHost = null, ov = null, ro = null;
+  const norm = t => t.toLowerCase().replace(/[^a-z0-9']+/g, " ").trim();
+  function drawMarks(scroll) {
+    if (!ov) { ov = document.createElement("div"); ov.className = "ra-ov"; }
+    const host = markHost;
+    if (!host || !host.isConnected || !marks.length || !marks.refW || !ui || ui.p.hidden || host.offsetParent === null) { ov.hidden = true; return; }
+    const parent = host.parentElement;
+    if (getComputedStyle(parent).position === "static") parent.style.position = "relative";
+    if (ov.parentElement !== parent) parent.append(ov);
+    if (ro) ro.disconnect(); ro = new ResizeObserver(() => drawMarks()); ro.observe(host);
+    ov.hidden = false;
+    Object.assign(ov.style, { left: host.offsetLeft + "px", top: host.offsetTop + "px", width: host.offsetWidth + "px", height: host.offsetHeight + "px" });
+    const k = host.offsetWidth / marks.refW, ky = marks.refH ? host.offsetHeight / marks.refH : k, cur = sentences[idx] ? norm(sentences[idx]) : "", playingNow = playing;
+    ov.replaceChildren(...marks.map(m => {
+      const d = document.createElement("div");
+      const on = playingNow && m.read && m.key && cur.includes(m.key);
+      d.className = "ra-box " + (m.read ? "r" : "n") + (on ? " cur" : "");
+      const pad = 3;
+      Object.assign(d.style, { left: (m.rect[0] * k - pad) + "px", top: (m.rect[1] * ky - pad) + "px", width: ((m.rect[2] - m.rect[0]) * k + pad * 2) + "px", height: ((m.rect[3] - m.rect[1]) * ky + pad * 2) + "px" });
+      return d;
+    }));
+    /* ふつう表示のとき、読む部分がパネルに隠れないようにスクロール */
+    if (scroll && !host.closest(".full")) {
+      const first = ov.querySelector(".ra-box.r");
+      if (first) { const r = first.getBoundingClientRect(), panelTop = ui.p.getBoundingClientRect().top; if (r.top < 60 || r.bottom > panelTop - 10) window.scrollBy({ top: r.top - Math.max(70, (panelTop - r.height) * 0.35), behavior: "smooth" }); }
+    }
   }
   /* まん中の文だけ：ページ中央付近でいちばん大きい文字の行を選ぶ */
   function pickMain(lines) {
@@ -118,7 +153,9 @@
     const ls = (r.data.lines || []).filter(l => (l.text.match(/[A-Za-z]/g) || []).length >= 2);
     if (!ls.length) return r.data.text.split("\n").map(t => ({ s: t, h: 1, cy: .5 })).filter(l => (l.s.match(/[A-Za-z]/g) || []).length >= 2);
     const H = (src.height || src.naturalHeight || Math.max(...ls.map(l => l.bbox.y1)) * 1.05) || 1;
-    return ls.map(l => ({ s: l.text, h: l.bbox.y1 - l.bbox.y0, cy: (l.bbox.y0 + l.bbox.y1) / 2 / H }));
+    const out = ls.map(l => ({ s: l.text, h: l.bbox.y1 - l.bbox.y0, cy: (l.bbox.y0 + l.bbox.y1) / 2 / H, rect: [l.bbox.x0, l.bbox.y0, l.bbox.x1, l.bbox.y1] }));
+    out.refW = src.width || src.naturalWidth || 0; out.refH = src.height || src.naturalHeight || 0;
+    return out;
   }
 
   /* ===== 画面 ===== */
@@ -142,6 +179,13 @@
   .ra-s.you{border-color:#f59f00;background:#fff4e0;box-shadow:inset 4px 0 #f59f00}
   .ra-note{font-size:.8rem;color:#777;padding:6px 12px 14px;line-height:1.6}
   .ra-btn{border:2px solid #e9d9c4;background:#fff;border-radius:12px;min-height:42px;padding:0 12px;font-weight:800;font-size:.86rem;white-space:nowrap}
+  .ra-ov{position:absolute;pointer-events:none;z-index:2}
+  .ra-ov[hidden]{display:none}
+  .ra-box{position:absolute;border-radius:5px;box-sizing:border-box}
+  .ra-box.r{border:3px solid rgba(47,158,68,.95);background:rgba(47,158,68,.13)}
+  .ra-box.n{border:2px dashed rgba(224,49,49,.75)}
+  .ra-box.cur{border-color:#f59f00;background:rgba(245,159,0,.28);box-shadow:0 0 0 3px rgba(245,159,0,.35)}
+  #view.full ~ #ra-panel,body.noscroll #ra-panel{max-height:44vh}
   .fs-ra{position:absolute;z-index:3;bottom:max(14px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);border:0;border-radius:29px;height:58px;padding:0 18px;font-weight:900;font-size:1rem;color:#fff;background:rgba(47,158,68,.9)}
   `;
   function build() {
@@ -198,7 +242,7 @@
       idx = i; const s = sentences[i];
       for (let t = 1; t <= pref.times; t++) {
         if (my !== runId) return;
-        mark(i, "on"); setStatus("🔊 きいてね（" + t + "/" + pref.times + "）　" + (i + 1) + "/" + sentences.length);
+        mark(i, "on"); drawMarks(); setStatus("🔊 きいてね（" + t + "/" + pref.times + "）　" + (i + 1) + "/" + sentences.length);
         ui.bar.style.transition = "none"; ui.bar.style.width = "0";
         await speak(s, my);
         if (t < pref.times) await sleep(450, my);
@@ -222,11 +266,11 @@
   let autoContinue = false, curKey = "", doneKey = "", skipped = 0;
   function stop() {
     runId++; playing = false; clearTimeout(waitTimer); synth && synth.cancel();
-    if (ui) { ui.go.textContent = "▶ スタート"; ui.go.classList.remove("stop"); ui.bar.style.transition = "none"; ui.bar.style.width = "0"; mark(-1); setStatus("とまりました。▶で つづきから"); }
+    if (ui) { setTimeout(drawMarks, 0); ui.go.textContent = "▶ スタート"; ui.go.classList.remove("stop"); ui.bar.style.transition = "none"; ui.bar.style.width = "0"; mark(-1); setStatus("とまりました。▶で つづきから"); }
   }
 
   async function load() {
-    const my = ++loadId; sentences = []; idx = 0; renderList();
+    const my = ++loadId; sentences = []; idx = 0; renderList(); marks = []; drawMarks();
     setStatus('<span class="ra-spin">⏳</span> ページの英文を さがしています…');
     let lines = [], src = null;
     try {
@@ -236,7 +280,13 @@
       if (src && src.doc) lines = await textFromDoc(src.doc, src.n);
     } catch (e) {}
     const pick = ls => (pref.main ? pickMain(ls) : ls).map(l => typeof l === "string" ? l : l.s);
+    const remember = (ls, host) => {
+      const chosen = new Set(pref.main ? pickMain(ls) : ls);
+      marks = ls.filter(l => l.rect && (l.s.match(/[A-Za-z]/g) || []).length >= 2).map(l => ({ rect: l.rect, read: chosen.has(l), key: norm(cleanLine(l.s)) }));
+      marks.refW = ls.refW || 0; marks.refH = ls.refH || 0; markHost = host; drawMarks(true);
+    };
     let list = toSentences(pick(lines), pref.main);
+    if (list.length) remember(lines, src && src.canvas);
     if (list.length < 1 && src && (src.canvas || src.imageUrl)) {
       setStatus("🔍 文字を よみとっています…（はじめは少し時間がかかります）");
       try {
@@ -244,6 +294,8 @@
         const ocr = await textFromImage(img);
         if (my !== loadId) return;
         list = toSentences(pick(ocr), pref.main);
+        if (!ocr.refW && src.img) { ocr.refW = src.img.naturalWidth; ocr.refH = src.img.naturalHeight; }
+        remember(ocr, src.canvas && src.canvas.width ? src.canvas : src.img);
       } catch (e) { if (my !== loadId) return; setStatus("文字を よみとれませんでした（" + (e.message || e) + "）"); return; }
     }
     if (my !== loadId) return;
@@ -260,7 +312,7 @@
   }
 
   function open() { if (!ui) build(); ui.p.hidden = false; autoContinue = false; load(); }
-  function close() { stop(); autoContinue = false; if (ui) ui.p.hidden = true; }
+  function close() { stop(); autoContinue = false; if (ui) ui.p.hidden = true; drawMarks(); }
 
   window.ReadAloud = {
     init(o) { opts = o; },
