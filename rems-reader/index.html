@@ -131,12 +131,12 @@ body.noscroll{overflow:hidden}
    <button class="nav" id="prev" type="button" aria-label="前のページ">←</button>
    <label class="pageno"><input id="page" type="number" inputmode="numeric" min="1" aria-label="ページ番号"><span id="total">/ 258</span></label>
    <button class="nav" id="next" type="button" aria-label="次のページ">→</button>
-   <button class="fs-open" id="fs-open" type="button">⛶ 大きく</button>
+   <button class="fs-open" id="fs-open" type="button">⛶ 大きく</button><button class="ra-btn" id="ra-open" type="button">🔊 音読</button>
    <button class="nav star" id="star" type="button" aria-pressed="false">☆</button>
   </div>
   <div class="meter"><i id="meter"></i></div>
   <div class="view" id="view">
-   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><button class="fs-auto" id="fs-auto" type="button" aria-pressed="true">自動で大きく: ON</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button></div>
+   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><button class="fs-auto" id="fs-auto" type="button" aria-pressed="true">自動で大きく: ON</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button><button class="fs-ra" id="fs-ra" type="button">🔊 音読</button></div>
 
    <div class="msg" id="msg"><div class="spin"></div><h2 id="msg-h">読み込み中…</h2><p id="msg-p"></p></div>
    <div id="pages" hidden><canvas id="canvas" aria-label="教材ページ"></canvas></div>
@@ -173,6 +173,7 @@ body.noscroll{overflow:hidden}
  <footer>非公式の個人用ビューア · 出典 <a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish R.E.M.S. Textbooks</a></footer>
 </main>
 
+<script src="../shared/read-aloud.js"></script>
 <script>
 "use strict";
 /* ===== 教材データ ===== */
@@ -341,14 +342,14 @@ function showImage(key,url,offset,total){
  if(im.dataset.src!==src){im.classList.add("loading");im.dataset.src=src;im.src=src;}
  if(offset<total)new Image().src=imgUrl(url,offset+1); /* 次ページを先読み */
 }
-$("pageimg").addEventListener("load",()=>{$("pageimg").classList.remove("loading");sizeImg();});
+$("pageimg").addEventListener("load",()=>{$("pageimg").classList.remove("loading");sizeImg();if(window.ReadAloud)ReadAloud.pageChanged();});
 $("pageimg").addEventListener("error",()=>{const im=$("pageimg");if(!im.dataset.src)return;im.classList.remove("loading");if(current.mode==="img"){imgBad.add(current.url);im.dataset.src="";show();}});
 function showFrameFull(){if(full)layoutFull(1,1);}
 function showFrame(key,url,offset){
  const src=useNative?url+"#page="+offset+"&view=FitH":"https://docs.google.com/gview?embedded=true&url="+encodeURIComponent(url);
  const f=$("frame");
  if(f.dataset.src!==src){if(useNative||f.dataset.base!==url){f.dataset.base=url;gTries=0;loadFrame(src);}else f.dataset.src=src;}
- current={key,mode:"frame"};view("frame");showFrameFull();
+ current={key,mode:"frame"};view("frame");showFrameFull();if(window.ReadAloud)ReadAloud.pageChanged();
  const h=$("hint");if(!useNative){h.textContent="PDF内 "+offset+" ページ目を表示してください";h.hidden=false;clearTimeout(h._t);h._t=setTimeout(()=>{h.hidden=true;},4000);}
  setMode(useNative?"<b>ブラウザ表示</b> · 白い場合は「Google表示」に切替":"<b>Google表示</b> · 裏で取得でき次第、ページ単位の表示に切替わります");
  $("reload").textContent=useNative?"Google表示に切替":"再読み込み";
@@ -366,7 +367,7 @@ async function drawPage(doc,offset,t){
   renderTask?.cancel();
   c.width=Math.floor(vp.width*dpr);c.height=Math.floor(vp.height*dpr);c.style.width=vp.width+"px";c.style.height=vp.height+"px";
   renderTask=pg.render({canvasContext:ctx,viewport:vp,transform:dpr!==1?[dpr,0,0,dpr,0,0]:null});
-  await renderTask.promise;renderTask=null;
+  await renderTask.promise;renderTask=null;if(window.ReadAloud)ReadAloud.pageChanged();
   if(n<doc.numPages)doc.getPage(n+1).catch(()=>{}); /* 次ページを先読み */
  }catch(e){if(e?.name!=="RenderingCancelledException"&&t===token)message("ページを表示できませんでした",String(e.message||e),false);}
 }
@@ -477,6 +478,11 @@ function autoBig(){if(autoOn()&&!full)setFull(true);}
 function syncAuto(){$("fs-auto").textContent="自動で大きく: "+(autoOn()?"ON":"OFF");$("fs-auto").setAttribute("aria-pressed",String(autoOn()));}
 $("fs-auto").onclick=()=>{try{localStorage.setItem("reader-auto-full",autoOn()?"0":"1");}catch(e){}syncAuto();};
 syncAuto();
+window.ReadAloud&&ReadAloud.init({
+ getPage:()=>{const s=segOf(state.unit,state.page);return{key:state.unit+"/"+state.page+"/"+state.ans,doc:current.mode==="pdf"?docs.get(current.key):null,n:state.page-s.start+1,canvas:current.mode==="pdf"?$("canvas"):null,imageUrl:current.mode==="img"?$("pageimg").src:null};},
+ next:()=>{if(state.page>=maxPage(state.unit))return false;$("next").click();return true;}
+});
+$("ra-open").onclick=()=>ReadAloud.toggle();$("fs-ra").onclick=()=>ReadAloud.toggle();
 
 window.visualViewport?.addEventListener("resize",()=>{if(full){clearTimeout(rz);rz=setTimeout(()=>show(),150);}});
 window.addEventListener("hashchange",()=>{const h=fromHash();if(h&&(h.unit!==state.unit||h.page!==state.page||h.ans!==state.ans))go(h.unit,h.page,h.ans);});
