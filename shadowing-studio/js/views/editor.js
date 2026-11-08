@@ -20,7 +20,7 @@ export async function mineView(root) {
     h('p.lead', '手持ちの音声ファイルと英文を登録して、サンプルと同じ6ステップで練習できます。登録した教材はこの端末の中だけに保存されます。'),
     h('div.row', h('a.btn.primary', { href: '#/edit/new' }, '＋ 新しい教材を登録')),
     h('div.card.note',
-      h('p', h('strong', '使える教材の例：'), 'ELLLO（A2レベルの会話など）の音声とスクリプト、QQEnglish Basic English Book 3 など受講中の教材の音声・本文、自分で用意した音声。'),
+      h('p', h('strong', '使える教材の例：'), '無料の学習サイトの音声とスクリプト、受講中の教材の音声・本文、自分で用意した音声。'),
       h('p.small', '利用規約で個人の学習利用が認められている範囲で使ってください。登録した音声・本文はこのアプリから外部へ送信されず、GitHub などにも含まれません（バックアップファイルには含まれるので取り扱いに注意してください）。')),
     lessons.length ? h('div.lesson-list', lessons.map(l => h('div.card.lesson-card',
       h('div.lc-top', h('span.badge.lv', l.level || '—'), h('span.badge', l.theme || 'テーマなし')),
@@ -34,11 +34,11 @@ export async function mineView(root) {
 export async function newLessonView(root, app) {
   const f = {};
   const field = (label, input, hint) => h('label.field', h('span.fl', label), input, hint ? h('span.hint', hint) : null);
-  f.title = h('input', { required: true, placeholder: '例: ELLLO #1234 Weekend Plans' });
+  f.title = h('input', { required: true, placeholder: '例: Weekend Plans（会話 #12）' });
   f.titleJa = h('input', { placeholder: '任意' });
   f.level = h('select', LEVELS.map(l => h('option', { value: l, selected: l === 'A2' }, l)));
   f.theme = h('input', { list: 'theme-list', placeholder: '例: 日常' });
-  f.credit = h('input', { placeholder: '例: ELLLO / QQEnglish Basic English Book 3 Unit 5（個人学習用）' });
+  f.credit = h('input', { placeholder: '例: 受講中の教材 Book 3 Unit 5（個人学習用）' });
   f.audio = h('input', { type: 'file', accept: 'audio/*,video/mp4,.m4a,.mp3,.wav,.aac' });
   f.en = h('textarea', { rows: 8, placeholder: '英文を貼り付けてください。\n例:\nHi, I am Tom. I live in Sydney with my family.' });
   f.mode = 'phrase';

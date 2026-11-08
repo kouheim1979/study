@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3b4cca">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Echo Lines">
+<meta name="description" content="英文テキストを貼るだけで、文とチャンクに自動分解してシャドーイング教材を作るアプリ。読み上げは端末の音声を使用。">
+<title>Echo Lines</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#/"><img src="icon.svg" alt="" width="26" height="26"><span>Echo Lines</span></a>
+  <a class="top-link" href="../">まなびBOX</a>
+</header>
+<main id="view"><p class="loading">読み込み中…</p></main>
+<nav class="tabs" aria-label="メイン">
+  <a href="#/" data-tab="home"><span>📚</span>テキスト</a>
+  <a href="#/new" data-tab="new"><span>➕</span>作る</a>
+  <a href="#/rec" data-tab="rec"><span>🎙️</span>録音</a>
+  <a href="#/log" data-tab="log"><span>📈</span>記録</a>
+  <a href="#/settings" data-tab="settings"><span>⚙️</span>設定</a>
+</nav>
+<noscript>JavaScript を有効にしてください。</noscript>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

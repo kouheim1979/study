@@ -6,7 +6,7 @@ Vercel AI Gatewayを使う「えいごヒマつぶしクエスト」用のAIバ�
 
 - `GET /api/health`
 - `POST /api/transcribe` — 音声→英語テキスト
-- `POST /api/evaluate` — REMS風変換文の内容・文法判定
+- `POST /api/evaluate` — 言い換え文の内容・文法判定
 - `POST /api/chat` — AI英会話＋短い訂正
 - `POST /api/tts` — AI英語音声
 - `POST /api/generate-drill` — 苦手に合わせたオリジナル文変換ドリル

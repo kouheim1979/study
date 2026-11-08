@@ -8,6 +8,7 @@ GitHub Pages: https://kouheim1979.github.io/study/
 |---|---|---|
 | [rems-reader](rems-reader/) | R.E.M.S. Reader（QQEnglish公式PDF教材ビューア） | 英語 |
 | [shadowing-studio](shadowing-studio/) | Shadowing Studio（6ステップの英語シャドーイング・録音と添削の受け渡し） | 英語 |
+| [echo-lines](echo-lines/) | Echo Lines（テキストから自動でシャドーイング教材を作成・端末の読み上げを使用） | 英語 |
 | [toeic](toeic/) | TOEIC形式 英語トレーナー | 英語 |
 | [pattern-pocket](pattern-pocket/) | Pattern Pocket（キッズ版あり） | 英語 |
 | [soundbeat](soundbeat/) | SoundBeat | 英語 |
