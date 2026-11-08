@@ -77,6 +77,12 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .choice.ok .k{background:var(--ok);border-color:var(--ok);color:var(--surface)}
 .choice.ng{border-color:var(--ng);background:var(--ng-soft)}
 .choice.ng .k{background:var(--ng);border-color:var(--ng);color:var(--surface)}
+.fig{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 8px 8px}
+.fig svg{display:block;width:100%;max-width:340px;height:auto;margin:0 auto}
+.fig text{font-family:var(--body);font-size:12px;fill:var(--ink)}
+.fig .lb{font-weight:700;font-size:13px}
+.fig .hl{fill:var(--accent);font-weight:700}
+.fig figcaption{font-size:.75rem;color:var(--muted);text-align:center;margin-top:4px}
 .fb{border-radius:12px;padding:14px 16px;background:var(--accent-soft)}
 .fb h2{margin-bottom:4px}
 .fb.ok h2{color:var(--ok)} .fb.ng h2{color:var(--ng)}
@@ -125,6 +131,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
       <div class="card">
         <span class="qtag" id="q-tag"></span>
         <p class="qtext" id="q-text"></p>
+        <figure class="fig" id="q-fig" hidden style="margin:0"></figure>
         <div class="choices" id="q-choices"></div>
         <div class="fb" id="q-fb" hidden><h2 id="fb-h"></h2><p id="fb-p"></p></div>
         <button class="btn" id="b-next" hidden>次の問題へ</button>
@@ -164,7 +171,7 @@ const Q=[
 ['n','水溶性食物繊維に分類されるものはどれか。',['ペクチン','セルロース','キチン','リグニン'],'ペクチン（果物）やアルギン酸（海藻）は水溶性。セルロース・リグニン・キチンは不溶性食物繊維です。'],
 ['n','n-3系脂肪酸に分類されるものはどれか。',['ドコサヘキサエン酸（DHA）','リノール酸','オレイン酸','パルミチン酸'],'n-3系はDHA・EPA・α-リノレン酸。リノール酸はn-6系、オレイン酸は一価不飽和（n-9系）、パルミチン酸は飽和脂肪酸です。'],
 ['n','日本のメタボリックシンドローム診断基準における腹囲の基準はどれか。',['男性85cm以上・女性90cm以上','男性90cm以上・女性85cm以上','男女とも80cm以上','男性100cm以上・女性90cm以上'],'腹囲の基準に加え、血圧・血糖・脂質のうち2項目以上が基準に当てはまると診断されます。'],
-['n','食事バランスガイドのコマのイラストで「回転」が表しているものはどれか。',['運動','水・お茶','菓子・嗜好飲料','主食'],'コマの軸は水・お茶、ヒモは菓子・嗜好飲料。料理区分は主食・副菜・主菜・牛乳乳製品・果物の5つです。'],
+['n','食事バランスガイドのコマのイラストで「回転」が表しているものはどれか。',['運動','水・お茶','菓子・嗜好飲料','主食'],'コマは回転（運動）することで安定します。軸は水・お茶、ヒモは菓子・嗜好飲料（楽しく適度に）。料理区分は上から主食・副菜・主菜・牛乳乳製品と果物の5つで、上の段ほど多くとるべきものです。','koma'],
 ['n','甲状腺ホルモンの構成成分となるミネラルはどれか。',['ヨウ素','鉄','マグネシウム','銅'],'ヨウ素は昆布などの海藻に多く含まれ、甲状腺ホルモンの材料になります。'],
 
 ['c','「和食；日本人の伝統的な食文化」がユネスコ無形文化遺産に登録された年はどれか。',['2013年','2005年','2010年','2020年'],'2013年12月に登録されました。多様で新鮮な食材の尊重、栄養バランス、自然の美しさの表現、年中行事との関わりが特徴とされます。'],
@@ -257,6 +264,28 @@ const Q=[
 ['s','消費者契約法で、契約を取り消せる場合の例として正しいものはどれか。',['事業者が重要な事項について事実と違う説明をした','購入した商品に飽きた','インターネットで購入した','友人に反対された'],'不実告知のほか、断定的判断の提供、不退去、退去妨害などによる契約は取り消せます。'],
 ];
 
+const FIG={koma:open=>{
+  const sub=(t)=>open?`<tspan x="0" dy="15" class="hl">${t}</tspan>`:'';
+  return `<svg viewBox="0 0 340 270" role="img" aria-label="食事バランスガイドのコマの図">
+  <line x1="160" y1="14" x2="160" y2="258" stroke="var(--muted)" stroke-width="5" stroke-linecap="round"/>
+  <polygon points="50,50 270,50 241,100 79,100" fill="var(--accent-soft)" stroke="var(--ink)" stroke-width="1.5"/>
+  <polygon points="79,100 241,100 215,145 105,145" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+  <polygon points="105,145 215,145 192,185 128,185" fill="var(--accent-soft)" stroke="var(--ink)" stroke-width="1.5"/>
+  <polygon points="128,185 160,185 160,215 145.5,215" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+  <polygon points="160,185 192,185 174.5,215 160,215" fill="var(--ng-soft)" stroke="var(--ink)" stroke-width="1.5"/>
+  <polygon points="145.5,215 174.5,215 160,240" fill="var(--line)" stroke="var(--ink)" stroke-width="1.5"/>
+  <text x="160" y="80" text-anchor="middle" class="lb">主食</text>
+  <text x="160" y="127" text-anchor="middle" class="lb">副菜</text>
+  <text x="160" y="170" text-anchor="middle" class="lb">主菜</text>
+  <line x1="140" y1="200" x2="100" y2="214" stroke="var(--muted)"/><text x="96" y="218" text-anchor="end">牛乳・乳製品</text>
+  <line x1="178" y1="200" x2="220" y2="214" stroke="var(--muted)"/><text x="224" y="218">果物</text>
+  <path d="M74 46 A90 12 0 0 1 246 46" fill="none" stroke="var(--stamp)" stroke-width="2"/>
+  <path d="M246 46 l-9 -6 m9 6 l-10 3" fill="none" stroke="var(--stamp)" stroke-width="2" stroke-linecap="round"/>
+  <path d="M270 52 q18 14 6 30 t10 34" fill="none" stroke="var(--stamp)" stroke-width="2" stroke-linecap="round"/>
+  <g transform="translate(22,26)"><text x="0" y="0" class="lb">回転${sub('＝運動')}</text></g>
+  <g transform="translate(172,12)"><text x="0" y="0" class="lb">軸${sub('水・お茶')}</text></g>
+  <g transform="translate(244,134)"><text x="0" y="0" class="lb">ヒモ${sub('菓子・嗜好飲料')}</text></g>
+  </svg><figcaption>食事バランスガイドのコマを簡略化した図${open?'':'（回答すると意味が表示されます）'}</figcaption>`;}};
 const KEY='fla2-stats-v1', KANA=['ア','イ','ウ','エ'];
 const $=id=>document.getElementById(id);
 let stats=load();
@@ -296,6 +325,7 @@ function renderQ(){
   $('q-prog').style.width=(S.i/S.ids.length*100)+'%';
   $('q-tag').innerHTML=`<span class="stamp" style="width:24px;height:24px;font-size:.8rem;border-width:1.5px">${CATS[q[0]].mark}</span>${CATS[q[0]].name}`;
   $('q-text').textContent=q[1];
+  const fg=$('q-fig');fg.hidden=!q[4];fg.innerHTML=q[4]?FIG[q[4]](false):'';
   const order=shuffle([0,1,2,3]);
   const box=$('q-choices');box.innerHTML='';
   order.forEach((oi,n)=>{
@@ -319,6 +349,7 @@ function answer(oi){
   const fb=$('q-fb');fb.hidden=false;fb.className='fb '+(right?'ok':'ng');
   $('fb-h').textContent=right?'正解':'不正解　正解は「'+q[2][0]+'」';
   $('fb-p').textContent=q[3];
+  if(q[4])$('q-fig').innerHTML=FIG[q[4]](true);
   const nb=$('b-next');nb.hidden=false;nb.textContent=S.i+1<S.ids.length?'次の問題へ':'結果を見る';nb.focus();
 }
 $('b-next').onclick=()=>{S.i++;S.i<S.ids.length?renderQ():renderResult()};
