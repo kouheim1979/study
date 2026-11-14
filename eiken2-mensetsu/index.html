@@ -42,9 +42,14 @@ button,textarea{font:inherit}button{cursor:pointer;border:0;color:inherit}button
  .print-card .print-lead{font:10pt Georgia,serif;margin:3mm 0 0}
  .print-card .print-foot{position:absolute;right:8mm;bottom:3mm;color:#6b7890;font-size:6.5pt}
 }
+.voice-help{color:#b9c7e7;font-size:.75rem;line-height:1.6;margin:9px 0 0}
+.voice-status{margin-top:10px;border:1px solid #8f9dc274;background:#101f39;border-radius:12px;padding:10px 12px;min-height:42px;font-size:.83rem;color:#e5ecff}
+.voice-status:empty{display:none}
+@media(max-width:530px){.voice-btn{flex:1 1 145px;white-space:normal;text-align:center}}
 </style>
 </head><body>
 <main id="app"></main>
+<script src="../shared/eiken-voice.js"></script>
 <script>
 "use strict";
 const LESSONS=[
@@ -79,7 +84,8 @@ function paper(showPicture){const x=lesson();return '<div class="paper"><h3>'+es
 function isAnswerStage(){return ["reading","q1","q2","q3","q4","welcome"].includes(st.stage)}
 function responsePane(){const s=st.stage;const key=s;const hint=s==="reading"?"音読はタイトルから。声に出して読んだら「次へ」を押そう。":s==="q2"?"First → Then → Finally の3つでつなぐと話しやすいよ。":s==="q3"||s==="q4"?"I think ... because ... の形で理由もひとつ添えよう。":s==="q1"?"Because ... / By ... の形で答えてみよう。":"How are you? と聞かれたら I'm good, thank you. と答えよう。";
 let out='<div class="panel"><div class="kicker">YOUR TURN · SPEAK OUT</div><h3 class="stage-title">🎙 声に出して答えよう</h3><p class="subtext">'+(st.mode==="practice"?"言えたらメモして、あとでお手本と比べよう。":"英語で答えたら次に進もう。メモは任意。")+'</p>';
-if(s!=="reading"&&s!=="welcome"){out+='<label class="sr-only" for="answer">あなたの英語の回答</label><textarea id="answer" spellcheck="false" placeholder="話した英語をメモ（空欄でも次へ進めます）">'+esc(st.answers[key]||"")+'</textarea><div class="answer-tools"><button class="btn small" data-action="mic">🎤 音声入力</button><span class="note">音声入力できない場合は手入力でOK</span></div>'}
+if(s!=="reading"&&s!=="welcome"){out+='<label class="sr-only" for="answer">あなたの英語の回答</label><textarea id="answer" spellcheck="false" placeholder="話した英語をメモ（空欄でも次へ進めます）">'+esc(st.answers[key]||"")+'</textarea><div class="answer-tools"><button class="btn small voice-btn" data-action="mic">🎤 直接音声認識</button><button class="btn small purple voice-btn" data-action="aimic">🎙️ 録音してAI変換</button><span class="note">文字起こし後は必ず内容を確認</span></div>'}
+out+='<div id="voice-status" class="voice-status" role="status" aria-live="polite"></div><p class="voice-help">iPhoneで直接認識できないときは「録音してAI変換」を選んでください。押した場合だけ音声を外部AIサービスに送信します。送信しない場合はキーボードの🎤でも入力できます。</p>';
 if(st.mode==="practice")out+='<p class="tip">💡 '+esc(hint)+'</p>';
 out+='</div>';return out}
 
@@ -111,16 +117,36 @@ function stopAudio(){try{window.speechSynthesis.cancel()}catch(e){}st.speaking=f
 function say(text,done){stopAudio();if(!("speechSynthesis" in window)){if(done)done();return}const token=st.token;let complete=false;function ondone(){if(complete||token!==st.token)return;complete=true;st.speaking=false;syncTalking();if(done)done()}try{const u=new SpeechSynthesisUtterance(text);u.lang="en-US";u.rate=st.rate;u.pitch=1.02;if(voice)u.voice=voice;u.onstart=function(){if(token===st.token){st.speaking=true;syncTalking()}};u.onend=ondone;u.onerror=ondone;window.speechSynthesis.speak(u);if(done)setTimeout(ondone,10000)}catch(e){ondone()}}
 function clearCountdown(){if(st.activeTimer){clearInterval(st.activeTimer);st.activeTimer=null}}
 function startCountdown(){if(st.stage!=="silent"&&st.stage!=="prep2")return;clearCountdown();const token=st.token,deadline=Date.now()+20000;st.activeTimer=setInterval(function(){if(token!==st.token){clearCountdown();return}const n=Math.max(0,Math.ceil((deadline-Date.now())/1000));st.time=n;const el=document.getElementById("count");if(el)el.textContent=n;if(n<=0){clearCountdown();advance()}},180)}
-function go(s){st.token++;clearCountdown();stopAudio();if(st.recognition){try{st.recognition.abort()}catch(e){}st.recognition=null}st.stage=s;st.show=st.mode==="practice";st.error="";st.time=20;if(s==="end"){finish();return}stage();const msg=promptText();if(msg){say(msg,(s==="silent"||s==="prep2")?startCountdown:undefined)}else if(s==="silent"||s==="prep2")startCountdown();window.scrollTo({top:0,behavior:"instant"})}
+function go(s){EikenVoice.cancel();st.token++;clearCountdown();stopAudio();if(st.recognition){try{st.recognition.abort()}catch(e){}st.recognition=null}st.stage=s;st.show=st.mode==="practice";st.error="";st.time=20;if(s==="end"){finish();return}stage();const msg=promptText();if(msg){say(msg,(s==="silent"||s==="prep2")?startCountdown:undefined)}else if(s==="silent"||s==="prep2")startCountdown();window.scrollTo({top:0,behavior:"instant"})}
 function advance(){const idx=STAGES.indexOf(st.stage);if(idx<STAGES.length-1)go(STAGES[idx+1])}
 function start(mode){st.mode=mode;st.answers={};go("welcome")}
-function mic(){const Rec=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Rec){st.error="このブラウザは音声入力に対応していません。キーボードのマイクか手入力を使ってね。";stage();return}if(st.recognition){try{st.recognition.stop()}catch(e){}return}try{const r=new Rec();st.recognition=r;r.lang="en-US";r.continuous=false;r.interimResults=false;r.onresult=function(ev){let t="";for(let i=0;i<ev.results.length;i++)t+=ev.results[i][0].transcript+" ";const key=st.stage;st.answers[key]=((st.answers[key]||"")+" "+t).trim();const ta=document.getElementById("answer");if(ta)ta.value=st.answers[key]};r.onerror=function(ev){st.error="音声入力を開始できませんでした（"+(ev.error||"error")+"）。手入力でも練習できます。";const m=document.querySelector(".flash");if(m)m.textContent=st.error;else{const pane=document.querySelector(".screen");if(pane){const d=document.createElement("div");d.className="flash";d.textContent=st.error;pane.appendChild(d)}}};r.onend=function(){st.recognition=null};r.start()}catch(e){st.recognition=null;st.error="音声入力が利用できません。手入力を使ってね。";stage()}}
+
+function voiceStatus(msg){
+ const el=document.getElementById("voice-status");if(el)el.textContent=msg;
+ const b=document.querySelector('[data-action="aimic"]');
+ if(b)b.textContent=EikenVoice.isRecording()?"⏹ 録音を終了":"🎙️ 録音してAI変換";
+}
+function voiceAnswer(t){
+ const key=st.stage;
+ if(!["q1","q2","q3","q4"].includes(key))return;
+ st.answers[key]=((st.answers[key]||"")+" "+t).trim();
+ const ta=document.getElementById("answer");if(ta)ta.value=st.answers[key];
+}
+function mic(){
+ if(!window.EikenVoice){voiceStatus("音声入力機能を読み込めませんでした。ページを更新してください。");return}
+ EikenVoice.nativeSpeech({onState:voiceStatus,onText:voiceAnswer});
+}
+function aiMic(){
+ if(!window.EikenVoice){voiceStatus("録音機能を読み込めませんでした。ページを更新してください。");return}
+ if(EikenVoice.isRecording()){EikenVoice.stopAI();return}
+ EikenVoice.aiSpeech({onState:voiceStatus,onText:voiceAnswer,maxSeconds:st.stage==="q2"?35:25});
+}
 function checkItem(n,q,model,answer){const words=answer.trim()?answer.trim().split(/\s+/).length:0;const reason=/\b(because|since|for example|also|so|first|then|finally|later|after)\b/i.test(answer);const tip=!words?"まだ回答メモがないよ。次は声に出してみよう。":n===2&&words<16?"3コマを順番に説明して、3つ以上の文にしてみよう。":(n===3||n===4)&&!reason?"理由を because / for example で加えてみよう。":words<7?"もう少し詳しく話せるといいね。":"伝えようとしたことがいいね。お手本と比べてみよう。";return '<div class="check-item"><div class="kicker">No.'+n+'</div><p>'+esc(q)+'</p><p class="muted"><b>あなた：</b>'+(words?esc(answer):"（メモなし）")+'</p><div class="model"><b>お手本の一例：</b><br>'+esc(model)+'</div><p class="note">'+esc(tip)+'</p></div>'}
 function finish(){st.stage="result";stopAudio();clearCountdown();const x=lesson();saved.sessions.push({date:new Date().toISOString(),id:x.id,mode:st.mode});if(saved.sessions.length>250)saved.sessions=saved.sessions.slice(-250);save();let h=header()+'<div class="result-banner"><div class="eyebrow">MISSION COMPLETE</div><h1>面接、完走！ 🎉</h1><p>最後まで英語を話し切ったね。<br>今日のチャレンジが次の自信につながるよ。</p><span class="pill">'+(st.mode==="exam"?"本番チャレンジ":"やさしく練習")+' · '+esc(x.title)+'</span></div>';
 h+='<section class="section card"><h2>🌟 ふりかえり</h2><p class="note">ここは自動採点ではなく、お手本とメモを比べる練習ページです。音声の発音や内容の正しさをAIが判定したものではありません。</p><div class="check">'+checkItem(1,x.q1,x.a1,st.answers.q1||"")+checkItem(2,x.q2,x.a2,st.answers.q2||"")+checkItem(3,x.q3,x.a3,st.answers.q3||"")+checkItem(4,x.q4,x.a4,st.answers.q4||"")+'</div></section><div class="actions"><button class="btn primary" data-action="again">🔁 同じ問題でもう一度</button><button class="btn" data-action="home">🏠 問題を選び直す</button></div>';
 app.innerHTML=h;window.scrollTo(0,0)}
 document.addEventListener("input",function(e){if(e.target&&e.target.id==="answer")st.answers[st.stage]=e.target.value});
-document.addEventListener("click",function(e){const b=e.target.closest("[data-action]");if(!b)return;const a=b.getAttribute("data-action"),v=b.getAttribute("data-value");if(a==="choose"){st.lesson=+v;home()}else if(a==="start")start(b.getAttribute("data-mode"));else if(a==="next")advance();else if(a==="back"){const i=STAGES.indexOf(st.stage);if(i>0)go(STAGES[i-1])}else if(a==="quit"){st.token++;clearCountdown();stopAudio();st.stage="home";home()}else if(a==="caption"){st.show=!st.show;stage()}else if(a==="repeat"){say(promptText(),(st.stage==="silent"||st.stage==="prep2")?startCountdown:undefined)}else if(a==="mic")mic();else if(a==="home"){st.stage="home";home()}else if(a==="again")start(st.mode);else if(a==="rate"){st.rate=Number(v)||.9;saved.rate=st.rate;save();home()}else if(a==="printall")printCards(false);else if(a==="printone")printCards(true);else if(a==="testvoice"){say("Hello! Welcome to your English interview. Let's practice together!")}})
+document.addEventListener("click",function(e){const b=e.target.closest("[data-action]");if(!b)return;const a=b.getAttribute("data-action"),v=b.getAttribute("data-value");if(a==="choose"){st.lesson=+v;home()}else if(a==="start")start(b.getAttribute("data-mode"));else if(a==="next")advance();else if(a==="back"){const i=STAGES.indexOf(st.stage);if(i>0)go(STAGES[i-1])}else if(a==="quit"){EikenVoice.cancel();st.token++;clearCountdown();stopAudio();st.stage="home";home()}else if(a==="caption"){st.show=!st.show;stage()}else if(a==="repeat"){say(promptText(),(st.stage==="silent"||st.stage==="prep2")?startCountdown:undefined)}else if(a==="mic")mic();else if(a==="aimic")aiMic();else if(a==="home"){EikenVoice.cancel();st.stage="home";home()}else if(a==="again")start(st.mode);else if(a==="rate"){st.rate=Number(v)||.9;saved.rate=st.rate;save();home()}else if(a==="printall")printCards(false);else if(a==="printone")printCards(true);else if(a==="testvoice"){say("Hello! Welcome to your English interview. Let's practice together!")}})
 document.addEventListener("visibilitychange",function(){if(document.hidden){stopAudio();clearCountdown()}else if(st.stage==="silent"||st.stage==="prep2"){startCountdown()}});
 home();
 </script>
