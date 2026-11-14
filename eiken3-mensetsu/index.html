@@ -141,6 +141,26 @@ button{border-radius:12px;min-height:42px}button.primary{background:#6c60df;colo
 @keyframes exbreath{50%{transform:translateY(3px)}}@keyframes extalk{to{transform:scaleY(2.4)}}@keyframes exbar{to{height:18px}}
 @media(prefers-reduced-motion:reduce){.ex-video .examiner-img,.ex-video .mouth,.ex-video .ex-bars i{animation:none!important}}
 @media(max-width:520px){.ex-video{height:227px}.ex-video .examiner-img{width:197px}}
+
+/* Printable Grade 3 practice cards (A4: two cut-outs per sheet) */
+#print-pack{display:none}
+@media print{
+ @page{size:A4 portrait;margin:9mm}
+ html,body{background:white!important;color:#1c2d45!important;min-height:0!important;margin:0!important}
+ .wrap{display:none!important}
+ #print-pack{display:block!important;margin:0!important;padding:0!important}
+ .practice-print-card{height:131mm;width:100%;box-sizing:border-box;background:#fff;color:#1c2d45;border:1px solid #8294b7;border-radius:4mm;padding:7mm 9mm;break-inside:avoid;page-break-inside:avoid;position:relative;overflow:hidden}
+ .practice-print-card:nth-child(odd){margin-bottom:7mm}
+ .practice-print-card:nth-child(even){break-after:page;page-break-after:always}
+ .practice-print-card:last-child{break-after:auto;page-break-after:auto}
+ .print-head3{display:flex;justify-content:space-between;align-items:center;font-family:Arial,sans-serif;font-size:8.5pt;font-weight:bold;color:#405479}
+ .print-head3 b{border:1px solid #98a8c5;border-radius:30px;padding:4px 9px}
+ .practice-print-card h2{text-align:center;font:700 16pt Georgia,serif;margin:6mm 0 4mm;color:#1b2d42}
+ .practice-print-card .ptext{font:10.5pt/1.65 Georgia,serif;margin:0;min-height:27mm}
+ .practice-print-card svg{width:100%;max-width:164mm;height:58mm;display:block;margin:4mm auto 0;border-top:1px solid #a3aabb;padding-top:2mm}
+ .practice-print-card .print-foot3{position:absolute;bottom:4mm;right:8mm;font:6.4pt Arial,sans-serif;color:#65748b}
+ .practice-print-card .picture-title{margin:2mm 0 0;text-align:center;font:8pt Arial,sans-serif;letter-spacing:.12em;color:#6a7791}
+}
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 </head>
@@ -421,6 +441,18 @@ function currentLine(){const c=card();
   return '';}
 function enter(){render();const l=currentLine();if(l)setTimeout(()=>say(l),120)}
 
+
+function printGrade3Cards(onlySelected){
+ const src=onlySelected?[card()]:CARDS;
+ const pack=document.getElementById("print-pack")||document.createElement("section");
+ pack.id="print-pack";
+ pack.innerHTML=src.map((c,i)=>'<article class="practice-print-card"><div class="print-head3"><b>EIKEN GRADE 3 · PRACTICE CARD</b><span>CARD '+c.id.toUpperCase()+'</span></div><h2>'+esc(c.title)+'</h2><p class="ptext">'+esc(c.passage)+'</p><div class="picture-title">LOOK AT THE PICTURE</div>'+SCENES[c.id]()+'<div class="print-foot3">ORIGINAL · UNOFFICIAL PRACTICE MATERIAL</div></article>').join('');
+ document.body.appendChild(pack);
+ const cleanup=()=>{pack.remove();window.removeEventListener("afterprint",cleanup)};
+ window.addEventListener("afterprint",cleanup);
+ window.print();
+}
+
 function home(){
   const rows=CARDS.map((c,i)=>{const r=saved['r_'+c.id];return `<button class="pick" data-act="pick" data-i="${i}" aria-pressed="${i===S.cardIdx}">
     <span class="n">CARD ${String.fromCharCode(65+i)}</span><span class="t">${esc(c.title)}</span><span class="h">${esc(c.hint)}${r?`　前回 ${r.total}/33`:''}</span></button>`}).join('');
@@ -439,7 +471,7 @@ function home(){
      <button class="mini" data-act="rate" data-v="0.9" aria-pressed="${S.rate==0.9}">ふつう</button>
      <button class="mini" data-act="rate" data-v="1" aria-pressed="${S.rate==1}">本番より速め</button>
      <button class="mini ghost" data-act="test">🔊 試し聞き</button></div></div>
-   <button class="primary" data-act="start" style="padding:14px">🎬 面接官と練習スタート（${esc(card().title)}）</button><div class="note">※人物はアニメーション。音声は端末の読み上げ機能です（実在の動画・AIとの自由会話ではありません）。</div><a href="../eiken2-mensetsu/" class="sub">2級の面接練習はこちら →</a>
+   <button class="primary" data-act="start" style="padding:14px">🎬 面接官と練習スタート（${esc(card().title)}）</button><div class="panel stack"><h2>🖨 問題カードを印刷する</h2><p class="note">A4用紙に2枚ずつ印刷できます。英語の文章とイラストだけを印刷し、質問やお手本は載せません。</p><div class="row"><button data-act="printall" class="primary">5枚まとめて印刷</button><button data-act="printone">選んだ1枚だけ印刷</button></div></div><div class="note">※人物はアニメーション。音声は端末の読み上げ機能です（実在の動画・AIとの自由会話ではありません）。</div><a href="../eiken2-mensetsu/" class="sub">2級の面接練習はこちら →</a>
   </div>`;
 }
 
@@ -516,6 +548,8 @@ function result(){
 document.addEventListener('change',e=>{if(e.target.id==='showText'){S.showText=e.target.checked;saved.showText=S.showText;persist()}});
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+  if(a==='printall'){printGrade3Cards(false);return}
+  if(a==='printone'){printGrade3Cards(true);return}
   if(a==='pick'){S.cardIdx=+b.dataset.i;render();return}
   if(a==='rate'){S.rate=+b.dataset.v;saved.rate=S.rate;persist();render();say('Hello. Can I have your card, please?');return}
   if(a==='test'){say('Please look at the picture. What is the woman doing?');return}
