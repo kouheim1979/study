@@ -161,6 +161,12 @@ button{border-radius:12px;min-height:42px}button.primary{background:#6c60df;colo
  .practice-print-card .print-foot3{position:absolute;bottom:4mm;right:8mm;font:6.4pt Arial,sans-serif;color:#65748b}
  .practice-print-card .picture-title{margin:2mm 0 0;text-align:center;font:8pt Arial,sans-serif;letter-spacing:.12em;color:#6a7791}
 }
+
+.voice-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.voice-tools .mini{flex:1 1 135px;font-size:.83rem}
+.voice-status{font-size:.85rem;line-height:1.55;color:var(--fg);background:var(--surface);border:1.5px solid var(--line);border-radius:11px;padding:9px 12px}
+.voice-status:empty{display:none}
+.voice-help{font-size:.78rem;color:var(--muted);line-height:1.6}
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 </head>
@@ -168,6 +174,7 @@ button{border-radius:12px;min-height:42px}button.primary{background:#6c60df;colo
 
 <div class="wrap" id="app"></div>
 
+<script src="../shared/eiken-voice.js"></script>
 <script>
 /* ---------- picture helpers (black line art, like the real card) ---------- */
 const L=(x1,y1,x2,y2,w)=>`<line class="ln" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"${w?` style="stroke-width:${w}"`:''}/>`;
@@ -388,10 +395,30 @@ function examiner(line,{hide=false,repeat=true}={}){
   <div class="row" style="margin-top:8px">${repeat?`<button class="mini ghost" data-act="again">🔁 Could you say that again?</button>`:''}${hide?`<button class="mini ghost" data-act="reveal">文字で見る</button>`:''}</div></div></div>`;
 }
 function qcardHTML(){const c=card();return `<div class="qcard fade"><div class="ptitle">${esc(c.title)}</div><p class="ptext">${esc(c.passage)}</p>${SCENES[c.id]()}</div>`}
+
+function grade3VoiceStatus(msg){
+ const el=$('#voice-status');if(el)el.textContent=msg;
+ const b=document.querySelector('[data-act="aimic"]');
+ if(b)b.textContent=EikenVoice.isRecording()?'⏹ 録音を終了':'🎙️ 録音してAI変換';
+}
+function grade3VoiceAnswer(txt){
+ const key=S.step==='q5'?'q5':S.step;
+ if(!/^q[1-5]$/.test(key))return;
+ S.a[key]=((S.a[key]||'')+' '+txt).trim();
+ const ta=$('#ans');if(ta)ta.value=S.a[key];
+}
+function grade3Mic(mode){
+ if(!window.EikenVoice){const el=$('#voice-status');if(el)el.textContent='音声機能を読み込めませんでした。ページを更新してください。';return}
+ if(mode==='ai'){
+  if(EikenVoice.isRecording()){EikenVoice.stopAI();return}
+  EikenVoice.aiSpeech({onState:grade3VoiceStatus,onText:grade3VoiceAnswer,maxSeconds:22});
+ }else EikenVoice.nativeSpeech({onState:grade3VoiceStatus,onText:grade3VoiceAnswer});
+}
+
 function answerBox(key,ph){
   return `<div class="stack"><label for="ans" class="hint">あなたの答え（声に出して言ってから入力。キーボードのマイクで音声入力すると本番に近くなります）</label>
   <textarea id="ans" placeholder="${esc(ph)}">${esc(S.a[key]||'')}</textarea>
-  <div class="row" style="justify-content:space-between"><button class="mini ghost" data-act="mic">🎤 音声入力</button><span class="timer" id="tm">0秒</span><button class="primary" data-act="next">答えた → 次へ</button></div></div>`;
+  <div class="voice-tools"><button class="mini ghost" data-act="mic">🎤 直接音声認識</button><button class="mini primary" data-act="aimic">🎙️ 録音してAI変換</button></div><div class="voice-status" id="voice-status" role="status" aria-live="polite"></div><div class="voice-help">iPhoneで認識が不安定ならAI変換を使ってください。このボタンを押した場合だけ録音が外部AIサービスに送信されます。キーボードの🎤でも入力できます。</div><div class="row" style="justify-content:space-between"><span class="timer" id="tm">0秒</span><button class="primary" data-act="next">答えた → 次へ</button></div></div>`;
 }
 function startElapsed(limit=10){clearTimer();const t0=Date.now();timerId=setInterval(()=>{const e=Math.floor((Date.now()-t0)/1000),el=$('#tm');if(!el)return;el.textContent=e+'秒'+(e>=limit?'　早めに答え始めよう':'');el.classList.toggle('late',e>=limit)},500)}
 
@@ -439,7 +466,7 @@ function currentLine(){const c=card();
   if(/^q[1-4]$/.test(S.step))return c.q[+S.step[1]-1].t;
   if(S.step==='q5'){const q=c.q[4];return !S.yn?q.t:(S.yn==='yes'?q.yes:q.no)}
   return '';}
-function enter(){render();const l=currentLine();if(l)setTimeout(()=>say(l),120)}
+function enter(){EikenVoice.cancel();render();const l=currentLine();if(l)setTimeout(()=>say(l),120)}
 
 
 function printGrade3Cards(onlySelected){
@@ -553,13 +580,14 @@ document.addEventListener('click',e=>{
   if(a==='pick'){S.cardIdx=+b.dataset.i;render();return}
   if(a==='rate'){S.rate=+b.dataset.v;saved.rate=S.rate;persist();render();say('Hello. Can I have your card, please?');return}
   if(a==='test'){say('Please look at the picture. What is the woman doing?');return}
-  if(a==='start'||a==='retry'){S.a={};S.yn=null;S.introI=0;S.endI=0;S.grade=null;S.manual={};S.self={read:null,att:null};S.step='intro';enter();window.scrollTo(0,0);return}
-  if(a==='home'||a==='quit'){hush();S.step='home';render();window.scrollTo(0,0);return}
+  if(a==='start'||a==='retry'){EikenVoice.cancel();S.a={};S.yn=null;S.introI=0;S.endI=0;S.grade=null;S.manual={};S.self={read:null,att:null};S.step='intro';enter();window.scrollTo(0,0);return}
+  if(a==='home'||a==='quit'){EikenVoice.cancel();hush();S.step='home';render();window.scrollTo(0,0);return}
   if(a==='again'){say(currentLine());return}
-  if(a==='mic'){const Rec=window.SpeechRecognition||window.webkitSpeechRecognition;const ta=$('#ans');if(!ta)return;if(!Rec){alert('このブラウザは音声入力に対応していません。キーボードのマイクか手入力を使ってね。');return}try{const r=new Rec();r.lang='en-US';r.interimResults=false;r.onresult=e=>{ta.value=(ta.value+' '+e.results[0][0].transcript).trim();S.a[S.step==='q5'?'q5':S.step]=ta.value};r.onerror=()=>alert('音声入力を利用できませんでした。手入力は使えます。');r.start()}catch(e){alert('音声入力を開始できませんでした。')}return}
+  if(a==='mic'){grade3Mic('native');return}
+  if(a==='aimic'){grade3Mic('ai');return}
   if(a==='reveal'){const el=$('#exline');if(el){el.textContent=currentLine();el.classList.remove('hiddenq')}b.remove();return}
   if(a==='intro-next'){if(S.introI<INTRO.length-1){S.introI++;enter()}else{S.step='silent';enter()}return}
-  if(a==='end-next'){if(S.endI<ENDING.length-1){S.endI++;enter()}else{hush();S.step='result';render();window.scrollTo(0,0);grade()}return}
+  if(a==='end-next'){if(S.endI<ENDING.length-1){S.endI++;enter()}else{EikenVoice.cancel();hush();S.step='result';render();window.scrollTo(0,0);grade()}return}
   if(a==='yn'){S.yn=b.dataset.v;enter();return}
   if(a==='next'){const i=STEPS.indexOf(S.step);S.step=STEPS[i+1];enter();window.scrollTo(0,0);return}
   if(a==='regrade'){grade();return}
