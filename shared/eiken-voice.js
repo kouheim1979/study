@@ -76,7 +76,24 @@ function nativeSpeech(options){
   rec.onend=()=>{if(valid(op))finish(op,errored?"⚠️ 音声認識を終了しました。":heard?"✅ 認識しました。":"⚠️ 音声が文字になりませんでした。iPhoneではAI文字起こしがおすすめです。")};
   op.timer=setTimeout(()=>{if(!valid(op)||heard)return;finish(op,"⌛ 音声認識が応答しませんでした。iPhoneのSafariで起きることがあります。『AI文字起こし』を試してください。");try{rec.abort()}catch(e){}},15000);
   log(op,"🎤 マイクの許可を求めています…");
-  rec.start();
+  const startRecognition=()=>{
+   if(!valid(op))return;
+   try{rec.start()}catch(e){finish(op,"⚠️ "+errorText(e))}
+  };
+  // WebKit iOS: a short speech-synthesis utterance before start can
+  // recover consecutive recognition sessions after question playback.
+  const isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent||"");
+  if(isIOS&&global.speechSynthesis&&global.SpeechSynthesisUtterance){
+   let launched=false;
+   const once=()=>{if(launched)return;launched=true;startRecognition()};
+   try{
+    const primer=new global.SpeechSynthesisUtterance("Ready.");
+    primer.lang="en-US";primer.rate=1.15;primer.onend=once;primer.onerror=once;
+    log(op,"🔊 Ready の合図が聞こえたら、英語で話してください。");
+    global.speechSynthesis.speak(primer);
+    setTimeout(once,2500);
+   }catch(e){once()}
+  }else startRecognition();
   return true;
  }catch(e){finish(op,"⚠️ "+errorText(e));return false}
 }
