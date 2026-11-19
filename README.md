@@ -13,6 +13,7 @@ GitHub Pages: https://kouheim1979.github.io/study/
 | [pattern-pocket](pattern-pocket/) | Pattern Pocket（キッズ版あり） | 英語 |
 | [soundbeat](soundbeat/) | SoundBeat | 英語 |
 | [eigo-quest](eigo-quest/) | えいごヒマつぶしクエスト | 英語 |
+| [eigo-kairo](eigo-kairo/) | 英語回路（聞く・話すを毎日15分。聞き分け・ディクテーション・シャドーイング・瞬間英作文・AI英会話） | 英語 |
 | [Turn-method](Turn-method/) | ターンメソッド（英語発話トレーニング） | 英語 |
 | [eiken2-mensetsu](eiken2-mensetsu/) | 英検2級 INTERVIEW QUEST（アニメーション試験官＋音声の模擬面接） | 英語 |
 | [eiken3-mensetsu](eiken3-mensetsu/) | 英検3級 面接ルーム（二次試験の面接練習） | 英語 |

@@ -1,0 +1,3028 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>英語回路</title>
+<meta name="description" content="聞き分け・ディクテーション・瞬間英作文・シャドーイング・AI英会話を毎日15分。英語が聞ける・話せる回路をつくるトレーニングアプリ。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Lexend:wght@300..700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* 英語回路 — インクの太線と硬い影のポップ。青=耳（聞く）、ピンク=口（話す）、朱=完了のハンコ。
+     レイアウト: スマホ1カラム、下にタブ、練習は全画面。英文はリズム記号つき（●強く読む語・‿つながり） */
+  --paper: #F1EFFA;
+  --card: #FFFFFF;
+  --ink: #1D1A3B;
+  --line: #1D1A3B;
+  --muted: #5C5880;
+  --soft: #E5E1F6;
+  --ear: #2B6CF6;
+  --ear-soft: #DCE6FF;
+  --mouth: #E5407A;
+  --mouth-soft: #FFE0EB;
+  --hanko: #D2382B;
+  --hl: #FFE066;
+  --ok: #0E8656;
+  --ok-soft: #D5F4E5;
+  --bad: #C7303E;
+  --bad-soft: #FFE1E4;
+  --on-color: #FFFFFF;
+  --f-disp: "Dela Gothic One", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --f-ja: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+  --f-en: "Lexend", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --bw: 2.5px;
+  --sh: 3px 3px 0 var(--line);
+  --sh-lg: 5px 5px 0 var(--line);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15132B; --card: #232046; --ink: #F1EFFF; --line: #050414; --muted: #ABA7D3; --soft: #2F2B58;
+    --ear: #6B98FF; --ear-soft: #263461; --mouth: #FF6C99; --mouth-soft: #4B2342; --hanko: #FF5E4D;
+    --hl: #FFD84D; --ok: #43D49D; --ok-soft: #173D33; --bad: #FF6E7A; --bad-soft: #4A1E28; --on-color: #0D0B22;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #15132B; --card: #232046; --ink: #F1EFFF; --line: #050414; --muted: #ABA7D3; --soft: #2F2B58;
+  --ear: #6B98FF; --ear-soft: #263461; --mouth: #FF6C99; --mouth-soft: #4B2342; --hanko: #FF5E4D;
+  --hl: #FFD84D; --ok: #43D49D; --ok-soft: #173D33; --bad: #FF6E7A; --bad-soft: #4A1E28; --on-color: #0D0B22;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--paper); color: var(--ink);
+  font: 500 16px/1.65 var(--f-ja);
+  -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--ear); outline-offset: 2px; }
+.ic { width: 22px; height: 22px; flex: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+
+/* ---------- 枠組み ---------- */
+.app { height: 100%; display: flex; flex-direction: column; max-width: 560px; margin: 0 auto; }
+.top { display: flex; align-items: center; gap: 10px; padding: 12px 16px 8px; flex: none; }
+.logo { display: flex; align-items: center; gap: 8px; font: 400 21px/1 var(--f-disp); letter-spacing: .02em; margin-right: auto; }
+.logo .wave { width: 30px; height: 18px; color: var(--mouth); }
+.streak { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; padding: 4px 10px 4px 4px; border: var(--bw) solid var(--line); border-radius: 999px; background: var(--card); box-shadow: 2px 2px 0 var(--line); }
+.streak b { font: 400 13px/1 var(--f-disp); color: var(--on-color); background: var(--hanko); border-radius: 999px; min-width: 26px; height: 26px; display: grid; place-items: center; padding: 0 6px; }
+.iconbtn { display: grid; place-items: center; width: 42px; height: 42px; border: var(--bw) solid var(--line); border-radius: 12px; background: var(--card); box-shadow: 2px 2px 0 var(--line); padding: 0; }
+.iconbtn:active { transform: translate(2px, 2px); box-shadow: none; }
+#view { flex: 1; overflow-y: auto; padding: 6px 16px 28px; display: flex; flex-direction: column; gap: 18px; -webkit-overflow-scrolling: touch; }
+.tabbar { flex: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 8px 8px 10px; background: var(--card); border-top: var(--bw) solid var(--line); }
+.tabbar button { display: flex; flex-direction: column; align-items: center; gap: 2px; border: var(--bw) solid transparent; background: none; border-radius: 14px; padding: 6px 2px 4px; font-size: 11.5px; font-weight: 700; color: var(--muted); }
+.tabbar button .ic { width: 24px; height: 24px; }
+.tabbar button[aria-current="page"] { color: var(--ink); background: var(--hl); border-color: var(--line); box-shadow: 2px 2px 0 var(--line); }
+.tabbar button[aria-current="page"][data-tab="listen"] { background: var(--ear); color: var(--on-color); }
+.tabbar button[aria-current="page"][data-tab="speak"] { background: var(--mouth); color: var(--on-color); }
+.tabbar button[aria-current="page"] .ic { stroke-width: 2.6; }
+
+/* ---------- ボタン類 ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 10px 16px; border: var(--bw) solid var(--line); border-radius: 13px; background: var(--card); box-shadow: var(--sh); font-weight: 700; font-size: 16px; line-height: 1.2; text-align: center; transition: transform .06s ease, box-shadow .06s ease; touch-action: manipulation; }
+.btn:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--line); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.ear { background: var(--ear); color: var(--on-color); }
+.btn.mouth { background: var(--mouth); color: var(--on-color); }
+.btn.ink { background: var(--ink); color: var(--paper); }
+.btn.hl { background: var(--hl); color: #1D1A3B; }
+.btn.big { width: 100%; min-height: 58px; font-size: 18px; border-radius: 16px; box-shadow: var(--sh-lg); }
+.btn.big:active:not(:disabled) { transform: translate(5px, 5px); }
+.btn.sm { min-height: 38px; padding: 6px 12px; font-size: 14px; border-radius: 10px; box-shadow: 2px 2px 0 var(--line); }
+.btn.round { width: 58px; height: 58px; padding: 0; border-radius: 50%; }
+.btn.round .ic { width: 28px; height: 28px; }
+.btn.flat { box-shadow: none; }
+.btn.link { border: none; box-shadow: none; background: none; text-decoration: underline; text-underline-offset: 4px; min-height: 40px; color: var(--ink); }
+.btn.wide { flex: 1; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.row.end { justify-content: flex-end; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 700; padding: 2px 10px; border: 2px solid var(--line); border-radius: 999px; background: var(--card); line-height: 1.5; white-space: nowrap; }
+.chip.ear { background: var(--ear-soft); }
+.chip.mouth { background: var(--mouth-soft); }
+.chip.ghost { border-color: transparent; background: var(--soft); }
+button.chip { min-height: 36px; padding: 4px 12px; font-size: 13.5px; }
+button.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg { display: flex; border: var(--bw) solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); box-shadow: 2px 2px 0 var(--line); }
+.seg button { flex: 1; min-height: 40px; border: none; background: none; font-weight: 700; font-size: 14px; padding: 6px 8px; border-left: 2px solid var(--line); }
+.seg button:first-child { border-left: none; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.muted { color: var(--muted); }
+.small { font-size: 13.5px; }
+.label { font-weight: 900; font-size: 14px; }
+
+/* ---------- 英文（リズム記号） ---------- */
+.en { font-family: var(--f-en); font-weight: 400; letter-spacing: .005em; line-height: 1.5; word-break: normal; overflow-wrap: anywhere; }
+.en .w { display: inline-block; position: relative; padding-top: 11px; border-radius: 6px; transition: background .12s; }
+.en.rh .w.st { font-weight: 650; }
+.en.rh .w.wk { color: var(--muted); font-weight: 350; }
+.en.rh .w.st::before, .en.rh .w.wk::before { content: ""; position: absolute; top: 2px; left: 50%; transform: translateX(-50%); border-radius: 50%; }
+.en.rh .w.st::before { width: 8px; height: 8px; background: var(--mouth); }
+.en.rh .w.wk::before { width: 4px; height: 4px; background: var(--muted); opacity: .55; top: 4px; }
+.en .grp { white-space: nowrap; }
+.en .lk { display: inline-block; color: var(--ear); font-weight: 700; margin: 0 -.12em; transform: translateY(.42em); font-size: .9em; }
+.en .pu { display: inline-block; padding-top: 11px; }
+.en .w.on { background: var(--hl); color: #1D1A3B; }
+.en .w.m-ok { color: var(--ok); }
+.en .w.m-near { color: #B7791F; text-decoration: underline wavy; text-underline-offset: 5px; }
+.en .w.m-miss { color: var(--bad); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.en .w.hit { background: var(--hl); color: #1D1A3B; padding-left: 3px; padding-right: 3px; }
+.en input.blank { font: 500 1em/1.2 var(--f-en); border: none; border-bottom: 3px solid var(--ear); background: var(--ear-soft); border-radius: 6px 6px 0 0; padding: 2px 4px; margin: 0 2px; min-width: 3.2ch; text-align: center; color: var(--ink); vertical-align: baseline; }
+.en input.blank:focus { outline: none; background: var(--hl); color: #1D1A3B; border-bottom-color: var(--ink); }
+.en input.blank.ok { background: var(--ok-soft); border-bottom-color: var(--ok); }
+.en input.blank.ng { background: var(--bad-soft); border-bottom-color: var(--bad); }
+.ja { color: var(--muted); font-size: 15px; }
+.big-en { font-size: clamp(22px, 6.4vw, 30px); }
+.mid-en { font-size: clamp(19px, 5.2vw, 24px); }
+
+/* ---------- ホーム ---------- */
+.stage { position: relative; background: var(--card); border: var(--bw) solid var(--line); border-radius: 22px; box-shadow: var(--sh-lg); padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.stage-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.stage-top .label { margin-right: auto; }
+.stage .legend { font-size: 12px; color: var(--muted); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--mouth); margin-right: 4px; vertical-align: 1px; }
+.legend i.s { width: 4px; height: 4px; background: var(--muted); }
+.legend em { font-style: normal; color: var(--ear); font-weight: 700; margin-right: 4px; }
+.plan { display: flex; flex-direction: column; gap: 12px; }
+.plan-head { display: flex; align-items: baseline; gap: 10px; }
+.plan-head h2 { font: 400 19px/1.3 var(--f-disp); margin-right: auto; }
+.plan-head .mins { font-weight: 700; font-variant-numeric: tabular-nums; }
+.meter { height: 12px; border: 2px solid var(--line); border-radius: 999px; background: var(--card); overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--hl); border-right: 2px solid var(--line); }
+.meter i[style*="100%"] { border-right: none; }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: var(--bw) solid var(--line); border-radius: 16px; background: var(--card); overflow: hidden; }
+.steps li { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 11px 14px; border-top: 2px dashed var(--soft); counter-increment: st; }
+.steps li:first-child { border-top: none; }
+.steps li::before { content: counter(st); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); font: 400 14px/1 var(--f-disp); background: var(--paper); }
+.steps li.done::before { content: "済"; background: var(--hanko); color: var(--on-color); border-color: var(--hanko); font-size: 13px; }
+.steps li b { display: block; font-weight: 900; font-size: 15.5px; line-height: 1.3; }
+.steps li span { display: block; font-size: 13px; color: var(--muted); line-height: 1.4; }
+.steps li em { font-style: normal; font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.steps li.done b { text-decoration: line-through; text-decoration-thickness: 2px; opacity: .6; }
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.week .d { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11.5px; color: var(--muted); font-weight: 700; }
+.week .d .c { width: 38px; height: 38px; border-radius: 50%; border: 2px dashed var(--muted); display: grid; place-items: center; opacity: .55; }
+.week .d.part .c { border-style: solid; opacity: 1; background: var(--card); }
+.week .d.part .c::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--hanko); }
+.week .d.today { color: var(--ink); }
+.week .d.today .c { opacity: 1; border-color: var(--ink); }
+.week .d.full .c { border: none; opacity: 1; }
+.week .d .c svg { width: 40px; height: 40px; color: var(--hanko); }
+.section-title { font: 400 17px/1.3 var(--f-disp); }
+.note { font-size: 13.5px; color: var(--muted); }
+.callout { border: 2px dashed var(--muted); border-radius: 14px; padding: 12px 14px; font-size: 14px; color: var(--muted); }
+
+/* ---------- 練習メニュー ---------- */
+.tool { background: var(--card); border: var(--bw) solid var(--line); border-radius: 18px; box-shadow: var(--sh); overflow: hidden; }
+.tool-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: var(--bw) solid var(--line); background: var(--ear); color: var(--on-color); }
+.tool.mouthy .tool-head { background: var(--mouth); }
+.tool.inky .tool-head { background: var(--ink); color: var(--paper); }
+.tool-head h3 { font: 400 17px/1.3 var(--f-disp); margin-right: auto; }
+.tool-head .chip { color: var(--ink); }
+.tool-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 12px; }
+.tool-body p { font-size: 14px; color: var(--muted); }
+.pagehead { display: flex; flex-direction: column; gap: 4px; padding-top: 4px; }
+.pagehead h1 { font: 400 24px/1.25 var(--f-disp); }
+.pagehead p { color: var(--muted); font-size: 14px; }
+.acc { font-variant-numeric: tabular-nums; font-size: 12px; opacity: .8; margin-left: 2px; }
+
+/* ---------- 全画面（練習・会話・聞き流し） ---------- */
+#ov { position: fixed; left: 0; right: 0; top: var(--vvt, 0px); height: var(--vvh, 100%); z-index: 40; background: var(--paper); display: flex; flex-direction: column; }
+#ov[hidden] { display: none; }
+.ov-wrap { width: 100%; max-width: 560px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; }
+.run-top { display: flex; align-items: center; gap: 10px; padding: 10px 14px 6px; flex: none; }
+.run-title { display: flex; flex-direction: column; margin-right: auto; min-width: 0; line-height: 1.25; }
+.run-title b { font: 400 16px/1.3 var(--f-disp); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.run-title span { font-size: 12.5px; color: var(--muted); font-weight: 700; }
+.run-count { font: 400 14px/1 var(--f-disp); font-variant-numeric: tabular-nums; }
+.run-bar { height: 8px; margin: 2px 14px 0; border: 2px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--card); flex: none; }
+.run-bar i { display: block; height: 100%; background: var(--ear); transition: width .25s ease; }
+.run-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.run-body { padding: 18px 16px 24px; display: flex; flex-direction: column; gap: 16px; min-height: 100%; }
+.run-foot { flex: none; padding: 10px 16px 14px; border-top: var(--bw) solid var(--line); background: var(--card); display: flex; flex-direction: column; gap: 10px; }
+.run-foot:empty { display: none; }
+.q { font-weight: 900; font-size: 17px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.prompt-ja { font: 700 clamp(20px, 5.6vw, 26px)/1.55 var(--f-ja); }
+.playbig { align-self: center; display: flex; flex-direction: column; align-items: center; gap: 6px; border: none; background: none; font-weight: 700; font-size: 13.5px; color: var(--muted); padding: 4px; }
+.playbig .disc { width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; background: var(--ear); color: var(--on-color); border: var(--bw) solid var(--line); box-shadow: var(--sh-lg); transition: transform .06s, box-shadow .06s; }
+.playbig:active .disc { transform: translate(4px, 4px); box-shadow: none; }
+.playbig .disc .ic { width: 40px; height: 40px; }
+html.is-speaking .playbig .disc { animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 5px 5px 0 var(--line), 0 0 0 10px color-mix(in srgb, var(--ear) 25%, transparent); } }
+.audio-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.choice { min-height: 86px; border: var(--bw) solid var(--line); border-radius: 18px; background: var(--card); box-shadow: var(--sh-lg); font: 600 clamp(22px, 6vw, 28px)/1.2 var(--f-en); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 8px; transition: transform .06s, box-shadow .06s; }
+.choice:active:not(:disabled) { transform: translate(5px, 5px); box-shadow: none; }
+.choice small { font: 700 12px/1 var(--f-ja); color: var(--muted); }
+.choice.right { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+.choice.wrong { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+.choice:disabled { cursor: default; }
+.verdict { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 18px; padding: 10px 14px; border: var(--bw) solid var(--line); border-radius: 14px; }
+.verdict.ok { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+.verdict.ng { background: var(--bad-soft); color: var(--bad); border-color: var(--bad); }
+.verdict.mid { background: color-mix(in srgb, var(--hl) 45%, var(--card)); }
+.verdict .ic { width: 26px; height: 26px; stroke-width: 3; }
+.verdict small { font-weight: 700; font-size: 13px; margin-left: auto; color: var(--ink); opacity: .75; }
+.tip { font-size: 14.5px; background: var(--card); border: 2px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.tip b { font-weight: 900; }
+.card { background: var(--card); border: var(--bw) solid var(--line); border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--sh); }
+.card.flat { box-shadow: none; }
+.sound { display: inline-flex; align-items: baseline; gap: 8px; font-weight: 900; font-size: 20px; }
+.sound small { font-size: 12.5px; color: var(--muted); font-weight: 700; }
+textarea.full, input.text, select.text { width: 100%; border: var(--bw) solid var(--line); border-radius: 14px; background: var(--card); padding: 12px 14px; font: 500 17px/1.5 var(--f-en); resize: vertical; }
+textarea.full:focus, input.text:focus { outline: none; box-shadow: 0 0 0 3px var(--ear-soft); border-color: var(--ear); }
+input.text.ja-in, textarea.ja-in { font-family: var(--f-ja); }
+.timer { height: 6px; border-radius: 999px; background: var(--soft); overflow: hidden; }
+.timer i { display: block; height: 100%; width: 100%; background: var(--mouth); transform-origin: left; animation: shrink var(--dur, 6s) linear forwards; }
+@keyframes shrink { to { transform: scaleX(0); } }
+.grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.grades .btn { flex-direction: column; gap: 0; min-height: 58px; padding: 6px 4px; font-size: 14.5px; }
+.grades .btn small { font-weight: 500; font-size: 11.5px; opacity: .8; }
+.grades .g0 { background: var(--bad-soft); }
+.grades .g2 { background: var(--ok-soft); }
+.grades .g3 { background: var(--ear-soft); }
+.grades .btn.sug { outline: 3px solid var(--ink); outline-offset: 2px; }
+.speakbox { display: flex; flex-direction: column; gap: 10px; }
+.mic { width: 100%; min-height: 60px; font-size: 17px; }
+.mic.on { background: var(--ink); color: var(--paper); animation: breathe 1.4s ease-in-out infinite; }
+@keyframes breathe { 50% { box-shadow: 3px 3px 0 var(--line), 0 0 0 8px color-mix(in srgb, var(--mouth) 30%, transparent); } }
+.live { min-height: 1.6em; font: 500 17px/1.5 var(--f-en); color: var(--ink); }
+.live:empty::before { content: attr(data-ph); color: var(--muted); font: 500 13.5px/1.5 var(--f-ja); }
+.live .part { color: var(--muted); }
+.typein { display: flex; gap: 8px; }
+.typein input { flex: 1; min-width: 0; border: var(--bw) solid var(--line); border-radius: 12px; background: var(--card); padding: 10px 12px; font: 500 17px/1.4 var(--f-en); }
+.typein input:focus { outline: none; border-color: var(--ear); box-shadow: 0 0 0 3px var(--ear-soft); }
+.hint { font-size: 12.5px; color: var(--muted); display: flex; gap: 6px; align-items: flex-start; }
+.hint .ic { width: 16px; height: 16px; margin-top: 3px; }
+.turn { display: flex; flex-direction: column; gap: 6px; }
+.turn .bar { height: 14px; border-radius: 999px; border: 2px solid var(--line); background: var(--card); overflow: hidden; }
+.turn .bar i { display: block; height: 100%; width: 0; background: var(--mouth); }
+.turn.go .bar i { animation: grow var(--dur, 3s) linear forwards; }
+@keyframes grow { to { width: 100%; } }
+.turn .lbl { font-size: 13px; font-weight: 700; color: var(--muted); }
+.dots { display: flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 700; color: var(--muted); }
+.dots i { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid var(--line); background: var(--card); }
+.dots i.on { background: var(--mouth); }
+.score { font: 400 30px/1 var(--f-disp); font-variant-numeric: tabular-nums; }
+.score small { font: 700 13px/1 var(--f-ja); color: var(--muted); margin-left: 4px; }
+.heard { font: 500 15px/1.5 var(--f-en); color: var(--muted); }
+.heard b { font-family: var(--f-ja); font-weight: 700; font-size: 12.5px; margin-right: 6px; }
+.finish { align-items: center; text-align: center; justify-content: center; }
+.finish h2 { font: 400 26px/1.3 var(--f-disp); }
+.bignums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
+.bignums div { background: var(--card); border: var(--bw) solid var(--line); border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.bignums b { font: 400 26px/1.1 var(--f-disp); font-variant-numeric: tabular-nums; }
+.bignums span { font-size: 12px; color: var(--muted); font-weight: 700; }
+.stamp { color: var(--hanko); }
+.stamp.big { width: 168px; height: 168px; }
+.stamp.slam { animation: slam .55s cubic-bezier(.2, .9, .3, 1.3) both; }
+@keyframes slam { 0% { transform: scale(2.2) rotate(-24deg); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1) rotate(-9deg); opacity: 1; } }
+.stamp.rest { transform: rotate(-9deg); }
+
+/* ---------- AI会話 ---------- */
+.scenes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.scene { text-align: left; border: var(--bw) solid var(--line); border-radius: 16px; background: var(--card); box-shadow: var(--sh); padding: 12px; display: flex; flex-direction: column; gap: 4px; min-height: 92px; }
+.scene:active { transform: translate(3px, 3px); box-shadow: none; }
+.scene b { font-weight: 900; font-size: 15px; line-height: 1.35; }
+.scene span { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+.scene.free { background: var(--hl); color: #1D1A3B; }
+.scene.free span { color: #4a456e; }
+.chat { display: flex; flex-direction: column; gap: 12px; }
+.msg { max-width: 88%; display: flex; flex-direction: column; gap: 6px; }
+.msg.ai { align-self: flex-start; }
+.msg.me { align-self: flex-end; align-items: flex-end; }
+.bubble { border: var(--bw) solid var(--line); border-radius: 18px; padding: 10px 14px; font: 400 17px/1.5 var(--f-en); background: var(--card); box-shadow: 2px 2px 0 var(--line); }
+.msg.ai .bubble { border-bottom-left-radius: 4px; }
+.msg.me .bubble { background: var(--ear-soft); border-bottom-right-radius: 4px; }
+.msg.me .bubble.ja-msg { font-family: var(--f-ja); font-size: 16px; }
+.bubble .tr { display: block; font: 500 14px/1.5 var(--f-ja); color: var(--muted); margin-top: 4px; }
+.bubble.hidden-cap { color: var(--muted); font: 700 14px/1.5 var(--f-ja); display: flex; gap: 8px; align-items: center; }
+.msg-tools { display: flex; gap: 6px; }
+.msg-tools button { min-height: 32px; border: 2px solid var(--line); border-radius: 999px; background: var(--card); font-size: 12.5px; font-weight: 700; padding: 2px 10px; display: inline-flex; gap: 4px; align-items: center; }
+.msg-tools button .ic { width: 15px; height: 15px; }
+.fb { width: 100%; border: 2px solid var(--line); border-radius: 14px; background: var(--card); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.fb.good { border-color: var(--ok); }
+.fb .fb-h { font-weight: 900; display: flex; align-items: center; gap: 6px; }
+.fb.good .fb-h { color: var(--ok); }
+.fb.fix .fb-h { color: var(--mouth); }
+.fb .fb-h .ic { width: 18px; height: 18px; stroke-width: 3; }
+.fb .alt { font: 500 16px/1.45 var(--f-en); }
+.fb .alt small { display: block; font: 700 11.5px/1.4 var(--f-ja); color: var(--muted); }
+.typing { display: inline-flex; gap: 5px; padding: 14px 16px; }
+.typing i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite; }
+.typing i:nth-child(2) { animation-delay: .2s; }
+.typing i:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 50% { opacity: .2; } }
+.composer { display: flex; gap: 8px; align-items: flex-end; }
+.composer textarea { flex: 1; min-width: 0; border: var(--bw) solid var(--line); border-radius: 14px; background: var(--card); padding: 10px 12px; font: 500 17px/1.4 var(--f-en); resize: none; max-height: 120px; }
+.composer textarea:focus { outline: none; border-color: var(--ear); }
+.composer .btn { min-height: 48px; padding: 0 12px; }
+.hints { display: flex; flex-direction: column; gap: 6px; }
+.hints button { text-align: left; border: 2px solid var(--line); border-radius: 12px; background: var(--hl); color: #1D1A3B; padding: 8px 12px; font: 500 15px/1.4 var(--f-en); }
+.hints button small { display: block; font: 700 12px/1.4 var(--f-ja); opacity: .75; }
+.sys { align-self: center; font-size: 13.5px; color: var(--muted); text-align: center; max-width: 92%; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+
+/* ---------- 記録 ---------- */
+.cal { background: var(--card); border: var(--bw) solid var(--line); border-radius: 18px; box-shadow: var(--sh-lg); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.cal-head { display: flex; align-items: center; gap: 8px; }
+.cal-head h3 { font: 400 18px/1.3 var(--f-disp); margin-right: auto; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-grid .dow { text-align: center; font-size: 11.5px; font-weight: 900; color: var(--muted); }
+.cal-grid .dow:first-child { color: var(--hanko); }
+.cal-grid .day { aspect-ratio: 1; border: 1.5px solid var(--soft); border-radius: 10px; position: relative; display: grid; place-items: center; font: 600 12.5px/1 var(--f-en); color: var(--muted); }
+.cal-grid .day.today { border: 2.5px solid var(--ink); color: var(--ink); }
+.cal-grid .day.part::after { content: ""; position: absolute; bottom: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--hanko); }
+.cal-grid .day svg { position: absolute; inset: 1px; width: calc(100% - 2px); height: calc(100% - 2px); color: var(--hanko); }
+.cal-grid .day.future { opacity: .45; }
+.bars { display: flex; flex-direction: column; gap: 8px; }
+.bar-row { display: grid; grid-template-columns: 7.5em 1fr 3.2em; gap: 8px; align-items: center; font-size: 13px; font-weight: 700; }
+.bar-row .tr { height: 14px; border: 2px solid var(--line); border-radius: 999px; background: var(--card); overflow: hidden; }
+.bar-row .tr i { display: block; height: 100%; background: var(--ear); }
+.bar-row .tr i.low { background: var(--mouth); }
+.bar-row .v { text-align: right; font-variant-numeric: tabular-nums; }
+.list { display: flex; flex-direction: column; border: var(--bw) solid var(--line); border-radius: 16px; background: var(--card); overflow: hidden; }
+.li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-top: 2px dashed var(--soft); }
+.li:first-child { border-top: none; }
+.li .en { font-size: 15.5px; line-height: 1.4; }
+.li .ja { font-size: 13px; line-height: 1.45; }
+.li .st-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); }
+.li .st-dot.l1 { background: linear-gradient(90deg, var(--ear) 50%, var(--card) 50%); }
+.li .st-dot.l2 { background: var(--ear); }
+.li .acts { display: flex; gap: 6px; }
+.li .acts button { width: 38px; height: 38px; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 10px; background: var(--card); padding: 0; }
+.li .acts button .ic { width: 18px; height: 18px; }
+.empty { padding: 18px 14px; text-align: center; color: var(--muted); font-size: 14px; }
+
+/* ---------- シート・ダイアログ・トースト ---------- */
+#sheet { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center; }
+#sheet[hidden] { display: none; }
+.sheet-back { position: absolute; inset: 0; background: color-mix(in srgb, var(--ink) 45%, transparent); }
+.sheet-panel { position: relative; width: 100%; max-width: 560px; max-height: calc(var(--vvh, 100%) - 24px); overflow-y: auto; background: var(--paper); border: var(--bw) solid var(--line); border-bottom: none; border-radius: 22px 22px 0 0; padding: 16px 16px 22px; display: flex; flex-direction: column; gap: 16px; animation: up .22s ease-out; }
+@keyframes up { from { transform: translateY(40px); opacity: 0; } }
+.sheet-head { display: flex; align-items: center; gap: 10px; }
+.sheet-head h2 { font: 400 20px/1.3 var(--f-disp); margin-right: auto; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field > .label { display: flex; align-items: baseline; gap: 8px; }
+.field > .label small { font-weight: 700; color: var(--muted); font-size: 12.5px; }
+.sw { display: flex; align-items: center; gap: 12px; justify-content: space-between; padding: 8px 0; border-top: 2px dashed var(--soft); }
+.sw:first-of-type { border-top: none; }
+.sw span { font-weight: 700; font-size: 15px; }
+.sw span small { display: block; font-weight: 500; font-size: 12.5px; color: var(--muted); }
+.toggle { flex: none; width: 56px; height: 32px; border-radius: 999px; border: var(--bw) solid var(--line); background: var(--soft); position: relative; padding: 0; }
+.toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; border-radius: 50%; background: var(--card); border: 2px solid var(--line); transition: transform .15s; }
+.toggle[aria-checked="true"] { background: var(--ok); }
+.toggle[aria-checked="true"]::after { transform: translateX(24px); }
+.lvopts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lvopt { text-align: left; border: var(--bw) solid var(--line); border-radius: 14px; background: var(--card); padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; box-shadow: 2px 2px 0 var(--line); }
+.lvopt b { font: 400 16px/1.3 var(--f-disp); }
+.lvopt span { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.lvopt em { font: 400 13px/1.4 var(--f-en); font-style: normal; }
+.lvopt[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.lvopt[aria-pressed="true"] span { color: color-mix(in srgb, var(--paper) 75%, transparent); }
+.range { display: flex; align-items: center; gap: 12px; }
+.range input { flex: 1; accent-color: var(--ear); }
+.range output { font: 400 15px/1 var(--f-disp); min-width: 3.4em; text-align: right; }
+details.help { border: 2px solid var(--line); border-radius: 14px; background: var(--card); padding: 10px 14px; }
+details.help summary { font-weight: 900; cursor: pointer; }
+details.help ul { margin: 8px 0 0; padding-left: 1.2em; font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
+.dlg-wrap { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 20px; background: color-mix(in srgb, var(--ink) 45%, transparent); }
+.dlg { width: 100%; max-width: 380px; background: var(--card); border: var(--bw) solid var(--line); border-radius: 20px; box-shadow: var(--sh-lg); padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.dlg h3 { font: 400 18px/1.4 var(--f-disp); }
+.dlg p { font-size: 14.5px; color: var(--muted); }
+#toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%); z-index: 90; width: max-content; max-width: min(92vw, 520px); background: var(--ink); color: var(--paper); border-radius: 14px; padding: 10px 16px; font-weight: 700; font-size: 14px; box-shadow: 3px 3px 0 var(--hanko); pointer-events: none; opacity: 0; transition: opacity .2s, transform .2s; }
+#toast.on { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+body.ov-open #toast { bottom: 110px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .turn.go .bar i { animation: none; width: 100%; }
+}
+@media (min-width: 600px) {
+  .app { border-left: var(--bw) solid var(--line); border-right: var(--bw) solid var(--line); background: var(--paper); }
+  body { background: color-mix(in srgb, var(--paper) 70%, var(--soft)); }
+}
+.phases { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.phases span { font-size: 12.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; border: 2px solid var(--soft); color: var(--muted); background: var(--card); }
+.phases span.on { background: var(--hl); border-color: var(--line); color: #1D1A3B; }
+#view > *, .run-body > *, .sheet-panel > *, .tool-body > * { flex-shrink: 0; }
+.iconbtn:disabled { opacity: .35; cursor: default; box-shadow: none; }
+.run-title span:empty { display: none; }
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <filter id="ink" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="3.4"/></filter>
+  <filter id="ink-s" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves="1" seed="9"/><feDisplacementMap in="SourceGraphic" scale="1.7"/></filter>
+</defs></svg>
+<div class="app">
+  <header class="top">
+    <div class="logo"><svg class="wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12h4V5h5v14h5V8h4v4h4"/></svg>英語回路</div>
+    <button class="streak" id="streak" data-act="tab" data-tab="stats" aria-label="連続日数"><b>0</b>日連続</button>
+    <button class="iconbtn" id="settings-btn" data-act="settings" aria-label="設定"></button>
+  </header>
+  <main id="view" tabindex="-1"></main>
+  <nav class="tabbar" aria-label="メニュー"></nav>
+</div>
+<div id="ov" hidden></div>
+<div id="sheet" hidden></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+/* ===== data.js — 教材データ ===== */
+/* 例文: 1行 = 英文|日本語|タグ。レベルは 1 入門 / 2 初級 / 3 中級 / 4 上級 */
+const CORPUS = {
+1: `
+I'm hungry.|お腹がすいた。|気持ち
+I'm a little tired today.|今日はちょっと疲れています。|気持ち
+Nice to meet you.|はじめまして。|あいさつ
+How are you?|調子はどう？|あいさつ
+I'm good, thanks. And you?|元気です、ありがとう。あなたは？|あいさつ
+Where are you from?|どちらのご出身ですか？|質問
+I'm from Japan.|日本から来ました。|自己紹介
+What's your name?|お名前は？|質問
+Please call me Ken.|ケンと呼んでください。|自己紹介
+What do you do?|お仕事は何をしていますか？|質問
+I'm an engineer.|エンジニアです。|自己紹介
+I work in Osaka.|大阪で働いています。|自己紹介
+I have two children.|子どもが二人います。|自己紹介
+My hobby is fishing.|趣味は釣りです。|自己紹介
+I like coffee.|コーヒーが好きです。|好み
+I don't like spicy food.|辛い食べ物は苦手です。|好み
+Do you like sports?|スポーツは好きですか？|好み
+I get up at six.|6時に起きます。|日課
+I go to work by train.|電車で通勤しています。|日課
+What time is it?|今何時ですか？|時間
+It's three o'clock.|3時です。|時間
+It's cold today.|今日は寒いですね。|天気
+It's raining outside.|外は雨が降っています。|天気
+I'm busy right now.|今、手が離せません。|気持ち
+See you tomorrow.|また明日。|あいさつ
+Have a nice day.|よい一日を。|あいさつ
+Thank you very much.|どうもありがとうございます。|あいさつ
+You're welcome.|どういたしまして。|あいさつ
+Excuse me.|すみません。|あいさつ
+I'm sorry I'm late.|遅れてすみません。|あいさつ
+Please speak slowly.|ゆっくり話してください。|お願い
+Could you say that again?|もう一度言っていただけますか？|お願い
+I don't understand.|わかりません。|会話
+What does this mean?|これはどういう意味ですか？|質問
+How do you say this in English?|これは英語で何と言いますか？|質問
+Can you help me?|手伝ってもらえますか？|お願い
+Can I sit here?|ここに座ってもいいですか？|お願い
+Is this seat taken?|この席は空いていますか？|質問
+How much is this?|これはいくらですか？|買い物
+I'll take this one.|これにします。|買い物
+I'm just looking.|見ているだけです。|買い物
+Where is the station?|駅はどこですか？|道案内
+It's over there.|あそこにあります。|道案内
+I'm looking for the bank.|銀行を探しています。|道案内
+Water, please.|お水をください。|注文
+Can I have the check, please?|お会計をお願いします。|注文
+Let's have lunch together.|一緒にお昼を食べましょう。|誘い
+That sounds good.|いいですね。|会話
+I think so, too.|私もそう思います。|会話
+I don't think so.|そうは思いません。|会話
+Don't worry.|心配しないで。|会話
+Wait a minute.|ちょっと待って。|会話
+I have a question.|質問があります。|会話
+Here you are.|はい、どうぞ。|会話
+Good job!|よくやったね！|会話
+Me, too.|私も。|会話
+It's my first time here.|ここは初めてです。|旅行
+Do you speak Japanese?|日本語は話せますか？|質問
+Open the window, please.|窓を開けてください。|お願い
+I'm full.|お腹いっぱいです。|気持ち
+`,
+2: `
+I went to Kyoto last weekend.|先週末、京都に行きました。|過去形
+What did you do yesterday?|昨日は何をしましたか？|過去形
+I stayed home and watched a movie.|家で映画を見ていました。|過去形
+I was really busy last week.|先週は本当に忙しかったです。|過去形
+I didn't sleep well last night.|昨夜はよく眠れませんでした。|過去形
+I lived in Tokyo for five years.|東京に5年間住んでいました。|過去形
+I'm going to visit my parents this weekend.|今週末は両親に会いに行く予定です。|未来
+I think it'll rain tomorrow.|明日は雨が降ると思います。|未来
+I'll call you later.|あとで電話するね。|未来
+What are you doing now?|今、何をしているの？|進行形
+I'm waiting for the bus.|バスを待っています。|進行形
+I want to get better at English.|英語がもっと上手になりたいです。|不定詞
+I need to buy some milk.|牛乳を買わないと。|不定詞
+I have to finish this today.|今日中にこれを終わらせないといけません。|助動詞
+You should see a doctor.|医者に診てもらったほうがいいよ。|助動詞
+Can you drive?|車の運転はできますか？|助動詞
+Could you take a picture of us?|私たちの写真を撮っていただけますか？|お願い
+Would you like something to drink?|何か飲み物はいかがですか？|お願い
+I'd like to check in, please.|チェックインをお願いします。|旅行
+I have a reservation under Tanaka.|田中で予約しています。|旅行
+How long does it take to get there?|そこまでどれくらいかかりますか？|旅行
+Which bus goes to the airport?|空港行きのバスはどれですか？|旅行
+Is there a convenience store near here?|この近くにコンビニはありますか？|旅行
+Go straight and turn left at the corner.|まっすぐ行って、角を左に曲がってください。|道案内
+It's next to the post office.|郵便局の隣です。|道案内
+This one is bigger than that one.|こっちのほうがあれより大きいです。|比較
+Summer is my favorite season.|夏が一番好きな季節です。|比較
+I like playing soccer.|サッカーをするのが好きです。|動名詞
+I enjoyed talking with you.|お話しできて楽しかったです。|動名詞
+Thank you for your help.|手伝ってくれてありがとう。|あいさつ
+Sorry to keep you waiting.|お待たせしてすみません。|あいさつ
+Do you mind if I open the window?|窓を開けてもかまいませんか？|お願い
+Let me think about it.|ちょっと考えさせてください。|会話
+I'm not sure.|よくわかりません。|会話
+That's a good idea.|それはいい考えですね。|会話
+What do you think?|どう思いますか？|会話
+How was your weekend?|週末はどうでしたか？|雑談
+It was great. I went hiking.|最高でした。ハイキングに行きました。|雑談
+I'm looking forward to it.|楽しみにしています。|気持ち
+I'm worried about the test.|テストが心配です。|気持ち
+I'm glad to hear that.|それを聞いてうれしいです。|気持ち
+That's too bad.|それは残念ですね。|気持ち
+I usually take a shower in the morning.|たいてい朝にシャワーを浴びます。|日課
+I often work late.|よく遅くまで働きます。|仕事
+I'm in charge of maintenance.|保守を担当しています。|仕事
+Could you send me the file?|ファイルを送ってもらえますか？|仕事
+I'll check and get back to you.|確認して折り返し連絡します。|仕事
+The meeting starts at ten.|会議は10時に始まります。|仕事
+When is the deadline?|締め切りはいつですか？|仕事
+Do you have a minute?|ちょっといいですか？|仕事
+How often do you exercise?|どのくらいの頻度で運動していますか？|質問
+How many people are coming?|何人来ますか？|質問
+Whose bag is this?|これは誰のかばんですか？|質問
+Why don't we take a break?|休憩しませんか？|誘い
+Are you free tonight?|今夜は空いてる？|誘い
+I'd love to.|ぜひ。|誘い
+Maybe next time.|また今度ね。|誘い
+I lost my wallet.|財布をなくしました。|トラブル
+My phone isn't working.|携帯が動きません。|トラブル
+I have a headache.|頭が痛いです。|体調
+I think I caught a cold.|風邪をひいたみたいです。|体調
+I'm allergic to eggs.|卵アレルギーがあります。|体調
+Can I pay by card?|カードで払えますか？|買い物
+Do you have this in a smaller size?|これの小さいサイズはありますか？|買い物
+Can I try this on?|試着してもいいですか？|買い物
+For here or to go?|店内でお召し上がりですか、お持ち帰りですか？|注文
+To go, please.|持ち帰りでお願いします。|注文
+I'll have the same.|同じものをお願いします。|注文
+What do you recommend?|おすすめは何ですか？|注文
+It was delicious.|とてもおいしかったです。|注文
+It's easy to use.|使い方は簡単です。|不定詞
+I forgot to bring my umbrella.|傘を持ってくるのを忘れました。|不定詞
+Don't forget to lock the door.|ドアの鍵をかけるのを忘れないで。|不定詞
+I'm good at cooking.|料理が得意です。|動名詞
+You look happy today.|今日はうれしそうですね。|会話
+It smells good.|いい匂いがする。|会話
+Take care.|気をつけてね。|あいさつ
+It's on me today.|今日は私のおごりです。|会話
+I'm on my way.|今向かっています。|会話
+I missed the last train.|終電を逃しました。|トラブル
+`,
+3: `
+I've lived here for ten years.|ここに10年住んでいます。|現在完了
+Have you ever been to New York?|ニューヨークに行ったことはありますか？|現在完了
+I've never tried skydiving.|スカイダイビングはやったことがありません。|現在完了
+I've just finished the report.|ちょうど報告書を書き終えたところです。|現在完了
+Have you eaten yet?|もうご飯は食べましたか？|現在完了
+I haven't decided yet.|まだ決めていません。|現在完了
+I've been studying English for three years.|3年間ずっと英語を勉強しています。|現在完了進行形
+How long have you been waiting?|どのくらい待っていますか？|現在完了進行形
+I've been looking forward to meeting you.|お会いするのを楽しみにしていました。|現在完了進行形
+This castle was built over four hundred years ago.|この城は400年以上前に建てられました。|受動態
+English is spoken in many countries.|英語は多くの国で話されています。|受動態
+My bike was stolen last night.|昨夜、自転車を盗まれました。|受動態
+I was born and raised in Osaka.|大阪で生まれ育ちました。|受動態
+The meeting has been moved to Friday.|会議は金曜日に変更になりました。|受動態
+The man who called you is my boss.|あなたに電話してきた男性は私の上司です。|関係代名詞
+This is the book I told you about.|これが前に話した本です。|関係代名詞
+Do you know anyone who speaks Chinese?|中国語を話せる人を誰か知りませんか？|関係代名詞
+That's the restaurant where we first met.|あれは私たちが初めて会ったレストランです。|関係副詞
+Do you know where the nearest station is?|一番近い駅がどこか知っていますか？|間接疑問
+Can you tell me what time the store closes?|お店が何時に閉まるか教えてもらえますか？|間接疑問
+I don't know what to do.|どうしたらいいかわかりません。|疑問詞+to
+Could you show me how to use this machine?|この機械の使い方を教えていただけますか？|疑問詞+to
+If it rains tomorrow, I'll stay home.|明日雨が降ったら、家にいます。|条件
+If you have any questions, please let me know.|ご質問があればお知らせください。|条件
+If I were you, I'd take the job.|私があなたなら、その仕事を引き受けます。|仮定法
+I wish I could speak English fluently.|英語をすらすら話せたらいいのに。|仮定法
+My boss made me work overtime.|上司に残業させられました。|使役
+Let me know when you're ready.|準備ができたら教えてください。|使役
+I had my hair cut yesterday.|昨日、髪を切ってもらいました。|使役
+I'll have someone look at it right away.|すぐに誰かに見てもらいます。|使役
+He said he would be late.|彼は遅れると言っていました。|時制の一致
+I asked her to help me.|彼女に手伝ってくれるよう頼みました。|不定詞
+I want you to read this.|これを読んでほしいです。|不定詞
+It's important to stick to the schedule.|スケジュールを守ることが大切です。|不定詞
+I'm thinking about changing jobs.|転職を考えています。|動名詞
+Would you mind closing the door?|ドアを閉めていただけませんか？|動名詞
+I'm used to getting up early.|早起きには慣れています。|動名詞
+It depends on the weather.|天気次第です。|会話
+As far as I know, he's still in the office.|私の知る限り、彼はまだ会社にいます。|会話
+I'm afraid I can't agree with you.|残念ながら賛成できません。|会話
+That makes sense.|なるほど、納得です。|会話
+Let me put it another way.|別の言い方をさせてください。|会話
+What I mean is, we need more time.|つまり、もっと時間が必要だということです。|会話
+I didn't catch the last part.|最後のところが聞き取れませんでした。|会話
+Sorry, I'm not following you.|すみません、話についていけていません。|会話
+Could you speak a little louder?|もう少し大きな声で話していただけますか？|お願い
+I'm calling about my order.|注文の件でお電話しました。|電話
+May I ask who's calling?|どちら様でしょうか？|電話
+I'll put you through.|おつなぎします。|電話
+Could you ask him to call me back?|折り返し電話するよう伝えていただけますか？|電話
+Let's get started.|では始めましょう。|会議
+Does anyone have any questions?|何か質問はありますか？|会議
+Let's move on to the next item.|次の議題に移りましょう。|会議
+Can we set up a meeting for next week?|来週ミーティングを設定できますか？|会議
+I'll send you the details by email.|詳細はメールでお送りします。|仕事
+We're a little behind schedule.|予定より少し遅れています。|仕事
+The machine stopped suddenly this morning.|今朝、機械が突然止まりました。|技術
+We're looking into the cause of the problem.|問題の原因を調べています。|技術
+It seems to be a sensor problem.|センサーの問題のようです。|技術
+Have you tried restarting it?|再起動は試しましたか？|技術
+The error only happens at high speed.|そのエラーは高速運転のときだけ起きます。|技術
+We need to replace this part.|この部品を交換する必要があります。|技術
+How long will the repair take?|修理にはどれくらいかかりますか？|技術
+I'm not as good at English as I'd like to be.|思っているほど英語は得意ではありません。|比較
+The sooner, the better.|早ければ早いほどいいです。|比較
+It's getting colder and colder.|どんどん寒くなってきました。|比較
+You don't have to come if you're busy.|忙しければ来なくても大丈夫です。|助動詞
+You must be tired after the long flight.|長旅でお疲れでしょう。|助動詞
+He can't be serious.|彼が本気のはずがない。|助動詞
+I should have left earlier.|もっと早く出ればよかった。|助動詞+完了
+`,
+4: `
+If I had known about the traffic, I would have left earlier.|渋滞のことを知っていたら、もっと早く出ていたのに。|仮定法過去完了
+Without your help, I couldn't have finished it on time.|あなたの助けがなければ、期限内に終えられなかったでしょう。|仮定法
+It's about time we made a decision.|そろそろ決断すべき時です。|仮定法
+I'd rather you didn't tell anyone about this.|できればこのことは誰にも言わないでほしいのですが。|仮定法
+Had I known earlier, I would have told you.|もっと早く知っていたら、あなたに伝えていたのに。|倒置
+Not only did he finish the project, but he also stayed under budget.|彼はプロジェクトを完成させただけでなく、予算内にも収めました。|倒置
+What surprised me most was how friendly everyone was.|一番驚いたのは、みんながとても親切だったことです。|強調
+It was the timing, not the design, that caused the problem.|問題を引き起こしたのは設計ではなくタイミングでした。|強調
+Judging from the data, the problem started last month.|データから判断すると、問題は先月から始まったようです。|分詞構文
+Having finished the work, we went out for dinner.|仕事を終えてから、私たちは夕食に出かけました。|分詞構文
+Considering the cost, this option makes more sense.|コストを考えると、こちらの案のほうが理にかなっています。|分詞構文
+I'd appreciate it if you could get back to me by Friday.|金曜日までにお返事いただけるとありがたいです。|丁寧表現
+Would it be possible to extend the deadline?|締め切りを延ばしていただくことは可能でしょうか？|丁寧表現
+I was wondering if you could help me with something.|ちょっとお手伝いいただけないかと思いまして。|丁寧表現
+I'm afraid there's been a misunderstanding.|恐れ入りますが、行き違いがあったようです。|丁寧表現
+If anything comes up, feel free to reach out.|何かあれば、遠慮なく連絡してください。|丁寧表現
+Just to make sure we're on the same page, could you summarize the plan?|認識を合わせるために、計画を要約していただけますか？|会議
+Let's take a step back and look at the big picture.|一歩引いて、全体像を見てみましょう。|会議
+I see your point, but I see it a little differently.|おっしゃることはわかりますが、私は少し違う見方をしています。|会議
+Could you elaborate on that a little?|その点をもう少し詳しく説明していただけますか？|会議
+To be honest, I don't think it's doable in this timeframe.|正直なところ、この期間で実現できるとは思いません。|会議
+We need to weigh the pros and cons before we decide.|決める前に、メリットとデメリットを比べる必要があります。|会議
+Let's touch base again next week.|来週また状況を確認し合いましょう。|会議
+I'll keep you posted.|進展があればお知らせします。|仕事
+The root cause turned out to be a loose connection.|根本原因は接続のゆるみだとわかりました。|技術
+We should have caught this during testing.|これはテストの段階で見つけるべきでした。|技術
+The system shuts down automatically if the temperature gets too high.|温度が上がりすぎると、システムは自動で停止します。|技術
+Once the new controller is installed, we'll run a full test.|新しい制御装置が設置されたら、全体テストを行います。|技術
+The problem only happens once in a while, so it's hard to reproduce.|その問題はたまにしか起きないので、再現が難しいです。|技術
+We need to keep downtime to a minimum during the changeover.|切り替え中の停止時間は最小限に抑える必要があります。|技術
+Could you walk me through the procedure step by step?|手順を一つずつ説明していただけますか？|技術
+No matter how hard I try, I can't remember his name.|どんなに頑張っても、彼の名前が思い出せません。|譲歩
+Whatever happens, don't give up.|何が起きても、あきらめないで。|譲歩
+The more you practice, the more natural it becomes.|練習すればするほど、自然になっていきます。|比較
+It goes without saying that safety comes first.|安全第一なのは言うまでもありません。|慣用表現
+I can't help thinking about it.|そのことを考えずにはいられません。|慣用表現
+There's no point in worrying about it now.|今それを心配しても仕方ありません。|慣用表現
+That's easier said than done.|言うのは簡単だけど、やるのは難しいね。|慣用表現
+Let's call it a day.|今日はここまでにしましょう。|慣用表現
+I'm on the fence about it.|まだ決めかねています。|慣用表現
+It's not really my cup of tea.|あまり好みではないんです。|慣用表現
+We're all in the same boat.|みんな同じ状況です。|慣用表現
+I'm not used to speaking in front of people.|人前で話すのには慣れていません。|動名詞
+Speaking of travel, have you decided where to go this summer?|旅行といえば、この夏どこに行くか決めた？|雑談
+That reminds me, I need to call my mom.|それで思い出した、母に電話しなきゃ。|雑談
+I couldn't agree more.|まったく同感です。|会話
+You can say that again.|本当にそのとおりですね。|会話
+It's not as simple as it sounds.|思っているほど単純ではありません。|会話
+I didn't mean to offend you.|気を悪くさせるつもりはありませんでした。|会話
+Better late than never.|遅くてもやらないよりはまし。|慣用表現
+`,
+};
+
+const LEVELS = {
+  1: { name: '入門', desc: 'あいさつ・短い定型文', ex: 'Nice to meet you.' },
+  2: { name: '初級', desc: '過去・未来・旅行や日常の会話', ex: "I'd like to check in, please." },
+  3: { name: '中級', desc: '現在完了・関係詞・仕事の会話', ex: "I've just finished the report." },
+  4: { name: '上級', desc: '仮定法・会議・技術の打ち合わせ', ex: "Let's touch base again next week." },
+};
+
+/* 音の聞き分け（日本人が混同しやすい音のペア） */
+const MP = [
+  { k: 'lr', name: 'L と R', tip: 'Lは舌先を上の歯ぐきにつけたまま。Rは舌をどこにもつけず、奥に引いて唇を少しすぼめます。',
+    pairs: [['light', 'right'], ['glass', 'grass'], ['collect', 'correct'], ['play', 'pray'], ['fly', 'fry'], ['long', 'wrong'], ['lock', 'rock'], ['lice', 'rice'], ['load', 'road'], ['lane', 'rain'], ['belly', 'berry'], ['alive', 'arrive'], ['cloud', 'crowd'], ['flesh', 'fresh'], ['lamp', 'ramp'], ['glow', 'grow']] },
+  { k: 'bv', name: 'B と V', tip: 'Bは両唇を閉じてから破裂させます。Vは上の歯を下唇に軽く当て、声を出して震わせます。',
+    pairs: [['berry', 'very'], ['best', 'vest'], ['boat', 'vote'], ['ban', 'van'], ['bet', 'vet'], ['base', 'vase'], ['curb', 'curve'], ['bolt', 'volt'], ['bent', 'vent'], ['bat', 'vat'], ['marble', 'marvel']] },
+  { k: 'sth', name: 'S と TH', tip: 'THは舌先を上の前歯に軽く当てて息を出します。Sは舌を歯に当てず、すき間から息を出します。',
+    pairs: [['sink', 'think'], ['sing', 'thing'], ['sank', 'thank'], ['mouse', 'mouth'], ['pass', 'path'], ['sick', 'thick'], ['worse', 'worth'], ['face', 'faith'], ['sum', 'thumb'], ['sought', 'thought'], ['tense', 'tenth']] },
+  { k: 'zth', name: 'Z と TH（濁る音）', tip: '濁るTHは舌先を歯に当てたまま声を出します。Zは舌を歯から離して「ズ」と出します。',
+    pairs: [['breeze', 'breathe'], ['closing', 'clothing'], ['bays', 'bathe'], ['tease', 'teethe'], ['zen', 'then'], ['seize', 'seethe']] },
+  { k: 'fh', name: 'F と H', tip: 'Fは上の歯を下唇に当てて息を出します。Hは口を開けたまま、のどから息だけを出します。',
+    pairs: [['fold', 'hold'], ['fear', 'hear'], ['fat', 'hat'], ['feet', 'heat'], ['fall', 'hall'], ['fire', 'hire'], ['fill', 'hill'], ['fit', 'hit'], ['foam', 'home'], ['fair', 'hair'], ['fight', 'height']] },
+  { k: 'shs', name: 'SH と S', tip: 'SHは唇を丸めて前に突き出します。日本語の「シ」はSHに近いので、see を「シー」と言わないように。',
+    pairs: [['she', 'see'], ['sheet', 'seat'], ['ship', 'sip'], ['shell', 'sell'], ['short', 'sort'], ['shine', 'sign'], ['shoe', 'sue'], ['shave', 'save'], ['shock', 'sock'], ['shore', 'sore']] },
+  { k: 'ae', name: 'æ と ʌ（cat / cut）', tip: 'æは「ア」と「エ」の中間で、口を横に大きく開きます。ʌは口をあまり開けない、短く軽い「ア」です。',
+    pairs: [['cat', 'cut'], ['bag', 'bug'], ['cap', 'cup'], ['hat', 'hut'], ['ran', 'run'], ['match', 'much'], ['ankle', 'uncle'], ['track', 'truck'], ['fan', 'fun'], ['back', 'buck'], ['mad', 'mud'], ['badge', 'budge']] },
+  { k: 'ah', name: 'ɑ と ʌ（not / nut）', tip: 'ɑは口を縦に大きく開ける「アー」。ʌは口をあまり開けない短い「ア」です。',
+    pairs: [['not', 'nut'], ['cot', 'cut'], ['lock', 'luck'], ['shot', 'shut'], ['doll', 'dull'], ['cop', 'cup'], ['rob', 'rub'], ['hot', 'hut'], ['robber', 'rubber'], ['boss', 'bus']] },
+  { k: 'ii', name: 'iː と ɪ（sheep / ship）', tip: 'iːは口を横に引いて長く「イー」。ɪは力を抜いた短い「イ」で、少し「エ」に近い音です。',
+    pairs: [['sheep', 'ship'], ['seat', 'sit'], ['heat', 'hit'], ['feel', 'fill'], ['beat', 'bit'], ['peach', 'pitch'], ['eat', 'it'], ['sleep', 'slip'], ['cheap', 'chip'], ['leak', 'lick'], ['wheel', 'will'], ['deep', 'dip']] },
+  { k: 'uu', name: 'uː と ʊ（pool / pull）', tip: 'uːは唇を丸めて突き出す長い「ウー」。ʊは力を抜いた短い「ウ」です。',
+    pairs: [['pool', 'pull'], ['fool', 'full'], ['Luke', 'look'], ["who'd", 'hood'], ['stewed', 'stood'], ['suit', 'soot']] },
+  { k: 'er', name: 'ɜːr と ɑːr（hurt / heart）', tip: 'ɜːrは口をあまり開けずに舌を丸める「アー」。ɑːrは口を大きく開けてから舌を丸めます。',
+    pairs: [['hurt', 'heart'], ['firm', 'farm'], ['fur', 'far'], ['burn', 'barn'], ['stir', 'star'], ['perk', 'park'], ['curve', 'carve'], ['purse', 'parse']] },
+  { k: 'ow', name: 'ɔː と oʊ（walk / woke）', tip: 'ɔːは口を縦に開けたままの「オー」。oʊは「オゥ」と唇を丸めながら動かします。',
+    pairs: [['walk', 'woke'], ['law', 'low'], ['bought', 'boat'], ['caught', 'coat'], ['saw', 'so'], ['called', 'cold'], ['ball', 'bowl'], ['hall', 'hole'], ['flaw', 'flow'], ['cost', 'coast']] },
+  { k: 'nng', name: 'N と NG（sin / sing）', tip: 'Nは舌先を上の歯ぐきにつけます。NGは舌の奥を上あごにつけ、鼻から音を出します。',
+    pairs: [['sin', 'sing'], ['ban', 'bang'], ['thin', 'thing'], ['ran', 'rang'], ['win', 'wing'], ['kin', 'king'], ['sun', 'sung'], ['run', 'rung'], ['fan', 'fang']] },
+];
+
+/* 音の変化（リエゾン・脱落・同化・弱形・フラップT） */
+const CS_RULES = {
+  link:   { name: 'つながる', sub: '連結', desc: '子音で終わる語のあとに母音で始まる語が来ると、2語が1語のようにつながります。' },
+  drop:   { name: '消える', sub: '脱落', desc: '子音が続くとき、前の語の終わりの t・d・k などはほとんど聞こえなくなります。' },
+  change: { name: '変わる', sub: '同化', desc: 't・d・s のあとに you が来ると、「チュ」「ジュ」「シュ」のような音に変わります。' },
+  weak:   { name: '弱まる', sub: '弱形・短縮', desc: 'to・of・and・have などは短くあいまいな音になり、くだけた会話ではさらに縮みます。' },
+  flap:   { name: 'ラ行になる', sub: 'フラップT', desc: '母音にはさまれた t は、日本語のラ行に近い音になります（主にアメリカ英語）。' },
+};
+/* t: 表示する文 / c: 聞き取る部分 / s: 聞こえ方 / say: 読み上げ用のくだけた形 */
+const CS = [
+  { r: 'link', t: 'Check it out!', c: 'Check it out', s: 'チェケラウ(ト)' },
+  { r: 'link', t: 'Come on in.', c: 'Come on in', s: 'カモニン' },
+  { r: 'link', t: 'Pick it up, please.', c: 'Pick it up', s: 'ピキラップ' },
+  { r: 'link', t: 'Turn it off.', c: 'Turn it off', s: 'ターニロフ' },
+  { r: 'link', t: 'Take it easy.', c: 'Take it easy', s: 'テイキリーズィ' },
+  { r: 'link', t: 'First of all, thank you.', c: 'First of all', s: 'ファースタヴォー' },
+  { r: 'link', t: 'Can I have an apple?', c: 'have an apple', s: 'ハヴァナポー' },
+  { r: 'link', t: 'I made it on time.', c: 'made it on', s: 'メイディロン' },
+  { r: 'drop', t: 'Good night, everyone.', c: 'Good night', s: 'グッナイ' },
+  { r: 'drop', t: 'Sit down, please.', c: 'Sit down', s: 'スィッダウン' },
+  { r: 'drop', t: 'See you next time.', c: 'next time', s: 'ネクスタイム' },
+  { r: 'drop', t: "I don't know.", c: "don't know", s: 'ドンノウ' },
+  { r: 'drop', t: 'It must be true.', c: 'must be', s: 'マスビ' },
+  { r: 'drop', t: 'Just a moment, please.', c: 'Just a moment', s: 'ジャスタモーメン' },
+  { r: 'drop', t: 'I want that one.', c: 'want that', s: 'ワンザッ' },
+  { r: 'drop', t: 'He used to live here.', c: 'used to', s: 'ユーストゥ' },
+  { r: 'change', t: 'Did you see that?', c: 'Did you', s: 'ディジュ' },
+  { r: 'change', t: 'Would you like some tea?', c: 'Would you', s: 'ウッジュ' },
+  { r: 'change', t: 'Nice to meet you.', c: 'meet you', s: 'ミーチュ' },
+  { r: 'change', t: 'Could you help me?', c: 'Could you', s: 'クッジュ' },
+  { r: 'change', t: 'I met him last year.', c: 'last year', s: 'ラスチャー' },
+  { r: 'change', t: "Don't you think so?", c: "Don't you", s: 'ドンチュ' },
+  { r: 'change', t: "I'll miss you.", c: 'miss you', s: 'ミシュー' },
+  { r: 'change', t: 'What did you say?', c: 'What did you', s: 'ワッディジュ' },
+  { r: 'weak', t: 'I want to go home.', c: 'want to', s: 'ワナ', say: 'I wanna go home.' },
+  { r: 'weak', t: "I'm going to call her.", c: 'going to', s: 'ガナ', say: "I'm gonna call her." },
+  { r: 'weak', t: 'I have to go now.', c: 'have to', s: 'ハフタ' },
+  { r: 'weak', t: "I've got to finish this.", c: 'got to', s: 'ガラ', say: "I've gotta finish this." },
+  { r: 'weak', t: "It's kind of cold today.", c: 'kind of', s: 'カインダ', say: "It's kinda cold today." },
+  { r: 'weak', t: 'Let me see.', c: 'Let me', s: 'レミ', say: 'Lemme see.' },
+  { r: 'weak', t: 'Give me a break.', c: 'Give me', s: 'ギミ', say: 'Gimme a break.' },
+  { r: 'weak', t: 'You should have told me.', c: 'should have', s: 'シュダ', say: "You should've told me." },
+  { r: 'weak', t: 'Salt and pepper, please.', c: 'and', s: 'ソールトゥン ペパー' },
+  { r: 'weak', t: 'A cup of coffee, please.', c: 'cup of', s: 'カッパ' },
+  { r: 'flap', t: 'Can I have some water?', c: 'water', s: 'ワーラー' },
+  { r: 'flap', t: 'Get it?', c: 'Get it', s: 'ゲリッ' },
+  { r: 'flap', t: "That's a lot of work.", c: 'a lot of', s: 'アラロヴ' },
+  { r: 'flap', t: "It's getting better.", c: 'getting better', s: 'ゲリン ベラー' },
+  { r: 'flap', t: 'Wait a minute.', c: 'Wait a', s: 'ウェイラ' },
+  { r: 'flap', t: 'Put it on the table.', c: 'Put it on', s: 'プリロン' },
+  { r: 'flap', t: 'Just let it go.', c: 'let it go', s: 'レリゴー' },
+  { r: 'flap', t: 'Get out of the car.', c: 'Get out of', s: 'ゲラウロヴ' },
+  { r: 'flap', t: 'What are you doing?', c: 'What are you', s: 'ワラユ' },
+  { r: 'flap', t: 'I bought it yesterday.', c: 'bought it', s: 'ボーリッ' },
+];
+
+/* AI会話のシーン */
+const SCENES = [
+  { id: 'cafe', name: 'カフェで注文', goal: '飲み物と軽食を注文して支払う', role: 'a friendly barista at a coffee shop in Seattle', aim: 'order a drink and a snack, answer questions about size and options, and pay', open: 'Hi there! What can I get for you today?' },
+  { id: 'hotel', name: 'ホテルのチェックイン', goal: 'チェックインして朝食やWi-Fiを確認する', role: 'a front desk clerk at a hotel in London', aim: 'check in, confirm the reservation, and ask about breakfast and Wi-Fi', open: 'Good evening, and welcome to the Riverside Hotel. Are you checking in?' },
+  { id: 'directions', name: '道をたずねる', goal: '駅や美術館への行き方を聞く', role: 'a kind local person on a street in New York', aim: 'ask how to get to a museum or a station and confirm the directions', open: 'Hi, you look a little lost. Can I help you find something?' },
+  { id: 'airport', name: '入国審査', goal: '旅行の目的や滞在期間を答える', role: 'an immigration officer at an airport in the United States', aim: 'answer questions about the purpose of the trip, length of stay, and where they will stay', open: "Good afternoon. May I see your passport, please? What's the purpose of your visit?" },
+  { id: 'restaurant', name: 'レストラン', goal: '料理を注文し、ちょっとした問題を伝える', role: 'a waiter at a casual restaurant', aim: 'order food, ask about the menu, and politely mention a small problem with the order', open: 'Hi, welcome! Here are your menus. Can I get you something to drink first?' },
+  { id: 'smalltalk', name: '自己紹介と雑談', goal: '自己紹介して会話を続ける', role: 'a friendly person you just met at a party', aim: 'introduce themselves and keep a casual conversation going', open: "Hi! I don't think we've met. I'm Alex. How do you know the host?" },
+  { id: 'meeting', name: '仕事のミーティング', goal: '進捗を報告し、次の作業を決める', role: 'a teammate in a weekly project meeting', aim: 'give a status update, mention one problem, and agree on next steps', open: "Okay, let's get started. Could you give us a quick update on your part of the project?" },
+  { id: 'tech', name: '設備トラブルの打ち合わせ', goal: '機械の不具合を説明し、対策を決める', role: 'an overseas engineer supporting a factory on a video call', aim: 'explain a machine problem, answer questions about when it happens, and agree on a fix', open: "Thanks for joining the call. I heard one of your machines has been having trouble. What's going on?" },
+  { id: 'phone', name: '電話で予約', goal: '日時と人数を伝えて予約する', role: 'a receptionist at an Italian restaurant taking phone reservations', aim: 'make a dinner reservation with a date, time, and number of people', open: 'Thank you for calling Bella Cucina. How can I help you?' },
+  { id: 'pharmacy', name: '薬局で相談', goal: '症状を伝えて薬について相談する', role: 'a pharmacist at a drugstore', aim: 'describe their symptoms and get advice about medicine', open: 'Hello! How can I help you today?' },
+  { id: 'free', name: 'フリートーク', goal: '日常や趣味について自由に話す', role: 'a curious, friendly English-speaking friend', aim: 'talk freely about daily life, hobbies, and plans', open: "Hey! It's good to see you. How's your week going?" },
+];
+const SCENE_JA = {
+  cafe: 'こんにちは！ご注文は何にしますか？',
+  hotel: 'こんばんは、リバーサイドホテルへようこそ。チェックインですか？',
+  directions: 'こんにちは、お困りのようですね。何かお探しですか？',
+  airport: 'こんにちは。パスポートを見せてください。訪問の目的は何ですか？',
+  restaurant: 'いらっしゃいませ！メニューです。まずお飲み物はいかがですか？',
+  smalltalk: 'こんにちは！はじめましてですよね。アレックスです。主催者とはどういうお知り合いですか？',
+  meeting: 'では始めましょう。担当部分の進捗を簡単に教えてもらえますか？',
+  tech: '通話に参加いただきありがとうございます。機械の一台に不具合が出ていると聞きました。どんな状況ですか？',
+  phone: 'お電話ありがとうございます、ベラ・クチーナです。ご用件をどうぞ。',
+  pharmacy: 'こんにちは！今日はどうされましたか？',
+  free: 'やあ！会えてうれしいよ。今週はどう？',
+};
+
+/* ===== core.js — 判定・リズム・復習間隔などの純粋ロジック（DOMなし） ===== */
+const Core = (() => {
+  'use strict';
+
+  function hashStr(s) {
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return (h >>> 0).toString(36);
+  }
+
+  function parseCorpus(raw) {
+    const out = [];
+    for (const lv of Object.keys(raw)) {
+      let ord = 0;
+      raw[lv].split('\n').forEach((line) => {
+        if (!line.trim()) return;
+        const [en, ja, tag] = line.split('|').map((x) => (x || '').trim());
+        if (!en || !ja) return;
+        out.push({ id: 's' + hashStr(en), en, ja, tag: tag || '', lv: +lv, ord: ord++ });
+      });
+    }
+    return out;
+  }
+
+  // ローカル日付での通し日番号
+  function dayNum(d) {
+    return Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 86400000);
+  }
+  function dayToDate(n) {
+    const d = new Date(n * 86400000);
+    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  }
+
+  const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+  function numWords(n) {
+    if (n < 20) return ONES[n];
+    if (n < 100) return TENS[Math.floor(n / 10)] + (n % 10 ? ' ' + ONES[n % 10] : '');
+    if (n < 1000) return ONES[Math.floor(n / 100)] + ' hundred' + (n % 100 ? ' ' + numWords(n % 100) : '');
+    if (n < 10000) return numWords(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? ' ' + numWords(n % 1000) : '');
+    return String(n);
+  }
+
+  const CONTR = {
+    "i'm": 'i am', "you're": 'you are', "we're": 'we are', "they're": 'they are', "he's": 'he is', "she's": 'she is', "it's": 'it is',
+    "that's": 'that is', "what's": 'what is', "where's": 'where is', "who's": 'who is', "how's": 'how is', "there's": 'there is', "here's": 'here is', "let's": 'let us',
+    "i've": 'i have', "you've": 'you have', "we've": 'we have', "they've": 'they have', "could've": 'could have', "should've": 'should have', "would've": 'would have', "might've": 'might have', "must've": 'must have',
+    "i'll": 'i will', "you'll": 'you will', "we'll": 'we will', "they'll": 'they will', "he'll": 'he will', "she'll": 'she will', "it'll": 'it will', "that'll": 'that will',
+    "i'd": 'i would', "you'd": 'you would', "we'd": 'we would', "they'd": 'they would', "he'd": 'he would', "she'd": 'she would',
+    "don't": 'do not', "doesn't": 'does not', "didn't": 'did not', "can't": 'can not', cannot: 'can not', "won't": 'will not', "wouldn't": 'would not',
+    "shouldn't": 'should not', "couldn't": 'could not', "isn't": 'is not', "aren't": 'are not', "wasn't": 'was not', "weren't": 'were not',
+    "haven't": 'have not', "hasn't": 'has not', "hadn't": 'had not', "mustn't": 'must not', "needn't": 'need not', "ain't": 'is not',
+    gonna: 'going to', wanna: 'want to', gotta: 'got to', kinda: 'kind of', lemme: 'let me', gimme: 'give me', shoulda: 'should have',
+    hafta: 'have to', cuppa: 'cup of', ok: 'okay', 'o.k.': 'okay', till: 'until', alright: 'all right',
+  };
+
+  // 表示用トークン（語・記号・空白）。ci は文字位置
+  function tokenize(text) {
+    const toks = [];
+    const re = /([A-Za-z0-9]+(?:['’][A-Za-z]+)*(?:-[A-Za-z0-9]+)*)|(\s+)|([^A-Za-z0-9\s]+)/g;
+    let m;
+    while ((m = re.exec(text))) {
+      if (m[1]) toks.push({ k: 'w', s: m[1], ci: m.index });
+      else if (m[2]) toks.push({ k: 's', s: m[2], ci: m.index });
+      else toks.push({ k: 'p', s: m[3], ci: m.index });
+    }
+    return toks;
+  }
+
+  // 1語を比較用の語（複数のこともある）に正規化
+  function normToken(w) {
+    let x = w.toLowerCase().replace(/[’‘`´]/g, "'").replace(/^'+|'+$/g, '');
+    if (!x) return [];
+    if (CONTR[x]) return CONTR[x].split(' ');
+    if (/^\d+$/.test(x)) return numWords(parseInt(x, 10)).split(' ');
+    if (/'s$/.test(x)) x = x.slice(0, -2);
+    if (x.includes('-')) return x.split('-').filter(Boolean);
+    return [x];
+  }
+
+  function normWords(text) {
+    const t = String(text || '')
+      .replace(/(\d{1,2}):(\d{2})/g, (_, h, mm) => h + (mm === '00' ? '' : ' ' + mm))
+      .replace(/(\d),(\d{3})/g, '$1$2');
+    const words = [];
+    for (const tok of tokenize(t)) if (tok.k === 'w') words.push(...normToken(tok.s));
+    return { words };
+  }
+
+  function lev(a, b) {
+    if (a === b) return 0;
+    if (Math.abs(a.length - b.length) > 2) return 3;
+    const dp = Array.from({ length: a.length + 1 }, (_, i) => i);
+    for (let j = 1; j <= b.length; j++) {
+      let prev = dp[0];
+      dp[0] = j;
+      for (let i = 1; i <= a.length; i++) {
+        const tmp = dp[i];
+        dp[i] = Math.min(dp[i] + 1, dp[i - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+        prev = tmp;
+      }
+    }
+    return dp[a.length];
+  }
+
+  // 最長共通部分列による語の対応づけ
+  function align(T, U) {
+    const n = T.length, m = U.length;
+    const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    for (let i = n - 1; i >= 0; i--)
+      for (let j = m - 1; j >= 0; j--)
+        dp[i][j] = T[i] === U[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    const ops = [];
+    let i = 0, j = 0;
+    while (i < n && j < m) {
+      if (T[i] === U[j]) { ops.push({ op: 'eq', t: i, u: j }); i++; j++; }
+      else if (dp[i + 1][j] >= dp[i][j + 1]) { ops.push({ op: 'del', t: i }); i++; }
+      else { ops.push({ op: 'ins', u: j }); j++; }
+    }
+    while (i < n) ops.push({ op: 'del', t: i++ });
+    while (j < m) ops.push({ op: 'ins', u: j++ });
+    return { lcs: dp[0][0], ops };
+  }
+
+  // アポストロフィなしで書いた短縮形（its, dont, oclock など）を、お手本に合わせて直す
+  function fixApostrophes(said, target) {
+    const forms = new Map();
+    for (const t of tokenize(target)) if (t.k === 'w' && /['’]/.test(t.s)) forms.set(bare(t.s), t.s);
+    if (!forms.size) return said;
+    return String(said || '').replace(/[A-Za-z]+/g, (w) => forms.get(w.toLowerCase()) || w);
+  }
+
+  // お手本 target と、言った／書いた said を比べる
+  function compare(target, said) {
+    said = fixApostrophes(said, target);
+    const toks = tokenize(target);
+    const T = [], tmap = [];
+    toks.forEach((tok, ti) => {
+      if (tok.k === 'w') normToken(tok.s).forEach((w) => { T.push(w); tmap.push(ti); });
+    });
+    const U = normWords(said).words;
+    const { ops } = align(T, U);
+    const st = new Array(T.length).fill('miss');
+    const usedU = new Set();
+    ops.forEach((o) => { if (o.op === 'eq') { st[o.t] = 'ok'; usedU.add(o.u); } });
+    // 一致の間にはさまれた区間で、つづり違い程度のものは near
+    let seg = { del: [], ins: [] };
+    const flush = () => {
+      for (const t of seg.del) {
+        let best = -1, bd = 9;
+        for (const u of seg.ins) {
+          if (usedU.has(u)) continue;
+          const d = lev(T[t], U[u]);
+          const lim = T[t].length >= 7 ? 2 : T[t].length >= 4 ? 1 : 0;
+          if (d <= lim && d < bd) { bd = d; best = u; }
+        }
+        if (best >= 0) { st[t] = 'near'; usedU.add(best); }
+      }
+      seg = { del: [], ins: [] };
+    };
+    for (const o of ops) {
+      if (o.op === 'eq') flush();
+      else if (o.op === 'del') seg.del.push(o.t);
+      else seg.ins.push(o.u);
+    }
+    flush();
+    toks.forEach((tok, ti) => {
+      if (tok.k !== 'w') return;
+      const ss = [];
+      tmap.forEach((x, i) => { if (x === ti) ss.push(st[i]); });
+      if (!ss.length) tok.m = 'ok';
+      else if (ss.every((x) => x === 'ok')) tok.m = 'ok';
+      else if (ss.some((x) => x !== 'miss')) tok.m = 'near';
+      else tok.m = 'miss';
+    });
+    const good = st.filter((x) => x === 'ok').length + 0.75 * st.filter((x) => x === 'near').length;
+    const extra = [];
+    U.forEach((w, u) => { if (!usedU.has(u)) extra.push(w); });
+    return { score: T.length ? good / T.length : 0, tokens: toks, extra, total: T.length, heard: U.length };
+  }
+
+  // 候補が複数あるとき（音声認識の別候補）一番近いものを採用
+  function compareBest(target, alts) {
+    let best = null;
+    for (const a of alts) {
+      if (!a) continue;
+      const r = compare(target, a);
+      r.said = a;
+      if (!best || r.score > best.score) best = r;
+    }
+    return best || Object.assign(compare(target, ''), { said: '' });
+  }
+
+  /* ---- リズム（強く読む語）とつながり ---- */
+  const FUNC = new Set(('a an the to of for from at in on by with as and but or nor than if ' +
+    'is am are was were be been being do does did have has had can could will would shall should may might must ' +
+    'i me my you your he him his she her it its we us our they them their some any into about ' +
+    "i'm you're we're they're he's she's it's i've you've we've they've i'll you'll we'll they'll he'll she'll it'll " +
+    "i'd you'd we'd they'd he'd she'd there's that's").split(/\s+/));
+  const END_STRESS = new Set(('is am are was were be been do does did have has had can could will would shall should may might must ' +
+    'to of for from at in on by with about into').split(/\s+/));
+  const E_VOWEL = new Set(['the', 'be', 'he', 'me', 'we', 'she', 'ye', 'maybe', 'recipe', 'cafe', 'karaoke', 'anime', 'sake', 'karate', 'sesame']);
+  const GH_CONS = new Set(['enough', 'tough', 'rough', 'cough', 'laugh']);
+
+  function bare(w) { return w.toLowerCase().replace(/[’']/g, ''); }
+  function endsConsonant(w0) {
+    const w = bare(w0);
+    if (!w) return false;
+    if (/[aiouyw]$/.test(w)) return false;
+    if (/e$/.test(w)) return !(E_VOWEL.has(w) || /(ee|ie|oe|ye|ue|ae)$/.test(w));
+    if (/gh$/.test(w)) return GH_CONS.has(w);
+    if (/h$/.test(w)) return !/(ah|oh|uh|eh)$/.test(w);
+    return /[bcdfgjklmnpqrstvxz]$/.test(w);
+  }
+  function startsVowel(w0) {
+    const w = bare(w0);
+    if (/^(one|once|uni|use|usu|uti|eu|ewe|you|yo)/.test(w)) return false;
+    if (/^(hour|honest|honor|honour|heir)/.test(w)) return true;
+    return /^[aeiou]/.test(w);
+  }
+
+  function rhythm(toks) {
+    let clause = [];
+    const close = () => {
+      if (!clause.length) return;
+      const last = clause[clause.length - 1];
+      if (END_STRESS.has(last.s.toLowerCase().replace(/’/g, "'"))) last.st = true;
+      if (!clause.some((t) => t.st)) last.st = true;
+      clause = [];
+    };
+    toks.forEach((t) => {
+      if (t.k === 'w') {
+        const lw = t.s.toLowerCase().replace(/’/g, "'");
+        t.st = !FUNC.has(lw);
+        clause.push(t);
+      } else if (t.k === 'p' && /[.,!?;:]/.test(t.s)) close();
+    });
+    close();
+    for (let i = 0; i < toks.length; i++) {
+      const t = toks[i];
+      if (t.k !== 'w') continue;
+      const sp = toks[i + 1], nx = toks[i + 2];
+      if (sp && sp.k === 's' && nx && nx.k === 'w' && endsConsonant(t.s) && startsVowel(nx.s)) {
+        t.lk = true;
+        nx.lkp = true;
+      }
+    }
+    return toks;
+  }
+
+  /* ---- 穴埋めの位置選び ---- */
+  function pickBlanks(toks, n, rand) {
+    rand = rand || Math.random;
+    const cands = [];
+    toks.forEach((t, i) => {
+      if (t.k !== 'w') return;
+      let sc = 0;
+      const weak = !t.st;
+      if (weak) sc += 3;
+      if (t.lk || t.lkp) sc += 2;
+      if (i > 0 && /^[A-Z]/.test(t.s) && t.s !== 'I' && !/^I['’]/.test(t.s)) sc -= 5;
+      if (/\d/.test(t.s)) sc -= 5;
+      cands.push({ i, sc, weak });
+    });
+    const score = (arr) => arr.map((c) => ({ i: c.i, sc: c.sc, r: c.sc + rand() * 2.5 })).sort((a, b) => b.r - a.r);
+    const pick = [];
+    const strong = score(cands.filter((c) => !c.weak && c.sc > -3));
+    if (n >= 2 && strong.length) pick.push(strong[0].i);
+    for (const c of score(cands)) {
+      if (pick.length >= n) break;
+      if (!pick.includes(c.i) && c.sc > -3) pick.push(c.i);
+    }
+    if (!pick.length && cands.length) pick.push(cands[0].i);
+    return pick.sort((a, b) => a - b);
+  }
+
+  function squash(s) {
+    return String(s || '').toLowerCase().replace(/[’‘`´]/g, "'").replace(/[^a-z0-9' ]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  // 穴埋め・聞き取りの答え合わせ。'ok' | 'near'（つづりミス） | 'ng'
+  function answerCheck(ans, target, alts) {
+    const a = normWords(ans).words.join(' ');
+    if (!a) return 'ng';
+    const goals = [target].concat(alts || []);
+    for (const g of goals) {
+      const b = normWords(g).words.join(' ');
+      if (a === b) return 'ok';
+      if (squash(ans).replace(/'/g, '') === squash(g).replace(/'/g, '')) return 'ok';
+    }
+    for (const g of goals) {
+      const b = normWords(g).words.join(' ');
+      if (b.length >= 5 && lev(a, b) <= 1) return 'near';
+      if (b.length >= 10 && lev(a, b) <= 2) return 'near';
+    }
+    return 'ng';
+  }
+
+  /* ---- 復習間隔（簡易SM-2） grade: 0 もう一回 / 1 難しい / 2 OK / 3 簡単 ---- */
+  function srsNext(card, g, t, now) {
+    const c = Object.assign({ i: 0, e: 2.5, r: 0, l: 0, d: t }, card || {});
+    if (g === 0) { c.l += 1; c.e = Math.max(1.3, c.e - 0.2); c.i = 1; }
+    else if (g === 1) { c.e = Math.max(1.3, c.e - 0.15); c.i = Math.max(1, Math.round(c.i * 1.2)); }
+    else if (g === 2) { c.i = c.i < 1 ? 1 : c.i < 3 ? 3 : Math.round(c.i * c.e); }
+    else { c.e = Math.min(3.0, c.e + 0.15); c.i = c.i < 1 ? 3 : c.i < 3 ? 6 : Math.round(c.i * c.e * 1.3); }
+    c.i = Math.min(c.i, 365);
+    c.r += 1;
+    c.d = t + c.i;
+    c.t = now || Date.now();
+    return c;
+  }
+  function srsPreview(card, t) {
+    return [0, 1, 2, 3].map((g) => srsNext(card, g, t, 1).i);
+  }
+  function fmtInterval(d) {
+    if (d <= 1) return '明日';
+    if (d < 7) return d + '日後';
+    if (d < 30) return Math.round(d / 7) + '週間後';
+    if (d < 365) return Math.round(d / 30) + 'か月後';
+    return '1年後';
+  }
+
+  /* ---- 記録 ---- */
+  function practiced(day) {
+    return !!day && (day.done > 0 || day.s >= 120 || day.n >= 10);
+  }
+  function streak(days, t) {
+    let d = practiced(days[t]) ? t : t - 1;
+    let n = 0;
+    while (practiced(days[d])) { n++; d--; }
+    return n;
+  }
+
+  // 2台の端末の記録を合わせる（新しい方を土台に、復習カードは語ごとに新しい方）
+  function mergeState(a, b) {
+    if (!b) return a;
+    if (!a) return b;
+    const newer = (a.u || 0) >= (b.u || 0) ? a : b;
+    const older = newer === a ? b : a;
+    const out = JSON.parse(JSON.stringify(newer));
+    out.cards = out.cards || {};
+    for (const [id, c] of Object.entries(older.cards || {})) {
+      const o = out.cards[id];
+      if (!o || (c.t || 0) > (o.t || 0)) out.cards[id] = c;
+    }
+    out.del = Object.assign({}, older.del || {}, out.del || {});
+    const seen = new Map();
+    for (const p of [...(out.custom || []), ...(older.custom || [])]) if (p && p.id && !seen.has(p.id)) seen.set(p.id, p);
+    out.custom = [...seen.values()].filter((p) => !out.del[p.id]).sort((x, y) => (x.at || 0) - (y.at || 0));
+    for (const id of Object.keys(out.del)) delete out.cards[id];
+    out.days = out.days || {};
+    for (const [k, d] of Object.entries(older.days || {})) {
+      const o = out.days[k];
+      if (!o) { out.days[k] = d; continue; }
+      for (const f of ['s', 'n', 'nw', 'rv', 'w', 'done']) o[f] = Math.max(o[f] || 0, d[f] || 0);
+    }
+    for (const key of ['mp', 'cs']) {
+      out[key] = out[key] || {};
+      for (const [k, v] of Object.entries(older[key] || {})) {
+        const o = out[key][k];
+        if (!o || (v.n || 0) > (o.n || 0)) out[key][k] = v;
+      }
+    }
+    out.u = Math.max(a.u || 0, b.u || 0);
+    // 「記録をすべて消す」より前のデータは戻さない
+    const ra = Math.max(a.resetAt || 0, b.resetAt || 0);
+    if (ra) {
+      out.resetAt = ra;
+      if ((older.u || 0) < ra) { out.mp = JSON.parse(JSON.stringify(newer.mp || {})); out.cs = JSON.parse(JSON.stringify(newer.cs || {})); }
+      for (const [id, c] of Object.entries(out.cards)) if ((c.t || 0) < ra) delete out.cards[id];
+      out.custom = out.custom.filter((p) => (p.at || 0) >= ra);
+      const rd = dayNum(new Date(ra));
+      for (const k of Object.keys(out.days)) if (+k < rd) delete out.days[k];
+    }
+    return out;
+  }
+
+  return { hashStr, parseCorpus, dayNum, dayToDate, numWords, tokenize, normToken, normWords, lev, align, compare, compareBest, rhythm, endsConsonant, startsVowel, pickBlanks, answerCheck, srsNext, srsPreview, fmtInterval, practiced, streak, mergeState };
+})();
+
+
+/* ===== app-base.js — 共通部品・保存・音声・マイク・AI ===== */
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rnd = (n) => Math.floor(Math.random() * n);
+const pickOne = (a) => a[rnd(a.length)];
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function withTimeout(p, ms) { return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej({ code: 'timeout' }), ms))]); }
+const hasJa = (s) => /[぀-ヿ㐀-鿿]/.test(s || '');
+
+const ICON = {
+  home: '<path d="M3.5 10.5 12 4l8.5 6.5V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/>',
+  ear: '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="5" height="7" rx="2"/><rect x="16" y="14" width="5" height="7" rx="2"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+  chat: '<path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01" stroke-width="3"/>',
+  stamp: '<circle cx="12" cy="12" r="8.5"/><path d="M4.5 9.5h15M4.5 14.5h15"/>',
+  gear: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/>',
+  play: '<path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/>',
+  pause: '<path d="M7.5 5.5h3v13h-3zM13.5 5.5h3v13h-3z" fill="currentColor"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  x: '<path d="M7 7l10 10M17 7 7 17"/>',
+  next: '<path d="M9 5.5l6.5 6.5L9 18.5"/>',
+  prev: '<path d="M15 5.5 8.5 12l6.5 6.5"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.9 10.6c.6.5.9 1.2.9 2V16h6v-.4c0-.8.3-1.5.9-2A6 6 0 0 0 12 3z"/>',
+  send: '<path d="M4.5 12 20 4.5 15.5 20l-3-6.5z"/><path d="m12.5 13.5 3-3"/>',
+  eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>',
+  eyeoff: '<path d="M3 3l18 18M10.6 5.6A9.6 9.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a15 15 0 0 1-2.8 3.5M6.1 7.1A15 15 0 0 0 2.5 12S6 18.5 12 18.5a9 9 0 0 0 4.2-1"/>',
+  skip: '<path d="M6 5.5 15 12l-9 6.5zM18.5 5.5v13"/>',
+  trash: '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/>',
+  book: '<path d="M5 4.5h9.5a2.5 2.5 0 0 1 2.5 2.5v13H7.5A2.5 2.5 0 0 1 5 17.5z"/><path d="M5 17.5A2.5 2.5 0 0 1 7.5 15H17"/>',
+  repeat: '<path d="M17 3.5 20.5 7 17 10.5"/><path d="M3.5 12V10a3 3 0 0 1 3-3h14M7 20.5 3.5 17 7 13.5"/><path d="M20.5 12v2a3 3 0 0 1-3 3h-14"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01" stroke-width="2.8"/>',
+  wave: '<path d="M1 12h4V5h5v14h5V8h4v4h4"/>',
+  copy: '<rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V5.5a1 1 0 0 0-1-1h-9a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3"/>',
+};
+function ic(name, cls = '') {
+  return `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${ICON[name] || ''}</svg>`;
+}
+
+/* ---------- 環境 ---------- */
+const HAS_CLAUDE = !!(window.claude && typeof window.claude.use === 'function');
+const IN_FRAME = (() => { try { return window.self !== window.top; } catch { return true; } })();
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+const Caps = { tts: null, dict: null, sample: null, db: null, user: null, done: false };
+
+const SENT = Core.parseCorpus(CORPUS);
+const SENT_MAP = new Map(SENT.map((s) => [s.id, s]));
+const LV = { 1: '入門', 2: '初級', 3: '中級', 4: '上級' };
+const REV_CAP = 20;
+const CS_RULE_KEYS = Object.keys(CS_RULES);
+
+/* ---------- 状態と保存 ---------- */
+const LS_KEY = 'eigo-kairo:v1';
+function defaults() {
+  return {
+    v: 1, u: 0, onb: 0,
+    settings: { engine: 'auto', voice: '', cvoice: 'buttery', rate: 1, level: 2, goal: 15, newPer: 5, rhythm: 1, sfx: 1, aiSpeak: 1, aiCap: 1, hfJa: 1, hfHide: 1, dictMode: 'cloze' },
+    cards: {}, custom: [], del: {}, mp: {}, cs: {}, days: {},
+  };
+}
+function normalizeState(o) {
+  const d = defaults();
+  if (!o || typeof o !== 'object') return d;
+  o.settings = Object.assign(d.settings, o.settings || {});
+  for (const k of ['cards', 'del', 'mp', 'cs', 'days']) if (!o[k] || typeof o[k] !== 'object' || Array.isArray(o[k])) o[k] = {};
+  if (!Array.isArray(o.custom)) o.custom = [];
+  o.v = 1; o.u = +o.u || 0; o.onb = +o.onb || 0;
+  return o;
+}
+function loadLocal() {
+  try { const raw = localStorage.getItem(LS_KEY); return raw ? normalizeState(JSON.parse(raw)) : null; } catch { return null; }
+}
+let S = loadLocal() || defaults();
+let saveTimer = 0;
+function saveLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch { /* 保存できない環境でも動かす */ } }
+function commit() {
+  S.u = Date.now();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveLocal, 300);
+  Sync.soon();
+}
+
+const today = () => Core.dayNum(new Date());
+function dayLog(t = today()) {
+  let d = S.days[t];
+  if (!d) {
+    d = S.days[t] = { s: 0, n: 0, nw: 0, rv: 0, w: 0, done: 0 };
+    for (const k of Object.keys(S.days)) if (+k < t - 420) delete S.days[k];
+  }
+  return d;
+}
+function countItem() { dayLog().n++; }
+
+/* ---------- 文データ ---------- */
+function customAsSent(p) { return { id: p.id, en: p.en, ja: p.ja, tag: 'マイフレーズ', lv: 0, custom: true }; }
+function sentById(id) {
+  if (SENT_MAP.has(id)) return SENT_MAP.get(id);
+  const p = S.custom.find((x) => x.id === id);
+  return p ? customAsSent(p) : null;
+}
+function dueList() {
+  const t = today();
+  return Object.entries(S.cards)
+    .filter(([id, c]) => c && c.d <= t && sentById(id))
+    .sort((a, b) => a[1].d - b[1].d || (a[1].t || 0) - (b[1].t || 0))
+    .map(([id]) => sentById(id));
+}
+function freshSentences(n, lv = S.settings.level) {
+  const out = [];
+  for (let L = lv; L <= 4 && out.length < n; L++) {
+    for (const s of SENT) if (s.lv === L && !S.cards[s.id] && !out.includes(s)) { out.push(s); if (out.length >= n) break; }
+  }
+  for (let L = lv - 1; L >= 1 && out.length < n; L--) {
+    for (const s of SENT) if (s.lv === L && !S.cards[s.id] && !out.includes(s)) { out.push(s); if (out.length >= n) break; }
+  }
+  return out;
+}
+function levelPool(lv = S.settings.level) { return SENT.filter((s) => s.lv === lv); }
+function learnedSentences() { return Object.keys(S.cards).map(sentById).filter(Boolean); }
+function cardState(id) { const c = S.cards[id]; if (!c) return 0; return c.i >= 21 ? 2 : 1; }
+function learnCard(s) {
+  if (!S.cards[s.id]) { const t = today(); S.cards[s.id] = { i: 1, e: 2.5, r: 0, l: 0, d: t + 1, t: Date.now() }; dayLog().nw++; }
+  commit();
+}
+
+/* ---------- 効果音（Web Audio） ---------- */
+const Sfx = {
+  ctx: null,
+  ensure() {
+    if (!this.ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; try { this.ctx = new AC(); } catch { return null; } }
+    if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+    return this.ctx;
+  },
+  tone(f, t0, dur, type = 'sine', g = 0.16) {
+    const c = this.ctx, o = c.createOscillator(), a = c.createGain(), t = c.currentTime + t0;
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    a.gain.setValueAtTime(0.0001, t); a.gain.exponentialRampToValueAtTime(g, t + 0.012); a.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(a).connect(c.destination); o.start(t); o.stop(t + dur + 0.03);
+  },
+  play(kind) {
+    if (!S.settings.sfx || !this.ensure()) return;
+    try {
+      if (kind === 'ok') { this.tone(784, 0, 0.12, 'triangle'); this.tone(1175, 0.08, 0.18, 'triangle'); }
+      else if (kind === 'ng') { this.tone(196, 0, 0.16, 'square', 0.06); this.tone(165, 0.12, 0.22, 'square', 0.05); }
+      else if (kind === 'stamp') { this.tone(70, 0, 0.3, 'sine', 0.55); this.tone(150, 0, 0.07, 'triangle', 0.3); this.tone(1046, 0.18, 0.25, 'triangle', 0.08); this.tone(1568, 0.28, 0.35, 'triangle', 0.07); }
+      else if (kind === 'go') { this.tone(1046, 0, 0.07, 'sine', 0.07); }
+    } catch { /* 音が出せない環境は無視 */ }
+  },
+};
+
+/* ---------- 端末の声 ---------- */
+const NOVELTY = /^(albert|bad news|bahh|bells|boing|bubbles|cellos|deranged|good news|hysterical|jester|organ|pipe organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|kathy|ralph|princess|agnes|bruce|vicki|victoria|eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley)\b/i;
+function rankVoice(v) {
+  const n = v.name || '';
+  let s = 0;
+  if (NOVELTY.test(n)) s -= 100;
+  if (/(premium|enhanced|neural|natural|online|siri)/i.test(n)) s += 40;
+  if (/google/i.test(n)) s += 28;
+  if (/\b(samantha|ava|allison|susan|tom|zoe|evan|nathan|noelle|joelle|serena|kate|oliver|daniel|karen|moira|tessa|aria|jenny|guy|libby|sonia|ryan|natasha|william|emma|brian|andrew|michelle|davis|jane|jason|nancy|tony|christopher|eric|roger|aaron|nicky|catherine|lee|gordon|arthur|martha|stephanie)\b/i.test(n)) s += 20;
+  const L = (v.lang || '').replace('_', '-');
+  if (/^en-US/i.test(L)) s += 12; else if (/^en-GB/i.test(L)) s += 9; else if (/^en-(AU|CA|IE|NZ)/i.test(L)) s += 6; else s += 2;
+  return s;
+}
+const ACCENT = { US: 'アメリカ', GB: 'イギリス', AU: 'オーストラリア', CA: 'カナダ', IE: 'アイルランド', NZ: 'ニュージーランド', ZA: '南アフリカ', IN: 'インド', SG: 'シンガポール', PH: 'フィリピン' };
+function accentOf(lang) { const m = /^en[-_]([A-Za-z]{2})/.exec(lang || ''); return (m && ACCENT[m[1].toUpperCase()]) || '英語'; }
+const Voices = {
+  en: [], ja: null, loaded: false,
+  load() {
+    const ss = window.speechSynthesis;
+    if (!ss) return;
+    let all = [];
+    try { all = ss.getVoices() || []; } catch { all = []; }
+    if (!all.length) return;
+    this.en = all.filter((v) => /^en([-_]|$)/i.test(v.lang || '')).map((v) => ({ v, s: rankVoice(v) })).filter((x) => x.s > -50).sort((a, b) => b.s - a.s).map((x) => x.v);
+    const ja = all.filter((v) => /^ja/i.test(v.lang || ''));
+    ja.sort((a, b) => (/(premium|enhanced|kyoko|o-ren|google)/i.test(b.name) ? 1 : 0) - (/(premium|enhanced|kyoko|o-ren|google)/i.test(a.name) ? 1 : 0));
+    this.ja = ja[0] || null;
+    this.loaded = true;
+    if (Sheet.mode === 'settings') Sheet.refresh();
+  },
+  pick() { const want = S.settings.voice; return (want && this.en.find((v) => v.voiceURI === want)) || this.en[0] || null; },
+  variety() {
+    const out = [], langs = new Set();
+    for (const v of this.en) { if (out.length >= 4) break; if (!langs.has(v.lang)) { out.push(v); langs.add(v.lang); } }
+    for (const v of this.en) { if (out.length >= 4) break; if (!out.includes(v)) out.push(v); }
+    return out;
+  },
+};
+if (window.speechSynthesis) {
+  try { window.speechSynthesis.addEventListener('voiceschanged', () => Voices.load()); } catch { window.speechSynthesis.onvoiceschanged = () => Voices.load(); }
+  Voices.load();
+  let tries = 0;
+  const poll = setInterval(() => { Voices.load(); if (Voices.loaded || ++tries > 20) clearInterval(poll); }, 300);
+}
+
+/* ---------- 読み上げ（Claudeの声 → 端末の声） ---------- */
+const CVOICES = [['buttery', 'やわらか'], ['airy', 'かろやか'], ['glassy', 'くっきり'], ['rounded', 'まろやか']];
+const Speech = {
+  tok: 0, cBlock: 0, cDenied: false, cWarned: false, u: null, unlocked: false, silentWarned: false,
+  canClaude() { return !!Caps.tts && !this.cDenied && Date.now() > this.cBlock; },
+  engine(lang = 'en') {
+    const e = S.settings.engine;
+    if (lang === 'en' && e !== 'device' && this.canClaude()) return 'claude';
+    if (e === 'claude' && this.cDenied) return 'none';
+    return window.speechSynthesis ? 'device' : 'none';
+  },
+  say(text, o = {}) {
+    const my = ++this.tok;
+    const lang = o.lang || 'en';
+    const rate = (o.rate || S.settings.rate || 1) * (o.slow ? 0.72 : 1);
+    const eng = this.engine(lang);
+    this._busy(true);
+    if (eng === 'claude') {
+      this._cancelDevice();
+      const voice = o.cvoice || S.settings.cvoice || 'buttery';
+      return Caps.tts.speak(String(text).slice(0, 1900), { voice, rate: clamp(rate, 0.7, 1.5), language: 'en' })
+        .then(() => { if (my === this.tok) this._busy(false); return true; })
+        .catch((e) => this._claudeFail(e || {}, text, o, my, rate));
+    }
+    if (eng === 'device') return this._device(text, lang, rate, o, my);
+    this._busy(false);
+    if (this.cDenied) toast('読み上げがオフになっています。設定で「端末の声」に切り替えられます。', 4000);
+    return Promise.resolve(false);
+  },
+  _claudeFail(e, text, o, my, rate) {
+    const code = e.code;
+    const idle = () => { if (my === this.tok) this._busy(false); return false; };
+    if (code === 'stopped') return idle();
+    if (code === 'not_granted') { this.cDenied = true; toast('Claudeの読み上げがオフになっています。設定で「端末の声」に切り替えられます。', 4200); return idle(); }
+    if (code === 'no_gesture') { toast('▶ をタップすると再生します'); return idle(); }
+    if (code === 'busy') { Mic.stop(); return idle(); }
+    this.cBlock = Date.now() + (code === 'rate_limited' ? Math.max(90000, e.retryAfterMs || 0) : code === 'unavailable' ? 600000 : 30000);
+    if (!this.cWarned) { this.cWarned = true; toast('Claudeの声が使えないため、端末の声で再生します'); }
+    if (my !== this.tok) return false;
+    return this._device(text, o.lang || 'en', rate, o, my);
+  },
+  _cancelDevice() { try { const ss = window.speechSynthesis; if (ss && (ss.speaking || ss.pending)) ss.cancel(); } catch { /* noop */ } },
+  _device(text, lang, rate, o, my) {
+    const ss = window.speechSynthesis;
+    if (!ss) { this._busy(false); return Promise.resolve(false); }
+    return new Promise((resolve) => {
+      const wasBusy = ss.speaking || ss.pending;
+      try { if (wasBusy) ss.cancel(); } catch { /* noop */ }
+      const u = new SpeechSynthesisUtterance(text);
+      const v = lang === 'ja' ? Voices.ja : (o.voice || Voices.pick());
+      if (v) { u.voice = v; u.lang = v.lang; } else u.lang = lang === 'ja' ? 'ja-JP' : 'en-US';
+      u.rate = clamp(rate, 0.5, 1.6);
+      let fin = false, started = false;
+      const done = (ok) => {
+        if (fin) return; fin = true; clearTimeout(wd); clearTimeout(st);
+        if (this.u === u) this.u = null;
+        if (my === this.tok) this._busy(false);
+        resolve(ok);
+      };
+      u.onstart = () => { started = true; };
+      u.onend = () => done(true);
+      u.onerror = () => done(false);
+      if (o.onWord) u.onboundary = (ev) => { if (ev.name && ev.name !== 'word') return; o.onWord(ev.charIndex); };
+      const est = 900 + (String(text).length * 82) / u.rate;
+      const wd = setTimeout(() => done(true), est * 1.8 + 2500);
+      const st = setTimeout(() => { if (!started && !fin && !this.silentWarned) { this.silentWarned = true; toast('音声が出ないときは、音量とマナーモードを確認するか、ブラウザで開いてください。', 5200); } }, 4000);
+      this.u = u;
+      const go = () => { if (my !== this.tok) { done(false); return; } try { ss.speak(u); if (ss.paused) ss.resume(); } catch { done(false); } };
+      if (wasBusy) setTimeout(go, 120); else go();
+    });
+  },
+  stop() {
+    this.tok++;
+    this._cancelDevice();
+    try { if (Caps.tts && (!Caps.tts.active || Caps.tts.active())) Caps.tts.stop().catch(() => {}); } catch { /* noop */ }
+    this._busy(false);
+  },
+  _busy(on) { document.documentElement.classList.toggle('is-speaking', !!on); },
+  unlock() {
+    Sfx.ensure();
+    if (this.unlocked) return;
+    this.unlocked = true;
+    const ss = window.speechSynthesis;
+    if (!ss) return;
+    try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; ss.speak(u); } catch { /* noop */ }
+  },
+  // 聞き分け練習用：毎回ちがう声
+  variedVoice() {
+    if (this.engine('en') === 'claude') return { cvoice: pickOne(CVOICES)[0] };
+    const vs = Voices.variety();
+    return vs.length ? { voice: pickOne(vs) } : {};
+  },
+};
+
+/* ---------- マイク（Claudeの音声入力 → ブラウザの音声認識 → キーボード） ---------- */
+const Mic = {
+  active: false, h: null, fin: '', part: '', alts: [], rec: null, dictOff: false, webOff: false, silenceT: 0, capT: 0, subscribed: false,
+  kind() {
+    if (Caps.dict && !this.dictOff) return 'claude';
+    if (SR && !this.webOff && !(HAS_CLAUDE && IN_FRAME)) return 'web';
+    return 'none';
+  },
+  subscribe() {
+    if (this.subscribed || !Caps.dict) return;
+    this.subscribed = true;
+    Caps.dict.onPartial(({ text }) => { if (!this.active) return; this.part = text || ''; this._emit(); this._arm(1600); });
+    Caps.dict.onFinal(({ text }) => { if (!this.active) return; this.fin += text || ''; this.part = ''; this._emit(); this._arm(1300); });
+    Caps.dict.onState(({ state, reason }) => {
+      if (state === 'listening' && this.active) this.h?.onState?.('listening');
+      if (state === 'idle' && this.active) this._end(reason || 'idle');
+    });
+  },
+  // クリックの中から同期的に呼ぶこと
+  start(h) {
+    if (this.active) { this.stop(); return true; }
+    const k = this.kind();
+    if (k === 'none') return false;
+    Speech.stop();
+    this.h = h; this.fin = ''; this.part = ''; this.alts = []; this.active = true;
+    clearTimeout(this.capT);
+    this.capT = setTimeout(() => this.stop(), 25000);
+    if (k === 'claude') {
+      Caps.dict.start({ language: 'en-US' })
+        .then(() => { this.h?.onState?.('listening'); this._arm(7000); })
+        .catch((e) => this._fail((e && e.code) || 'upstream_error'));
+    } else {
+      try {
+        const r = new SR();
+        this.rec = r;
+        r.lang = 'en-US'; r.interimResults = true; r.continuous = false; r.maxAlternatives = 3;
+        r.onresult = (ev) => {
+          let fin = '', part = '';
+          const alts = [];
+          for (let i = 0; i < ev.results.length; i++) {
+            const res = ev.results[i];
+            if (res.isFinal) { fin += res[0].transcript; for (let j = 0; j < res.length; j++) alts.push(res[j].transcript); }
+            else part += res[0].transcript;
+          }
+          this.fin = fin; this.part = part; if (alts.length) this.alts = alts;
+          this._emit();
+        };
+        r.onerror = (ev) => {
+          const c = ev.error;
+          if (c === 'not-allowed' || c === 'service-not-allowed' || c === 'audio-capture') { this.webOff = true; toast('この画面ではマイクが使えません。キーボードの音声入力を使ってください。', 4200); }
+          else if (c === 'no-speech') toast('声が聞き取れませんでした。もう一度どうぞ');
+        };
+        r.onend = () => this._end('ended');
+        r.start();
+        this.h?.onState?.('listening');
+      } catch {
+        this.webOff = true;
+        this._end('error');
+        return false;
+      }
+    }
+    h.onState?.('starting');
+    return true;
+  },
+  _arm(ms) {
+    clearTimeout(this.silenceT);
+    this.silenceT = setTimeout(() => { if (this.active) this.stop(); }, ms);
+  },
+  stop() {
+    if (!this.active) return;
+    clearTimeout(this.silenceT);
+    if (this.rec) { try { this.rec.stop(); } catch { this._end('error'); } }
+    else if (Caps.dict) { Caps.dict.stop().catch(() => this._end('error')); }
+    else this._end('stop');
+  },
+  _fail(code) {
+    if (code === 'not_granted' || code === 'unavailable') { this.dictOff = true; toast('音声入力が使えません。キーボードの音声入力か、文字で入力してください。', 4200); }
+    else if (code === 'no_gesture') toast('マイクのボタンをもう一度タップしてください');
+    else if (code === 'rate_limited') toast('音声入力が混み合っています。少し待ってからどうぞ');
+    else if (code === 'dismissed') toast('マイクの許可が必要です');
+    this._end(code);
+  },
+  _emit() { this.h?.onText?.(this.fin.trim(), this.part.trim()); },
+  _end(reason) {
+    if (!this.active) return;
+    this.active = false;
+    clearTimeout(this.silenceT); clearTimeout(this.capT);
+    this.rec = null;
+    const text = (this.fin + ' ' + this.part).replace(/\s+/g, ' ').trim();
+    const h = this.h; this.h = null;
+    const alts = this.alts.length ? this.alts.slice() : [];
+    if (text && !alts.includes(text)) alts.unshift(text);
+    h?.onDone?.(text, alts, reason);
+  },
+};
+
+/* ---------- Claude（AI） ---------- */
+const AI = {
+  off: false,
+  ok() { return !!Caps.sample && !this.off; },
+  async json(prompt, opt = {}) {
+    try {
+      return await Caps.sample.json(prompt, { modelTier: opt.tier || 'quick', cache: false, signal: opt.signal });
+    } catch (e) {
+      const c = (e && e.code) || 'upstream_error';
+      if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(c)) { this.off = true; }
+      throw { code: c, text: e && e.text };
+    }
+  },
+  msg(code) {
+    return ({
+      cancelled: '',
+      not_granted: 'Claudeの利用が許可されていないため、AI機能はお休みします。',
+      sampling_disabled: 'このアカウントではAI機能が使えません。',
+      not_declared: 'AI機能が使えない設定になっています。',
+      rate_limited: '利用が集中しています。少し待ってからもう一度どうぞ。',
+      session_expired: 'Claudeにサインインし直してください。',
+      refused: 'この内容には返答できませんでした。言い方を変えてみてください。',
+      prompt_too_large: '会話が長くなりすぎました。新しく始めてください。',
+    })[code] ?? 'うまく返事が返ってきませんでした。もう一度送ってください。';
+  },
+};
+
+/* ---------- 同期（Claudeアカウントに保存） ---------- */
+const Sync = {
+  ref: null, mode: 'local', timer: 0, writing: false, again: false, lastPushed: '', lastPull: 0, note: '',
+  async init() {
+    if (!Caps.db || !Caps.user) return;
+    let uid = null;
+    try { uid = await Caps.user.id(); } catch { uid = null; }
+    if (!uid) return;
+    try { this.ref = Caps.db.doc('data/users/' + uid + '/state'); } catch { this.ref = null; return; }
+    await this.pull(true);
+  },
+  async pull(first) {
+    if (!this.ref) return;
+    this.lastPull = Date.now();
+    let snap;
+    try { snap = await withTimeout(this.ref.get(), 10000); }
+    catch (e) { this.note = 'つながるまで端末に保存しています'; if (e && (e.code === 'revoked' || e.code === 'not_granted' || e.code === 'capability_disabled')) this.ref = null; refreshSyncNote(); return; }
+    this.mode = 'cloud'; this.note = '';
+    let remoteU = 0;
+    if (snap && snap.exists) {
+      const d = snap.data() || {};
+      remoteU = +d.u || 0;
+      let remote = null;
+      try { remote = normalizeState(JSON.parse(d.json || 'null')); } catch { remote = null; }
+      if (remote && remote.u) {
+        const merged = normalizeState(Core.mergeState(S, remote));
+        if (JSON.stringify(merged) !== JSON.stringify(S)) { S = merged; saveLocal(); if (!Ov.mode) render(); if (S.onb && Sheet.mode === 'onboard') Sheet.close(); }
+      }
+    }
+    if (!snap || !snap.exists || remoteU < S.u) this.soon(first ? 800 : 2500);
+    refreshSyncNote();
+  },
+  soon(ms = 2500) { if (!this.ref) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.push(), ms); },
+  async push() {
+    if (!this.ref) return;
+    if (this.writing) { this.again = true; return; }
+    const json = JSON.stringify(S);
+    if (json === this.lastPushed) return;
+    this.writing = true;
+    try {
+      await this.ref.set({ v: 1, u: S.u, json });
+      this.lastPushed = json; this.mode = 'cloud'; this.note = '';
+    } catch (e) {
+      const c = e && e.code;
+      if (c === 'unavailable' || c === 'resource_exhausted') setTimeout(() => this.soon(), 6000 + Math.random() * 4000);
+      else if (c === 'quota_exceeded') { this.note = '保存容量の上限に達しました'; toast('保存容量の上限に達しました。マイフレーズを減らすと保存できます。', 4500); }
+      else { this.ref = null; this.mode = 'local'; this.note = 'この端末にだけ保存しています'; }
+    }
+    this.writing = false;
+    refreshSyncNote();
+    if (this.again) { this.again = false; this.soon(); }
+  },
+};
+function refreshSyncNote() { const el = $('#sync-note'); if (el) el.textContent = syncText(); }
+function syncText() {
+  if (Sync.mode === 'cloud' && Sync.ref) return 'Claudeのアカウントに保存しています。ほかの端末でこのアプリを開いても続きから練習できます。';
+  if (Sync.note) return Sync.note + '。';
+  return HAS_CLAUDE ? 'この端末に保存しています（Claudeにサインインすると他の端末と同期します）。' : 'このブラウザに保存しています。';
+}
+
+/* ---------- 全画面・シート・ダイアログ・トースト ---------- */
+const Ov = {
+  el: null, mode: '',
+  open(mode) { this.mode = mode; this.el.hidden = false; document.body.classList.add('ov-open'); },
+  close() {
+    Speech.stop(); Mic.stop();
+    this.mode = ''; this.el.hidden = true; this.el.innerHTML = '';
+    document.body.classList.remove('ov-open');
+    Wake.release();
+    commit();
+    render();
+  },
+};
+const Sheet = {
+  el: null, mode: '', builder: null,
+  open(mode, builder) {
+    this.mode = mode; this.builder = builder;
+    this.el.innerHTML = `<div class="sheet-back" data-act="sheet-close"></div><div class="sheet-panel" role="dialog" aria-modal="true" aria-label="${esc(mode)}" id="sheet-panel">${builder()}</div>`;
+    this.el.hidden = false;
+  },
+  refresh() {
+    if (!this.mode || !this.builder) return;
+    const p = $('#sheet-panel'); const top = p ? p.scrollTop : 0;
+    if (p) { p.innerHTML = this.builder(); p.scrollTop = top; }
+  },
+  close() { this.mode = ''; this.builder = null; this.el.hidden = true; this.el.innerHTML = ''; },
+};
+function ask(title, body, okLabel = 'OK', cancelLabel = 'キャンセル') {
+  return new Promise((resolve) => {
+    const w = document.createElement('div');
+    w.className = 'dlg-wrap';
+    w.innerHTML = `<div class="dlg" role="alertdialog" aria-modal="true"><h3>${esc(title)}</h3>${body ? `<p>${esc(body)}</p>` : ''}<div class="row end"><button class="btn" data-r="0">${esc(cancelLabel)}</button><button class="btn ink" data-r="1">${esc(okLabel)}</button></div></div>`;
+    const fin = (v) => { w.remove(); document.removeEventListener('keydown', key, true); resolve(v); };
+    const key = (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fin(false); } };
+    w.addEventListener('click', (e) => { const b = e.target.closest('[data-r]'); if (b) fin(b.dataset.r === '1'); else if (e.target === w) fin(false); });
+    document.addEventListener('keydown', key, true);
+    document.body.appendChild(w);
+    w.querySelector('[data-r="1"]').focus();
+  });
+}
+let toastT = 0;
+function toast(msg, ms = 2600) {
+  const t = $('#toast'); if (!t) return;
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), ms);
+}
+const Wake = {
+  lock: null,
+  async on() { try { if (navigator.wakeLock && !this.lock) { this.lock = await navigator.wakeLock.request('screen'); this.lock.addEventListener?.('release', () => { this.lock = null; }); } } catch { this.lock = null; } },
+  release() { try { this.lock?.release(); } catch { /* noop */ } this.lock = null; },
+};
+
+/* ---------- 英文の表示（リズム記号・穴埋め・判定の色） ---------- */
+function rhythmTokens(en) { return Core.rhythm(Core.tokenize(en)); }
+function sentHTML(en, o = {}) {
+  const toks = o.tokens || rhythmTokens(en);
+  const rh = o.rhythm ?? !!S.settings.rhythm;
+  let html = '', wi = -1, inGrp = false;
+  toks.forEach((t, i) => {
+    if (t.k === 's') { if (!(rh && toks[i - 1] && toks[i - 1].lk)) html += ' '; return; }
+    if (t.k === 'p') { html += `<span class="pu">${esc(t.s)}</span>`; return; }
+    wi++;
+    if (rh && t.lk && !inGrp) { html += '<span class="grp">'; inGrp = true; }
+    if (o.blanks && o.blanks.has(i)) html += o.blankHTML(i, t);
+    else {
+      const cls = ['w'];
+      if (rh) cls.push(t.st ? 'st' : 'wk');
+      if (o.marks) cls.push('m-' + (t.m || 'miss'));
+      if (o.hit && o.hit.has(i)) cls.push('hit');
+      html += `<span class="${cls.join(' ')}" data-ci="${t.ci}" data-wi="${wi}">${esc(t.s)}</span>`;
+    }
+    if (rh && t.lk) html += '<span class="lk" aria-hidden="true">‿</span>';
+    else if (inGrp) { html += '</span>'; inGrp = false; }
+  });
+  if (inGrp) html += '</span>';
+  return html;
+}
+function enClass(extra = '') { return `en ${S.settings.rhythm ? 'rh' : ''} ${extra}`; }
+// 端末の声の単語位置に合わせて光らせる
+function karaoke(container) {
+  const words = container ? $$('.w[data-ci]', container) : [];
+  return (charIndex) => {
+    let cur = null;
+    for (const w of words) { if (+w.dataset.ci <= charIndex) cur = w; else break; }
+    words.forEach((w) => w.classList.toggle('on', w === cur));
+  };
+}
+function clearKaraoke(container) { if (container) $$('.w.on', container).forEach((w) => w.classList.remove('on')); }
+
+function fmtMin(sec) {
+  const m = Math.round(sec / 60);
+  if (m < 60) return m + '分';
+  return Math.floor(m / 60) + '時間' + (m % 60 ? (m % 60) + '分' : '');
+}
+
+/* ===== app-steps.js — 練習ステップと進行 ===== */
+const PHASE = { warm: '耳慣らし', rev: '復習', new: '新しい文' };
+const finePointer = () => { try { return matchMedia('(pointer: fine)').matches; } catch { return false; } };
+
+function micHint() {
+  return 'スマホはキーボードを英語に切り替え、キーボードのマイクで話すと発音チェックになります。';
+}
+function speakBoxHTML(listening, ph) {
+  const k = Mic.kind();
+  return `<div class="speakbox">
+    ${k !== 'none' ? `<button class="btn mouth mic ${listening ? 'on' : ''}" data-act="mic" id="mic-btn">${ic('mic')}<span>${listening ? '聞いています…（タップで終了）' : 'タップして話す'}</span></button>` : ''}
+    <div class="live" id="live" data-ph="${esc(ph || '')}"></div>
+    <form class="typein" data-form="say" autocomplete="off"><input id="say-in" type="text" enterkeyhint="done" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="${k === 'none' ? '英語で入力（キーボードのマイクも可）' : 'または入力して判定'}" aria-label="話した英語"><button class="btn sm ink" type="submit">判定</button></form>
+    ${k === 'none' ? `<p class="hint">${ic('info')}<span>${micHint()}</span></p>` : ''}
+  </div>`;
+}
+// 話す系ステップ共通：マイクの開始と表示更新
+function startMicFor(step) {
+  const ok = Mic.start({
+    onState: (s) => { step.listening = s !== 'idle'; paintMic(step.listening); },
+    onText: (fin, part) => { const el = $('#live'); if (el) el.innerHTML = esc(fin) + (part ? ` <span class="part">${esc(part)}</span>` : ''); },
+    onDone: (text, alts) => { step.listening = false; paintMic(false); if (text && Run.cur() === step) step.onSaid(text, alts); },
+  });
+  if (!ok) toast('この画面ではマイクが使えません。入力欄で判定できます。');
+  else { step.listening = Mic.active; paintMic(Mic.active); }
+}
+function paintMic(on) {
+  const b = $('#mic-btn'); if (!b) return;
+  b.classList.toggle('on', !!on);
+  const sp = b.querySelector('span'); if (sp) sp.textContent = on ? '聞いています…（タップで終了）' : 'タップして話す';
+}
+function pctText(score) { return Math.round(score * 100) + '%'; }
+function verdictHTML(score, extra = '') {
+  const cls = score >= 0.9 ? 'ok' : score >= 0.6 ? 'mid' : 'ng';
+  const word = score >= 0.999 ? 'パーフェクト！' : score >= 0.9 ? 'ほぼ完璧！' : score >= 0.6 ? 'おしい！' : 'もう一度挑戦';
+  return `<div class="verdict ${cls}">${ic(score >= 0.6 ? 'check' : 'repeat')}${word}<small>一致 ${pctText(score)}${extra}</small></div>`;
+}
+
+/* ---------- 音の聞き分け ---------- */
+class MPStep {
+  constructor(c, pair, phase) { this.c = c; this.pair = pair; this.ans = rnd(2); this.v = Speech.variedVoice(); this.done = false; this.picked = -1; this.phase = phase || ''; this.label = '音の聞き分け'; }
+  play(i = this.ans) { return Speech.say(this.pair[i], Object.assign({ rate: 0.95 }, this.v)); }
+  render() {
+    const choice = (i) => {
+      let cls = 'choice';
+      if (this.done) cls += i === this.ans ? ' right' : i === this.picked ? ' wrong' : '';
+      return `<button class="${cls}" data-act="mp-pick" data-i="${i}" ${this.done ? 'disabled' : ''}>${esc(this.pair[i])}${this.done && i === this.ans ? '<small>聞こえた音</small>' : ''}</button>`;
+    };
+    let body = `<p class="q">どっちが聞こえた？ <span class="chip ear">${esc(this.c.name)}</span></p>
+      <button class="playbig" data-act="replay"><span class="disc">${ic('play')}</span>もう一度聞く</button>
+      <div class="choices">${choice(0)}${choice(1)}</div>`;
+    if (this.done) {
+      const good = this.picked === this.ans;
+      body += `<div class="verdict ${good ? 'ok' : 'ng'}">${ic(good ? 'check' : 'x')}${good ? '正解！' : '正解は ' + esc(this.pair[this.ans])}</div>
+        <div class="audio-row"><button class="btn sm" data-act="mp-hear" data-i="0">${ic('play')} ${esc(this.pair[0])}</button><button class="btn sm" data-act="mp-hear" data-i="1">${ic('play')} ${esc(this.pair[1])}</button></div>
+        ${good ? '' : `<p class="tip"><b>コツ </b>${esc(this.c.tip)}</p>`}`;
+    }
+    const foot = this.done ? `<button class="btn big ink" data-act="next">次へ ${ic('next')}</button>` : '';
+    return { body, foot };
+  }
+  mount() { if (!this.played) { this.played = true; this.t = setTimeout(() => this.play(), 300); } }
+  act(a, el) {
+    if (a === 'replay') { clearTimeout(this.autoT); this.play(); return true; }
+    if (a === 'mp-pick' && !this.done) {
+      this.picked = +el.dataset.i; this.done = true;
+      const good = this.picked === this.ans;
+      const st = S.mp[this.c.k] || (S.mp[this.c.k] = { n: 0, ok: 0 });
+      st.n++; if (good) st.ok++;
+      countItem(); commit();
+      Sfx.play(good ? 'ok' : 'ng');
+      Run.score(good);
+      Run.refresh();
+      if (good) this.autoT = setTimeout(() => { if (Run.cur() === this) Run.next(); }, 1200);
+      return true;
+    }
+    if (a === 'mp-hear') { clearTimeout(this.autoT); this.play(+el.dataset.i); return true; }
+    return false;
+  }
+  unmount() { clearTimeout(this.autoT); clearTimeout(this.t); }
+}
+
+/* ---------- 音の変化 ---------- */
+const csKey = (it) => 'c' + Core.hashStr(it.t);
+class CSStep {
+  constructor(it, phase) { this.it = it; this.done = false; this.res = ''; this.ans = ''; this.phase = phase || ''; this.label = '音の変化'; }
+  parts() {
+    const t = this.it.t, c = this.it.c, i = t.toLowerCase().indexOf(c.toLowerCase());
+    return [t.slice(0, i), t.slice(i, i + c.length), t.slice(i + c.length)];
+  }
+  play(slow) { return slow ? Speech.say(this.it.t, { slow: true }) : Speech.say(this.it.say || this.it.t, { rate: (S.settings.rate || 1) * 1.05 }); }
+  render() {
+    const R = CS_RULES[this.it.r];
+    const [a, c, b] = this.parts();
+    let body = `<p class="q">聞こえたとおりに書こう <span class="chip ear">${esc(R.name)}</span></p>
+      <div class="audio-row"><button class="btn ear" data-act="replay">${ic('play')} ふつうの速さ</button><button class="btn" data-act="slow">${ic('play')} ゆっくり</button></div>`;
+    if (!this.done) {
+      body += `<p class="en big-en">${esc(a)}<input class="blank" id="cs-in" style="width:${Math.max(4, c.length + 1.5)}ch" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="聞こえた語句">${esc(b)}</p>
+        <p class="note">空欄の部分が、音がつながったり消えたりするところです。</p>`;
+    } else {
+      const good = this.res !== 'ng';
+      body += `<p class="en big-en">${esc(a)}<span class="w hit">${esc(c)}</span>${esc(b)}</p>
+        <div class="verdict ${good ? 'ok' : 'ng'}">${ic(good ? 'check' : 'x')}${this.res === 'ok' ? '正解！' : this.res === 'near' ? 'ほぼ正解（つづりに注意）' : '答え：' + esc(c)}${this.ans && this.res !== 'ok' ? `<small>あなた：${esc(this.ans)}</small>` : ''}</div>
+        <div class="card flat"><span class="sound">${esc(this.it.s)}<small>のように聞こえる</small></span><p class="small"><b>${esc(R.name)}（${esc(R.sub)}）</b> ${esc(R.desc)}</p></div>`;
+    }
+    const foot = this.done
+      ? `<button class="btn big ink" data-act="next">次へ ${ic('next')}</button>`
+      : `<button class="btn big ink" data-act="check">答え合わせ</button><button class="btn link" data-act="giveup">わからない（答えを見る）</button>`;
+    return { body, foot };
+  }
+  mount() {
+    if (!this.played) { this.played = true; this.t = setTimeout(() => this.play(false), 300); }
+    if (!this.done && finePointer()) $('#cs-in')?.focus();
+  }
+  check(giveup) {
+    this.ans = giveup ? '' : ($('#cs-in')?.value || '').trim();
+    this.res = giveup ? 'ng' : Core.answerCheck(this.ans, this.it.c);
+    this.done = true;
+    const k = csKey(this.it);
+    const st = S.cs[k] || (S.cs[k] = { n: 0, ok: 0 });
+    st.n++; if (this.res !== 'ng') st.ok++;
+    countItem(); commit();
+    Sfx.play(this.res !== 'ng' ? 'ok' : 'ng');
+    Run.score(this.res !== 'ng');
+    Run.refresh();
+    setTimeout(() => { if (Run.cur() === this) this.play(false); }, 350);
+  }
+  act(a) {
+    if (a === 'replay') { this.play(false); return true; }
+    if (a === 'slow') { this.play(true); return true; }
+    if (a === 'check' && !this.done) { this.check(false); return true; }
+    if (a === 'giveup' && !this.done) { this.check(true); return true; }
+    return false;
+  }
+  unmount() { clearTimeout(this.t); }
+}
+
+/* ---------- ディクテーション（穴埋め・全文） ---------- */
+class DictStep {
+  constructor(s, mode, o = {}) {
+    this.s = s; this.mode = mode; this.learn = !!o.learn; this.phase = o.phase || '';
+    this.toks = rhythmTokens(s.en);
+    const nW = this.toks.filter((t) => t.k === 'w').length;
+    this.blanks = mode === 'cloze' ? new Set(Core.pickBlanks(this.toks, clamp(Math.round(nW / 4), 1, 3))) : null;
+    this.done = false; this.showJa = false; this.label = this.learn ? '聞き取り' : mode === 'cloze' ? '穴埋め' : '全文';
+  }
+  play(slow) {
+    const box = this.done ? $('#dc-en') : null;
+    return Speech.say(this.s.en, { slow, onWord: box ? karaoke(box) : null }).then(() => clearKaraoke(box));
+  }
+  render() {
+    let body = `<p class="q">${this.mode === 'cloze' ? '空欄の語を聞き取ろう' : '聞こえた英文を書こう'}${this.learn ? ' <span class="chip ear">新しい文</span>' : ''}</p>
+      <div class="audio-row"><button class="btn ear round" data-act="replay" aria-label="もう一度聞く">${ic('play')}</button><button class="btn" data-act="slow">ゆっくり</button></div>`;
+    if (!this.done) {
+      if (this.mode === 'cloze') {
+        body += `<p class="en big-en">${sentHTML(this.s.en, { tokens: this.toks, rhythm: false, blanks: this.blanks, blankHTML: (i, t) => `<input class="blank" data-bi="${i}" style="width:${Math.max(3, t.s.length) + 1.6}ch" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="空欄">` })}</p>`;
+      } else {
+        body += `<textarea class="full" id="dict-in" rows="3" autocomplete="off" autocapitalize="sentences" autocorrect="off" spellcheck="false" placeholder="聞こえたとおりに入力" aria-label="聞こえた英文"></textarea>`;
+      }
+      body += this.showJa ? `<p class="ja">日本語訳：${esc(this.s.ja)}</p>` : `<button class="btn sm flat" data-act="toggle-ja" style="align-self:flex-start">ヒント：日本語訳を見る</button>`;
+    } else {
+      if (this.mode === 'cloze') {
+        body += `<div class="card"><p class="${enClass('big-en')}" id="dc-en">${sentHTML(this.s.en, { tokens: this.toks, hit: this.blanks })}</p><p class="ja">${esc(this.s.ja)}</p></div>`;
+        body += `<div class="stack">${this.answers.map((x) => `<div class="verdict ${x.r === 'ng' ? 'ng' : 'ok'}">${ic(x.r === 'ng' ? 'x' : 'check')}${esc(this.toks[x.i].s)}<small>${x.r === 'ok' ? '正解' : x.r === 'near' ? 'つづりに注意：' + esc(x.v) : 'あなた：' + esc(x.v || '（空欄）')}</small></div>`).join('')}</div>`;
+      } else {
+        body += `<div class="card"><p class="${enClass('big-en')}" id="dc-en">${sentHTML(this.s.en, { tokens: this.cmp.tokens, marks: true })}</p><p class="ja">${esc(this.s.ja)}</p></div>
+          <p class="heard"><b>あなた</b>${esc(this.typed || '（未入力）')}</p>${verdictHTML(this.score)}
+          <p class="note">赤い下線は聞き取れなかった語です。短い語ほど弱く速く読まれます。</p>`;
+      }
+      if (this.learn) body += `<p class="note">次は、この文をまねして言います。</p>`;
+    }
+    const foot = this.done
+      ? `<button class="btn big ink" data-act="next">${this.learn ? 'まねして言う' : '次へ'} ${ic('next')}</button>`
+      : `<button class="btn big ink" data-act="check">答え合わせ</button>`;
+    return { body, foot };
+  }
+  mount() {
+    if (!this.played) { this.played = true; this.t = setTimeout(() => this.play(false), 300); }
+    if (!this.done && finePointer()) ($('input.blank', Ov.el) || $('#dict-in'))?.focus();
+    if (this.done && !this.revealPlayed) { this.revealPlayed = true; this.t = setTimeout(() => { if (Run.cur() === this) this.play(false); }, 450); }
+  }
+  check() {
+    if (this.mode === 'cloze') {
+      this.answers = [...this.blanks].map((i) => {
+        const v = ($(`input[data-bi="${i}"]`, Ov.el)?.value || '').trim();
+        return { i, v, r: Core.answerCheck(v, this.toks[i].s) };
+      });
+      this.score = this.answers.filter((x) => x.r !== 'ng').length / Math.max(1, this.answers.length);
+    } else {
+      this.typed = ($('#dict-in')?.value || '').trim();
+      this.cmp = Core.compare(this.s.en, this.typed);
+      Core.rhythm(this.cmp.tokens);
+      this.score = this.cmp.score;
+    }
+    this.done = true;
+    countItem(); commit();
+    Sfx.play(this.score >= 0.99 ? 'ok' : 'ng');
+    Run.score(this.score >= 0.99);
+    Run.refresh(true);
+  }
+  act(a) {
+    if (a === 'replay') { this.play(false); return true; }
+    if (a === 'slow') { this.play(true); return true; }
+    if (a === 'toggle-ja') { this.showJa = true; Run.refresh(); return true; }
+    if (a === 'check' && !this.done) { this.check(); return true; }
+    return false;
+  }
+  unmount() { clearTimeout(this.t); }
+}
+
+/* ---------- シャドーイング（聞いてまねる） ---------- */
+class ShadowStep {
+  constructor(s, o = {}) { this.s = s; this.learn = !!o.learn; this.phase = o.phase || ''; this.toks = rhythmTokens(s.en); this.reps = 0; this.turn = false; this.res = null; this.listening = false; this.label = this.learn ? 'まねして言う' : 'シャドーイング'; }
+  dur() { const w = this.toks.filter((t) => t.k === 'w').length; return Math.round(((w * 0.42) / (S.settings.rate || 1) + 1.0) * 1000); }
+  async cycle(slow) {
+    if (this.busy) return;
+    this.busy = true;
+    const box = $('#sh-en');
+    await Speech.say(this.s.en, { slow, onWord: karaoke(box) });
+    clearKaraoke(box);
+    if (Run.cur() !== this) { this.busy = false; return; }
+    this.turn = true;
+    const tn = $('#sh-turn');
+    if (tn) { tn.classList.remove('go'); void tn.offsetWidth; tn.style.setProperty('--dur', this.dur() * (slow ? 1.35 : 1) + 'ms'); tn.classList.add('go'); tn.querySelector('.lbl').textContent = 'あなたの番：同じリズムで声に出して！'; }
+    Sfx.play('go');
+    await sleep(this.dur() * (slow ? 1.35 : 1));
+    this.busy = false;
+    if (Run.cur() !== this) return;
+    this.turn = false;
+    this.reps = Math.min(3, this.reps + 1);
+    Run.refresh();
+  }
+  render() {
+    let body = `<p class="q">お手本のリズムでまねしよう${this.learn ? ' <span class="chip mouth">新しい文</span>' : ''}</p>
+      <div class="card"><p class="${enClass('big-en')}" id="sh-en">${sentHTML(this.s.en, { tokens: this.res ? this.res.tokens : this.toks, marks: !!this.res })}</p><p class="ja">${esc(this.s.ja)}</p>
+      ${S.settings.rhythm ? '<p class="legend" style="font-size:12px;color:var(--muted)"><span><i></i>強く長く</span><span><i class="s"></i>弱く短く</span><span><em>‿</em>つなげて読む</span></p>' : ''}</div>
+      <div class="turn" id="sh-turn" style="--dur:${this.dur()}ms"><div class="bar"><i></i></div><span class="lbl">▶ のあと、バーが伸びる間に同じように言います</span></div>
+      <div class="dots">${[0, 1, 2].map((i) => `<i class="${i < this.reps ? 'on' : ''}"></i>`).join('')}<span>${this.reps >= 3 ? 'よくできました！' : `3回まねしよう（${this.reps}/3）`}</span></div>
+      <div class="audio-row"><button class="btn ear" data-act="cycle">${ic('play')} 聞いてまねる</button><button class="btn" data-act="slow">ゆっくりで</button></div>`;
+    body += `<details class="help" ${this.res || Mic.kind() !== 'none' ? 'open' : ''}><summary>発音チェック（声で判定）</summary><div class="stack" style="margin-top:10px">${speakBoxHTML(this.listening, '話した英語がここに表示されます')}</div></details>`;
+    if (this.res) body += `<p class="heard"><b>判定</b>${esc(this.res.said)}</p>${verdictHTML(this.res.score)}`;
+    const ready = this.reps >= 3 || this.res;
+    const foot = `<button class="btn big ${ready ? 'ink' : ''}" data-act="next">${this.learn ? '覚えた！次へ' : '次へ'} ${ic('next')}</button>`;
+    return { body, foot };
+  }
+  mount() { if (!this.started) { this.started = true; this.t = setTimeout(() => this.cycle(false), 350); } }
+  onSaid(text, alts) {
+    this.res = Core.compareBest(this.s.en, alts && alts.length ? alts : [text]);
+    Core.rhythm(this.res.tokens);
+    countItem(); commit();
+    Sfx.play(this.res.score >= 0.9 ? 'ok' : 'ng');
+    Run.refresh(true);
+  }
+  act(a) {
+    if (a === 'cycle') { this.cycle(false); return true; }
+    if (a === 'slow') { this.cycle(true); return true; }
+    if (a === 'replay') { this.cycle(false); return true; }
+    if (a === 'mic') { startMicFor(this); return true; }
+    return false;
+  }
+  beforeNext() {
+    if (this.learn) learnCard(this.s);
+    if (!this.counted) { this.counted = true; Run.score(this.reps >= 1 || (this.res && this.res.score >= 0.6)); }
+  }
+  unmount() { clearTimeout(this.t); }
+}
+
+/* ---------- 瞬間英作文 ---------- */
+class CompStep {
+  constructor(s, o = {}) { this.s = s; this.review = !!o.review; this.phase = o.phase || ''; this.revealed = false; this.att = ''; this.res = null; this.ai = null; this.listening = false; this.label = this.review ? '復習' : '瞬間英作文'; }
+  thinkSec() { const w = this.s.en.split(/\s+/).length; return clamp(Math.round(2 + w * 0.6), 4, 12); }
+  play(slow) { const box = $('#cp-en'); return Speech.say(this.s.en, { slow, onWord: box ? karaoke(box) : null }).then(() => clearKaraoke(box)); }
+  render() {
+    let body = `<p class="q">英語で言ってみよう ${this.s.tag ? `<span class="chip ghost">${esc(this.s.tag)}</span>` : ''}</p><p class="prompt-ja">${esc(this.s.ja)}</p>`;
+    if (!this.revealed) {
+      body += `<div class="timer" style="--dur:${this.thinkSec()}s" aria-hidden="true"><i></i></div>` + speakBoxHTML(this.listening, '話した英語がここに表示されます') + `<p class="note">声に出して言ってから「答えを見る」でもOK。ゆっくりでも最後まで言い切るのがコツです。</p>`;
+    } else {
+      body += `<div class="card"><p class="${enClass('big-en')}" id="cp-en">${sentHTML(this.s.en, { tokens: this.res ? this.res.tokens : rhythmTokens(this.s.en), marks: !!this.res })}</p>
+        <div class="row"><button class="btn sm ear" data-act="replay">${ic('play')} 聞く</button><button class="btn sm" data-act="slow">ゆっくり</button></div></div>`;
+      if (this.res) body += `<p class="heard"><b>あなた</b>${esc(this.att)}</p>${verdictHTML(this.res.score)}`;
+      if (this.ai) {
+        body += this.ai.err ? `<p class="note">${esc(this.ai.err)}</p>` : `<div class="fb ${this.ai.ok ? 'good' : 'fix'}"><span class="fb-h">${ic(this.ai.ok ? 'check' : 'repeat')}${this.ai.ok ? 'AI判定：その言い方でも正解です' : 'AI判定：少し直しましょう'}</span>${this.ai.comment ? `<p>${esc(this.ai.comment)}</p>` : ''}${!this.ai.ok && this.ai.fixed ? `<div class="alt"><small>直すなら</small>${esc(this.ai.fixed)}</div>` : ''}</div>`;
+      } else if (this.aiBusy) body += `<p class="note">AIが確認しています…</p>`;
+      else if (this.res && this.res.score < 0.999 && AI.ok()) body += `<button class="btn sm" data-act="ai-judge" style="align-self:flex-start">${ic('chat')} 別の言い方でも合ってる？ AIに確認</button>`;
+    }
+    const foot = this.revealed ? this.gradesHTML() : `<button class="btn big ink" data-act="reveal">答えを見る</button>`;
+    return { body, foot };
+  }
+  gradesHTML() {
+    const pv = Core.srsPreview(S.cards[this.s.id], today());
+    let sug = -1;
+    if (this.ai && !this.ai.err) sug = this.ai.ok ? 2 : 1;
+    else if (this.res) sug = this.res.score >= 0.9 ? 2 : this.res.score >= 0.6 ? 1 : 0;
+    const names = ['もう一回', '難しい', 'できた', '簡単'];
+    return `<div class="grades">${names.map((n, g) => `<button class="btn g${g} ${g === sug ? 'sug' : ''}" data-act="grade" data-g="${g}">${n}<small>${g === 0 ? 'あとで再出題' : '次は' + Core.fmtInterval(pv[g])}</small></button>`).join('')}</div>`;
+  }
+  mount() {
+    if (this.revealed && !this.revealPlayed) { this.revealPlayed = true; this.t = setTimeout(() => { if (Run.cur() === this) this.play(false); }, 300); }
+  }
+  reveal() { Mic.stop(); this.revealed = true; Run.refresh(true); }
+  onSaid(text, alts) {
+    this.res = Core.compareBest(this.s.en, alts && alts.length ? alts : [text]);
+    Core.rhythm(this.res.tokens);
+    this.att = this.res.said;
+    Sfx.play(this.res.score >= 0.9 ? 'ok' : 'ng');
+    this.reveal();
+  }
+  async aiJudge() {
+    if (this.aiBusy) return;
+    this.aiBusy = true; Run.refresh();
+    const prompt = `You are checking a Japanese learner's spoken English in a speaking drill.
+Japanese meaning: ${this.s.ja}
+Model answer: ${this.s.en}
+Learner said (from speech recognition or typing, so ignore capitalization and punctuation): ${this.att}
+
+Is the learner's sentence a correct and natural way to say the Japanese meaning? Different wording is fine if the meaning and grammar are right.
+Reply with only a JSON object: {"ok": true, "comment": "one short sentence in Japanese explaining your judgment", "fixed": "the learner's sentence with minimal corrections (same as theirs if ok)"}`;
+    try {
+      const r = await AI.json(prompt);
+      this.ai = { ok: !!(r && r.ok), comment: String((r && r.comment) || ''), fixed: String((r && r.fixed) || '') };
+    } catch (e) { this.ai = { err: AI.msg(e.code) || 'AIに確認できませんでした。' }; }
+    this.aiBusy = false;
+    if (Run.cur() === this) Run.refresh(true);
+  }
+  grade(g) {
+    S.cards[this.s.id] = Core.srsNext(S.cards[this.s.id], g, today());
+    if (this.review) dayLog().rv++;
+    countItem(); commit();
+    Run.score(g >= 2);
+    if (g === 0 && !this.again) { const st = new CompStep(this.s, { review: this.review, phase: this.phase }); st.again = true; Run.push(st); }
+    Run.next();
+  }
+  act(a, el) {
+    if (a === 'reveal' && !this.revealed) { this.reveal(); return true; }
+    if (a === 'mic') { startMicFor(this); return true; }
+    if (a === 'replay') { this.play(false); return true; }
+    if (a === 'slow') { this.play(true); return true; }
+    if (a === 'ai-judge') { this.aiJudge(); return true; }
+    if (a === 'grade') { this.grade(+el.dataset.g); return true; }
+    return false;
+  }
+  unmount() { clearTimeout(this.t); }
+}
+
+/* ---------- 音読チェック ---------- */
+class ReadStep {
+  constructor(s) { this.s = s; this.toks = rhythmTokens(s.en); this.res = null; this.tries = 0; this.listening = false; this.label = '音読チェック'; }
+  play(slow) { const box = $('#rd-en'); return Speech.say(this.s.en, { slow, onWord: karaoke(box) }).then(() => clearKaraoke(box)); }
+  render() {
+    let body = `<p class="q">英文を声に出して読もう</p>
+      <div class="card"><p class="${enClass('big-en')}" id="rd-en">${sentHTML(this.s.en, { tokens: this.res ? this.res.tokens : this.toks, marks: !!this.res })}</p><p class="ja">${esc(this.s.ja)}</p>
+      <div class="row"><button class="btn sm ear" data-act="replay">${ic('play')} お手本</button><button class="btn sm" data-act="slow">ゆっくり</button></div></div>`;
+    body += speakBoxHTML(this.listening, '読み上げた英語がここに表示されます');
+    if (this.res) {
+      const missed = this.res.tokens.filter((t) => t.k === 'w' && t.m === 'miss').map((t) => t.s);
+      body += `<p class="heard"><b>判定</b>${esc(this.res.said)}</p>${verdictHTML(this.res.score, this.tries > 1 ? `（${this.tries}回目）` : '')}`;
+      if (missed.length) body += `<p class="tip"><b>聞き取られなかった語 </b>${missed.map(esc).join(', ')}。お手本を聞いて、その語の音をまねしてみましょう。</p>`;
+    }
+    return { body, foot: `<button class="btn big ${this.res ? 'ink' : ''}" data-act="next">次へ ${ic('next')}</button>` };
+  }
+  onSaid(text, alts) {
+    this.res = Core.compareBest(this.s.en, alts && alts.length ? alts : [text]);
+    Core.rhythm(this.res.tokens);
+    this.tries++;
+    if (this.tries === 1) { Run.score(this.res.score >= 0.9); countItem(); commit(); }
+    Sfx.play(this.res.score >= 0.9 ? 'ok' : 'ng');
+    Run.refresh(true);
+  }
+  act(a) {
+    if (a === 'replay') { this.play(false); return true; }
+    if (a === 'slow') { this.play(true); return true; }
+    if (a === 'mic') { startMicFor(this); return true; }
+    return false;
+  }
+}
+
+/* ---------- 練習の進行 ---------- */
+function stampSVG(label, cls = '') {
+  return `<svg class="stamp ${cls}" viewBox="0 0 120 120" role="img" aria-label="完了スタンプ ${esc(label)}">
+    <g filter="url(#ink)" fill="none" stroke="currentColor"><circle cx="60" cy="60" r="53" stroke-width="5.5"/><path d="M9 45h102M9 75h102" stroke-width="3.5"/></g>
+    <g filter="url(#ink)" fill="currentColor" text-anchor="middle"><text x="60" y="36" font-size="16" font-family="Dela Gothic One, sans-serif">英語回路</text><text x="60" y="68" font-size="21" font-weight="700" font-family="Lexend, sans-serif">${esc(label)}</text><text x="60" y="101" font-size="21" font-family="Dela Gothic One, sans-serif">完了</text></g></svg>`;
+}
+function miniStamp(rot) {
+  return `<svg viewBox="0 0 40 40" aria-hidden="true" style="transform:rotate(${rot}deg)"><g filter="url(#ink-s)"><circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="2.6"/><text x="20" y="21" text-anchor="middle" dominant-baseline="central" font-size="15" fill="currentColor" font-family="Dela Gothic One, sans-serif">済</text></g></svg>`;
+}
+function fmtDur(sec) { return sec < 60 ? sec + '秒' : fmtMin(sec); }
+
+const Run = {
+  steps: [], i: 0, title: '', kind: '', ok: 0, n: 0, t0: 0, finished: false, again: null,
+  start(o) {
+    if (!o.steps || !o.steps.length) { toast(o.empty || '練習できる文がまだありません'); return; }
+    Speech.stop();
+    Object.assign(this, { steps: o.steps, i: 0, title: o.title, kind: o.kind || 'drill', ok: 0, n: 0, t0: Date.now(), finished: false, again: o.again || null });
+    Ov.open('run');
+    this.show();
+  },
+  cur() { return this.finished ? null : this.steps[this.i] || null; },
+  push(st) { this.steps.push(st); },
+  score(good) { this.n++; if (good) this.ok++; },
+  header() {
+    const st = this.cur(), total = this.steps.length;
+    const pct = this.finished ? 100 : Math.round((this.i / total) * 100);
+    const sub = st ? (st.phase ? PHASE[st.phase] + '：' + st.label : st.label !== this.title ? st.label : '') : '完了';
+    return `<header class="run-top"><button class="iconbtn" data-act="run-close" aria-label="練習を終える">${ic('close')}</button><div class="run-title"><b>${esc(this.title)}</b><span>${esc(sub)}</span></div><span class="run-count">${this.finished ? total : this.i + 1}/${total}</span></header><div class="run-bar" aria-hidden="true"><i style="width:${pct}%"></i></div>`;
+  },
+  show() {
+    const st = this.cur();
+    if (!st) { this.finish(); return; }
+    const r = st.render();
+    Ov.el.innerHTML = `<div class="ov-wrap">${this.header()}<div class="run-scroll" id="run-scroll"><div class="run-body">${r.body}</div></div><div class="run-foot">${r.foot || ''}</div></div>`;
+    st.mount?.();
+  },
+  refresh(toEnd) {
+    const st = this.cur(); if (!st) return;
+    const r = st.render();
+    const sc = $('#run-scroll'), body = $('.run-body', Ov.el), foot = $('.run-foot', Ov.el);
+    const top = sc ? sc.scrollTop : 0;
+    if (body) body.innerHTML = r.body;
+    if (foot) foot.innerHTML = r.foot || '';
+    if (sc) sc.scrollTop = toEnd ? sc.scrollHeight : top;
+    st.mount?.();
+  },
+  next() {
+    const st = this.cur();
+    if (st) { st.beforeNext?.(); st.unmount?.(); }
+    Speech.stop(); Mic.stop();
+    const nx = this.steps[this.i + 1];
+    if (st && st.phase === 'warm' && (!nx || nx.phase !== 'warm')) { dayLog().w = 1; commit(); }
+    this.i++;
+    if (this.i >= this.steps.length) this.finish(); else this.show();
+  },
+  finish() {
+    this.finished = true;
+    Speech.stop(); Mic.stop();
+    const secs = Math.max(1, Math.round((Date.now() - this.t0) / 1000));
+    const daily = this.kind === 'daily';
+    if (daily) { dayLog().done = 1; }
+    commit();
+    const d = new Date();
+    const stk = Core.streak(S.days, today());
+    const body = `<div class="run-body finish">
+      ${daily ? stampSVG(`${d.getMonth() + 1}.${d.getDate()}`, 'big slam') : ''}
+      <h2>${daily ? '今日のトレーニング完了' : 'おつかれさまでした'}</h2>
+      <div class="bignums"><div><b>${this.ok}/${this.n}</b><span>できた</span></div><div><b>${fmtDur(secs)}</b><span>時間</span></div><div><b>${stk}日</b><span>連続</span></div></div>
+      <p class="note">${daily ? '今日覚えた文は明日の復習に出てきます。忘れかけたころに思い出すのが、いちばん記憶に残ります。' : 'できなかった文は、明日以降の復習でまた出てきます。'}</p>
+    </div>`;
+    let foot = '';
+    if (daily) foot = `${AI.ok() ? `<button class="btn big mouth" data-act="go-ai">${ic('chat')} 仕上げにAIと会話する</button>` : ''}<button class="btn big ${AI.ok() ? '' : 'ink'}" data-act="run-done">ホームに戻る</button>`;
+    else foot = `${this.again ? `<button class="btn big ink" data-act="run-again">${ic('repeat')} もう一度</button>` : ''}<button class="btn big" data-act="run-done">戻る</button>`;
+    Ov.el.innerHTML = `<div class="ov-wrap">${this.header()}<div class="run-scroll">${body}</div><div class="run-foot">${foot}</div></div>`;
+    if (daily) setTimeout(() => Sfx.play('stamp'), 260);
+  },
+  async close() {
+    if (this.finished) { Ov.close(); return; }
+    const ok = await ask('練習を終えますか？', 'ここまでの結果は保存されています。', '終える', '続ける');
+    if (ok && Ov.mode === 'run') { this.cur()?.unmount?.(); this.finished = true; Ov.close(); }
+  },
+  act(a, el, ev) {
+    if (a === 'run-close') { this.close(); return true; }
+    if (a === 'run-done') { Ov.close(); return true; }
+    if (a === 'run-again' && this.again) { const o = this.again(); Ov.close(); this.start(o); return true; }
+    if (a === 'go-ai') { Ov.close(); setTab('ai'); return true; }
+    const st = this.cur();
+    if (st && st.act && st.act(a, el, ev)) return true;
+    if (a === 'next') { this.next(); return true; }
+    return false;
+  },
+};
+
+/* ---------- メニューの組み立て ---------- */
+function weightedPick(items) {
+  const tot = items.reduce((a, x) => a + x.w, 0);
+  let r = Math.random() * tot;
+  for (const x of items) { r -= x.w; if (r <= 0) return x.c; }
+  return items[items.length - 1].c;
+}
+function mpSteps(n, key, phase) {
+  const pool = key ? MP.filter((c) => c.k === key) : MP;
+  const weights = pool.map((c) => { const st = S.mp[c.k]; const acc = st && st.n ? st.ok / st.n : 0.5; return { c, w: 0.15 + (1 - acc) + (!st || st.n < 5 ? 0.6 : 0) }; });
+  const out = [];
+  let last = '';
+  for (let i = 0; i < n; i++) {
+    const c = weightedPick(weights);
+    let pair = pickOne(c.pairs);
+    if (pair.join() === last && c.pairs.length > 1) pair = pickOne(c.pairs.filter((p) => p.join() !== last));
+    last = pair.join();
+    out.push(new MPStep(c, pair, phase));
+  }
+  return out;
+}
+function csSteps(n, rule, phase) {
+  const pool = (rule ? CS.filter((x) => x.r === rule) : CS).map((it) => ({ it, n: (S.cs[csKey(it)] || {}).n || 0, ng: ((S.cs[csKey(it)] || {}).n || 0) - ((S.cs[csKey(it)] || {}).ok || 0) }));
+  const sorted = shuffle(pool).sort((a, b) => (a.n - a.ng * 2) - (b.n - b.ng * 2));
+  return sorted.slice(0, n).map((x) => new CSStep(x.it, phase));
+}
+function learnSteps(sents) {
+  const out = [];
+  sents.forEach((s) => { out.push(new DictStep(s, 'cloze', { learn: true, phase: 'new' })); out.push(new ShadowStep(s, { learn: true, phase: 'new' })); });
+  return out;
+}
+function practicePool(lv) {
+  const learned = learnedSentences();
+  const pool = levelPool(lv);
+  return learned.length >= 6 ? shuffle(learned.concat(pool.slice(0, 20))) : shuffle(pool);
+}
+function dailySteps() {
+  const L = dayLog();
+  const steps = [];
+  if (!L.w) steps.push(...mpSteps(6, null, 'warm'), ...csSteps(2, null, 'warm'));
+  dueList().slice(0, REV_CAP).forEach((s) => steps.push(new CompStep(s, { review: true, phase: 'rev' })));
+  steps.push(...learnSteps(freshSentences(Math.max(0, S.settings.newPer - L.nw))));
+  return steps;
+}
+function startDaily() {
+  const steps = dailySteps();
+  if (!steps.length) {
+    Run.start({ title: 'おかわり練習', kind: 'drill', steps: learnSteps(freshSentences(3)), empty: 'このレベルの文はすべて学習しました。設定でレベルを上げてみましょう。' });
+    return;
+  }
+  Run.start({ title: '今日のトレーニング', kind: 'daily', steps });
+}
+
+/* ===== app-views.js — 画面・AI会話・聞き流し・設定・起動 ===== */
+const VIEWS = { home: viewHome, listen: viewListen, speak: viewSpeak, ai: viewAI, stats: viewStats };
+const TABS = [['home', 'home', 'ホーム'], ['listen', 'ear', '聞く'], ['speak', 'mic', '話す'], ['ai', 'chat', 'AI会話'], ['stats', 'stamp', '記録']];
+let tab = 'home';
+let calMonth = null;
+let libLv = 2;
+const PF = { ja: '', en: '', note: '', busy: false };
+
+function setTab(t) {
+  if (!VIEWS[t]) t = 'home';
+  tab = t;
+  try { history.replaceState(null, '', '#' + t); } catch { /* noop */ }
+  render();
+  const v = $('#view'); if (v) v.scrollTop = 0;
+}
+function render() {
+  const v = $('#view');
+  if (!v) return;
+  v.innerHTML = VIEWS[tab]();
+  $$('.tabbar button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
+  const sb = $('#streak');
+  if (sb) { const n = Core.streak(S.days, today()); sb.innerHTML = `<b>${n}</b>日連続`; sb.setAttribute('aria-label', `連続${n}日。記録を見る`); }
+}
+
+/* ---------- ホーム ---------- */
+function sentenceOfDay() { const pool = levelPool(); return pool[(today() * 7 + 3) % pool.length]; }
+function dayState(dn) {
+  const d = S.days[dn];
+  if (!d) return '';
+  if (d.done || d.s >= S.settings.goal * 60) return 'full';
+  if (d.s > 0 || d.n > 0) return 'part';
+  return '';
+}
+function stampRot(dn) { return ((dn * 37) % 31) - 15; }
+function weekHTML() {
+  const t = today(), W = '日月火水木金土';
+  let h = '<div class="week">';
+  for (let k = 6; k >= 0; k--) {
+    const dn = t - k, st = dayState(dn);
+    h += `<div class="d ${st} ${k === 0 ? 'today' : ''}"><span class="c">${st === 'full' ? miniStamp(stampRot(dn)) : ''}</span>${k === 0 ? '今日' : W[Core.dayToDate(dn).getDay()]}</div>`;
+  }
+  return h + '</div>';
+}
+function planInfo() {
+  const L = dayLog();
+  const due = dueList().length;
+  const want = Math.max(0, S.settings.newPer - L.nw);
+  return { L, revN: Math.min(due, REV_CAP), newLeft: Math.min(want, freshSentences(want).length), warmDone: !!L.w };
+}
+function legendHTML() {
+  return S.settings.rhythm ? '<p class="legend"><span><i></i>強く長く</span><span><i class="s"></i>弱く短く</span><span><em>‿</em>つなげて読む</span></p>' : '';
+}
+function viewHome() {
+  const s = sentenceOfDay();
+  const p = planInfo(), L = p.L, goal = S.settings.goal;
+  const pct = Math.min(100, Math.round((L.s / (goal * 60)) * 100));
+  const started = p.warmDone || L.rv > 0 || L.nw > 0;
+  const allDone = p.warmDone && !p.revN && !p.newLeft;
+  const revLabel = p.revN ? `日本語を見て英語で言う ${p.revN}文` : L.rv ? `${L.rv}文 復習しました` : '今日の復習はありません';
+  const newLabel = p.newLeft ? `聞き取り → まねて言う ${p.newLeft}文` : L.nw ? `${L.nw}文 覚えました` : 'このレベルの文はすべて学習済み';
+  return `
+  <section class="stage" aria-labelledby="sod-h">
+    <div class="stage-top"><span class="label" id="sod-h">今日の一文</span><span class="chip">${LV[s.lv]}</span>${s.tag ? `<span class="chip ghost">${esc(s.tag)}</span>` : ''}</div>
+    <p class="${enClass('big-en')}" id="sod-en">${sentHTML(s.en)}</p>
+    <p class="ja">${esc(s.ja)}</p>
+    ${legendHTML()}
+    <div class="row">
+      <button class="btn ear round" data-act="sod-play" data-id="${s.id}" aria-label="英文を再生">${ic('play')}</button>
+      <button class="btn" data-act="sod-slow" data-id="${s.id}">ゆっくり</button>
+      <button class="btn mouth" data-act="sod-shadow" data-id="${s.id}" style="margin-left:auto">${ic('mic')} まねする</button>
+    </div>
+  </section>
+  <section class="plan" aria-labelledby="plan-h">
+    <div class="plan-head"><h2 id="plan-h">今日のトレーニング</h2><span class="mins">${Math.floor(L.s / 60)}<span class="small"> / ${goal}分</span></span></div>
+    <div class="meter" role="progressbar" aria-label="今日の練習時間" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
+    <ol class="steps">
+      <li class="${p.warmDone ? 'done' : ''}"><div><b>耳慣らし</b><span>まぎらわしい音の聞き分けと音の変化 8問</span></div><em>${p.warmDone ? '' : '約2分'}</em></li>
+      <li class="${p.revN ? '' : 'done'}"><div><b>復習</b><span>${revLabel}</span></div><em>${p.revN ? '約' + Math.max(1, Math.round(p.revN * 0.5)) + '分' : ''}</em></li>
+      <li class="${p.newLeft ? '' : 'done'}"><div><b>新しい文</b><span>${newLabel}</span></div><em>${p.newLeft ? '約' + Math.max(1, Math.round(p.newLeft * 1.5)) + '分' : ''}</em></li>
+    </ol>
+    <button class="btn big ink" data-act="daily">${allDone ? 'おかわり：新しい文を3つ' : started ? '続きから始める' : '今日のトレーニングを始める'}</button>
+    ${AI.ok() ? `<button class="btn mouth" data-act="tab" data-tab="ai">${ic('chat')} 仕上げにAIと英会話</button>` : ''}
+  </section>
+  <section class="stack" aria-labelledby="week-h">
+    <div class="row"><h2 class="section-title" id="week-h" style="margin-right:auto">この7日間</h2><button class="btn link small" data-act="tab" data-tab="stats">スタンプカード</button></div>
+    ${weekHTML()}
+  </section>`;
+}
+
+/* ---------- 聞く ---------- */
+function accText(st) { return st && st.n ? Math.round((st.ok / st.n) * 100) + '%' : ''; }
+function viewListen() {
+  const mpChips = MP.map((c) => { const a = accText(S.mp[c.k]); return `<button class="chip" data-act="mp-start" data-k="${c.k}">${esc(c.name.replace(/（.*）/, ''))}${a ? `<span class="acc">${a}</span>` : ''}</button>`; }).join('');
+  const csChips = CS_RULE_KEYS.map((k) => `<button class="chip" data-act="cs-start" data-r="${k}">${esc(CS_RULES[k].name)}<span class="acc">${esc(CS_RULES[k].sub)}</span></button>`).join('');
+  const dm = S.settings.dictMode;
+  return `
+  <header class="pagehead"><h1>聞く</h1><p>英語の音を、カタカナに置きかえずに英語のまま聞き取る耳をつくります。</p></header>
+  <section class="tool"><div class="tool-head"><h3>音の聞き分け</h3><span class="chip">2択</span></div><div class="tool-body">
+    <p>light と right のような、日本語にない音の違いを、毎回ちがう声で聞き分けます。苦手な音ほど多く出ます。</p>
+    <button class="btn ear" data-act="mp-start">おまかせ 10問</button>
+    <div class="chips">${mpChips}</div></div></section>
+  <section class="tool"><div class="tool-head"><h3>ディクテーション</h3></div><div class="tool-body">
+    <p>聞こえた語を書き取ります。書けなかった語が、あなたの耳の弱点です。</p>
+    <div class="seg" role="group" aria-label="形式"><button data-act="set" data-k="dictMode" data-v="cloze" aria-pressed="${dm === 'cloze'}">穴埋め</button><button data-act="set" data-k="dictMode" data-v="full" aria-pressed="${dm === 'full'}">全文</button></div>
+    <button class="btn ear" data-act="dict-start">10問はじめる</button></div></section>
+  <section class="tool"><div class="tool-head"><h3>音の変化</h3></div><div class="tool-body">
+    <p>Check it out が「チェケラウ」に聞こえるような、音のつながりや消え方に慣れます。</p>
+    <button class="btn ear" data-act="cs-start">おまかせ 8問</button>
+    <div class="chips">${csChips}</div></div></section>
+  <section class="tool inky"><div class="tool-head"><h3>聞き流し</h3><span class="chip">ハンズフリー</span></div><div class="tool-body">
+    <p>日本語 → 考える → 英語 → まねる → 英語 の順に自動で流れます。通勤中や家事をしながら、声に出して練習できます。</p>
+    <div class="row"><button class="btn wide" data-act="hf-start" data-src="learned">覚えた文で</button><button class="btn wide" data-act="hf-start" data-src="level">${LV[S.settings.level]}の文で</button></div></div></section>`;
+}
+
+/* ---------- 話す ---------- */
+function viewSpeak() {
+  const due = dueList().length, mine = S.custom.length;
+  const micNote = Mic.kind() === 'none' ? `<p class="hint">${ic('info')}<span>${micHint()}</span></p>` : '';
+  return `
+  <header class="pagehead"><h1>話す</h1><p>日本語から訳さずに、英語がすぐ口から出る回路をつくります。</p></header>
+  <section class="tool mouthy"><div class="tool-head"><h3>瞬間英作文</h3></div><div class="tool-body">
+    <p>日本語を見て、すぐ英語で言います。覚えた文は、忘れかけたころに復習として出てきます。</p>
+    <div class="row"><button class="btn mouth wide" data-act="comp-start" data-src="due" ${due ? '' : 'disabled'}>復習 ${due}文</button><button class="btn wide" data-act="comp-start" data-src="level">${LV[S.settings.level]}の文</button></div>
+    ${mine ? `<button class="btn" data-act="comp-start" data-src="mine">マイフレーズ ${mine}文</button>` : ''}${micNote}</div></section>
+  <section class="tool mouthy"><div class="tool-head"><h3>シャドーイング</h3></div><div class="tool-body">
+    <p>お手本のすぐあとに、同じリズムとスピードでまねします。●を強く、‿をつなげて言うのがコツです。</p>
+    <button class="btn mouth" data-act="shadow-start">5文はじめる</button></div></section>
+  <section class="tool mouthy"><div class="tool-head"><h3>音読チェック</h3></div><div class="tool-body">
+    <p>英文を読み上げると、伝わらなかった語が赤く表示されます。</p>
+    <button class="btn mouth" data-act="read-start">5文はじめる</button></div></section>
+  <section class="tool inky"><div class="tool-head"><h3>マイフレーズ</h3><span class="chip">${mine}</span></div><div class="tool-body">
+    <p>「これ英語で何て言うんだろう」と思った表現を登録すると、瞬間英作文の復習に入ります。</p>
+    <div class="row"><button class="btn wide" data-act="phrase-add">${ic('plus')} 追加する</button><button class="btn wide" data-act="library" data-lv="0">一覧を見る</button></div></div></section>
+  <button class="btn" data-act="library" data-lv="${S.settings.level}">${ic('book')} 例文ライブラリ（${SENT.length}文）</button>`;
+}
+
+/* ---------- AI英会話 ---------- */
+function viewAI() {
+  const head = '<header class="pagehead"><h1>AI英会話</h1><p>場面を選んで、AIを相手に英語で会話します。言い間違いは、その場で自然な言い方に直してくれます。</p></header>';
+  if (!AI.ok()) {
+    const msg = HAS_CLAUDE && !Caps.done ? 'AIの準備をしています…' : AI.off ? 'Claudeの利用が許可されていないため、AI英会話はお休みしています。' : 'AI英会話は、このアプリをClaudeの中で開いているときに使えます。聞く・話すの練習はこのまま使えます。';
+    return head + `<div class="callout">${msg}</div>`;
+  }
+  const lv = S.settings.level;
+  return head + `
+  <div class="field"><span class="label">会話のレベル</span><div class="seg" role="group" aria-label="会話のレベル">${[1, 2, 3, 4].map((l) => `<button data-act="set" data-k="level" data-v="${l}" aria-pressed="${lv === l}">${LV[l]}</button>`).join('')}</div></div>
+  <div class="scenes">${SCENES.map((sc) => `<button class="scene ${sc.id === 'free' ? 'free' : ''}" data-act="chat-open" data-id="${sc.id}"><b>${esc(sc.name)}</b><span>${esc(sc.goal)}</span></button>`).join('')}</div>
+  <p class="note">${Mic.kind() !== 'none' ? 'マイクで話すか、文字で入力します。' : 'スマホはキーボードを英語にして、キーボードのマイクで話せます。'}英語が出てこないときは日本語で入力すると、英語での言い方を教えてくれます。</p>`;
+}
+
+/* ---------- 記録 ---------- */
+function calHTML(y, m) {
+  const first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate(), t = today();
+  let cells = '日月火水木金土'.split('').map((w) => `<span class="dow">${w}</span>`).join('');
+  for (let i = 0; i < first.getDay(); i++) cells += '<span></span>';
+  for (let d = 1; d <= days; d++) {
+    const dn = Core.dayNum(new Date(y, m, d, 12)), st = dayState(dn);
+    cells += `<span class="day ${st} ${dn === t ? 'today' : ''} ${dn > t ? 'future' : ''}" aria-label="${m + 1}月${d}日${st === 'full' ? ' 完了' : st === 'part' ? ' 練習あり' : ''}">${st === 'full' ? miniStamp(stampRot(dn)) : d}</span>`;
+  }
+  const now = new Date(), isCur = y === now.getFullYear() && m === now.getMonth();
+  return `<section class="cal" aria-label="スタンプカード"><div class="cal-head"><h3>${y}年${m + 1}月</h3><button class="iconbtn" data-act="cal" data-d="-1" aria-label="前の月">${ic('prev')}</button><button class="iconbtn" data-act="cal" data-d="1" aria-label="次の月" ${isCur ? 'disabled' : ''}>${ic('next')}</button></div><div class="cal-grid">${cells}</div><p class="note">今日のトレーニングを最後まで終えるか、目標時間に届くとハンコが押されます。小さな点は練習した日です。</p></section>`;
+}
+function viewStats() {
+  const t = today();
+  const total = Object.values(S.days).reduce((a, d) => a + (d.s || 0), 0);
+  const learned = Object.keys(S.cards).length;
+  const mastered = Object.values(S.cards).filter((c) => c.i >= 21).length;
+  const now = new Date();
+  if (!calMonth) calMonth = { y: now.getFullYear(), m: now.getMonth() };
+  const rows = MP.filter((c) => S.mp[c.k] && S.mp[c.k].n).map((c) => ({ c, acc: S.mp[c.k].ok / S.mp[c.k].n })).sort((a, b) => a.acc - b.acc);
+  return `
+  <header class="pagehead"><h1>記録</h1><p>毎日のハンコがたまるほど、英語の回路が太くなります。</p></header>
+  <div class="bignums"><div><b>${Core.streak(S.days, t)}日</b><span>連続</span></div><div><b>${fmtMin(total)}</b><span>合計時間</span></div><div><b>${learned}</b><span>${mastered ? `覚えた文（定着 ${mastered}）` : '覚えた文'}</span></div></div>
+  ${calHTML(calMonth.y, calMonth.m)}
+  <section class="stack"><h2 class="section-title">音の聞き分け 正答率</h2>
+  ${rows.length ? `<div class="bars">${rows.map((r) => `<div class="bar-row"><span>${esc(r.c.name.replace(/（.*）/, ''))}</span><span class="tr"><i class="${r.acc < 0.7 ? 'low' : ''}" style="width:${Math.round(r.acc * 100)}%"></i></span><span class="v">${Math.round(r.acc * 100)}%</span></div>`).join('')}</div><p class="note">ピンクは正答率70%未満の苦手な音です。耳慣らしで多めに出ます。</p>` : '<p class="note">まだ記録がありません。「聞く」の音の聞き分けから始めましょう。</p>'}</section>
+  <section class="stack"><h2 class="section-title">データ</h2>
+    <p class="note" id="sync-note">${esc(syncText())}</p>
+    <div class="row"><button class="btn sm" data-act="backup">${ic('copy')} バックアップをコピー</button><button class="btn sm" data-act="restore">バックアップから戻す</button></div>
+    <button class="btn sm flat" data-act="reset" style="align-self:flex-start">記録をすべて消す</button></section>`;
+}
+
+/* ---------- シート：設定・はじめに・ライブラリ・フレーズ ---------- */
+function toggleRow(k, label, sub) {
+  const on = !!S.settings[k];
+  return `<div class="sw"><span>${esc(label)}${sub ? `<small>${esc(sub)}</small>` : ''}</span><button class="toggle" role="switch" aria-checked="${on}" aria-label="${esc(label)}" data-act="toggle" data-k="${k}"></button></div>`;
+}
+function segRow(k, opts, unit = '') {
+  return `<div class="seg" role="group">${opts.map((v) => `<button data-act="set" data-k="${k}" data-v="${v}" aria-pressed="${S.settings[k] === v}">${v}${unit}</button>`).join('')}</div>`;
+}
+function lvOpts(withEx) {
+  return `<div class="lvopts">${[1, 2, 3, 4].map((l) => `<button class="lvopt" data-act="set" data-k="level" data-v="${l}" aria-pressed="${S.settings.level === l}"><b>${LV[l]}</b>${withEx ? `<em>${esc(LEVELS[l].ex)}</em>` : ''}<span>${esc(LEVELS[l].desc)}</span></button>`).join('')}</div>`;
+}
+function settingsHTML() {
+  const st = S.settings, eng = st.engine, vs = Voices.en;
+  const claudeNote = Caps.tts ? (Speech.cDenied ? 'Claudeの読み上げは権限メニューでオフになっています。' : 'Claudeの声が使えます。') : 'この画面ではClaudeの声が使えないため、端末の声で読み上げます。';
+  const showDev = eng !== 'claude' || !Caps.tts;
+  return `<div class="sheet-head"><h2>設定</h2><button class="iconbtn" data-act="sheet-close" aria-label="閉じる">${ic('close')}</button></div>
+  <div class="field"><span class="label">レベル</span>${lvOpts(false)}</div>
+  <div class="field"><span class="label">読み上げの声</span>
+    <div class="seg" role="group">${[['auto', 'おまかせ'], ['claude', 'Claudeの声'], ['device', '端末の声']].map(([v, n]) => `<button data-act="set" data-k="engine" data-v="${v}" aria-pressed="${eng === v}">${n}</button>`).join('')}</div>
+    <p class="note">${claudeNote}</p>
+    ${Caps.tts && eng !== 'device' ? `<div class="chips">${CVOICES.map(([v, n]) => `<button class="chip" data-act="set" data-k="cvoice" data-v="${v}" aria-pressed="${st.cvoice === v}">${n}</button>`).join('')}</div>` : ''}
+    ${showDev ? (vs.length ? `<select class="text" id="voice-sel" aria-label="端末の声">${vs.map((v, i) => `<option value="${esc(v.voiceURI)}" ${(st.voice ? st.voice === v.voiceURI : i === 0) ? 'selected' : ''}>${esc(v.name)}（${accentOf(v.lang)}）</option>`).join('')}</select>` : `<p class="note">${window.speechSynthesis ? '端末の声を読み込んでいます…' : 'この端末では読み上げが使えません。'}</p>`) : ''}
+    <button class="btn sm" data-act="voice-test" style="align-self:flex-start">${ic('play')} 試しに聞く</button></div>
+  <div class="field"><span class="label">話す速さ <small>「ゆっくり」はこの約7割</small></span><div class="range"><input type="range" id="rate" min="0.75" max="1.25" step="0.05" value="${st.rate}" aria-label="話す速さ"><output id="rate-out">${(+st.rate).toFixed(2)}×</output></div></div>
+  <div class="field"><span class="label">1日の目標時間</span>${segRow('goal', [10, 15, 20, 30], '分')}</div>
+  <div class="field"><span class="label">1日に覚える新しい文</span>${segRow('newPer', [3, 5, 8, 10], '文')}</div>
+  <div class="field">${toggleRow('rhythm', 'リズム記号を表示', '● 強く読む語、‿ つなげて読む所')}${toggleRow('sfx', '効果音')}${toggleRow('aiSpeak', 'AIの返事を自動で読み上げる')}${toggleRow('hfJa', '聞き流しで日本語も読み上げる')}</div>
+  <details class="help"><summary>音が出ない・マイクが使えないとき</summary><ul>
+    <li>iPhoneは消音モードを解除し、音量を上げてください。</li>
+    <li>Claudeアプリの中で音が出ないときは、同じリンクをSafariやChromeで開いてください。</li>
+    <li>スマホで話す練習をするときは、キーボードを英語に切り替え、キーボードのマイクで話します。話した英語が入力欄に入り、判定できます。</li>
+    <li>パソコンのChromeやClaudeデスクトップアプリでは、マイクのボタンで直接話せます。</li>
+  </ul></details>`;
+}
+function onboardHTML() {
+  return `<div class="sheet-head"><h2>英語回路へようこそ</h2></div>
+  <p>1日15分、3つのステップをくり返して、聞ける・話せる回路をつくります。</p>
+  <ol class="steps"><li><div><b>耳慣らし</b><span>まぎらわしい音と、音のつながりに慣れる</span></div><em></em></li><li><div><b>復習</b><span>覚えた文を、日本語を見てすぐ英語で言う</span></div><em></em></li><li><div><b>新しい文</b><span>聞き取って、リズムごとまねして言う</span></div><em></em></li></ol>
+  <div class="field"><span class="label">いまのレベルは？</span>${lvOpts(true)}<p class="note">例文がすらすら言えるなら、ひとつ上を選びましょう。あとから設定で変えられます。</p></div>
+  <div class="field"><span class="label">1日に覚える新しい文</span>${segRow('newPer', [3, 5, 8, 10], '文')}</div>
+  <button class="btn big ink" data-act="onb-done">はじめる</button>`;
+}
+function libraryHTML() {
+  const lv = libLv;
+  const items = lv === 0 ? S.custom.map(customAsSent) : levelPool(lv);
+  const tabs = [1, 2, 3, 4].map((l) => `<button data-act="lib-lv" data-v="${l}" aria-pressed="${lv === l}">${LV[l]}</button>`).join('') + `<button data-act="lib-lv" data-v="0" aria-pressed="${lv === 0}">マイ</button>`;
+  const rows = items.map((s) => {
+    const st = cardState(s.id);
+    return `<div class="li"><span class="st-dot ${st === 2 ? 'l2' : st === 1 ? 'l1' : ''}" role="img" aria-label="${['まだ', '学習中', '定着'][st]}"></span><div><p class="en">${esc(s.en)}</p><p class="ja">${esc(s.ja)}</p></div><div class="acts"><button data-act="lib-play" data-id="${s.id}" aria-label="再生">${ic('play')}</button>${st === 0 && lv !== 0 ? `<button data-act="lib-learn" data-id="${s.id}" aria-label="この文を練習">${ic('plus')}</button>` : ''}${lv === 0 ? `<button data-act="phrase-del" data-id="${s.id}" aria-label="削除">${ic('trash')}</button>` : ''}</div></div>`;
+  }).join('');
+  return `<div class="sheet-head"><h2>${lv === 0 ? 'マイフレーズ' : '例文ライブラリ'}</h2><button class="iconbtn" data-act="sheet-close" aria-label="閉じる">${ic('close')}</button></div>
+  <div class="seg" role="group">${tabs}</div>
+  <p class="note">${lv === 0 ? '登録したフレーズは瞬間英作文の復習に出てきます。' : '塗りつぶし＝定着、半分＝学習中、白＝まだ。＋でその文をすぐ練習できます。'}</p>
+  ${items.length ? `<div class="list">${rows}</div>` : '<div class="empty">まだマイフレーズはありません。</div>'}
+  ${lv === 0 ? `<button class="btn" data-act="phrase-add">${ic('plus')} フレーズを追加</button>` : ''}`;
+}
+function phraseHTML() {
+  return `<div class="sheet-head"><h2>フレーズを追加</h2><button class="iconbtn" data-act="sheet-close" aria-label="閉じる">${ic('close')}</button></div>
+  <div class="field"><label class="label" for="pf-ja">言いたいこと（日本語）</label><textarea class="full ja-in" id="pf-ja" rows="2" data-bind="ja" placeholder="例：その件は持ち帰って検討します">${esc(PF.ja)}</textarea></div>
+  ${AI.ok() ? `<button class="btn" data-act="pf-ai" ${PF.busy ? 'disabled' : ''}>${ic('chat')} ${PF.busy ? 'AIが英語にしています…' : 'AIで英語にする'}</button>` : ''}
+  <div class="field"><label class="label" for="pf-en">英語</label><textarea class="full" id="pf-en" rows="2" data-bind="en" placeholder="例：Let me get back to you on that.">${esc(PF.en)}</textarea>${PF.note ? `<p class="note">${esc(PF.note)}</p>` : ''}</div>
+  <button class="btn big ink" data-act="pf-save">マイフレーズに追加</button>`;
+}
+function addPhrase(en, ja) {
+  const id = 'c' + Date.now().toString(36) + rnd(1296).toString(36);
+  S.custom.push({ id, en: en.trim(), ja: ja.trim(), at: Date.now() });
+  S.cards[id] = { i: 0, e: 2.5, r: 0, l: 0, d: today(), t: Date.now() };
+  commit();
+  return id;
+}
+async function pfAI() {
+  if (!PF.ja.trim()) { toast('先に日本語を入力してください'); return; }
+  PF.busy = true; Sheet.refresh();
+  const lvWord = { 1: 'beginner', 2: 'elementary', 3: 'intermediate', 4: 'upper-intermediate' }[S.settings.level];
+  const prompt = `Translate the Japanese below into natural spoken English that a ${lvWord} learner can actually say in conversation. Prefer short, common wording.
+Japanese: ${PF.ja}
+Reply with only a JSON object: {"en": "the English sentence", "note": "one short tip in Japanese about when or how to use it, or an empty string"}`;
+  try {
+    const r = await AI.json(prompt);
+    PF.en = String((r && r.en) || '').trim();
+    PF.note = String((r && r.note) || '').trim();
+  } catch (e) { toast(AI.msg(e.code) || '英語にできませんでした'); }
+  PF.busy = false;
+  if (Sheet.mode === 'phrase') Sheet.refresh();
+}
+
+/* ---------- AI英会話 ---------- */
+const sameText = (a, b) => Core.normWords(a).words.join(' ') === Core.normWords(b).words.join(' ');
+const LV_PROMPT = {
+  1: 'beginner (CEFR A1): use very short, simple sentences (under 8 words) and only basic words',
+  2: 'elementary (CEFR A2): use short sentences (under 12 words) and everyday words',
+  3: 'intermediate (CEFR B1): use natural sentences, one or two per reply',
+  4: 'upper-intermediate (CEFR B2): use natural, fluent speech with some common idioms, one to three sentences per reply',
+};
+const Chat = {
+  scene: null, msgs: [], seq: 0, busy: false, ctl: null, cap: true, hintsOpen: false, hints: [], turns: 0, summary: false, draft: '',
+  open(id) {
+    if (!AI.ok()) { toast('AI英会話はClaudeの中で開いているときに使えます'); return; }
+    const sc = SCENES.find((x) => x.id === id);
+    if (!sc) return;
+    Object.assign(this, { scene: sc, msgs: [], seq: 0, busy: false, ctl: null, cap: !!S.settings.aiCap, hintsOpen: false, hints: [], turns: 0, summary: false, draft: '' });
+    this.msgs.push({ id: ++this.seq, role: 'ai', en: sc.open, ja: SCENE_JA[sc.id] || '' });
+    Speech.stop();
+    Ov.open('chat');
+    this.render();
+    this.say(this.msgs[0]);
+  },
+  render() {
+    Ov.el.innerHTML = `<div class="ov-wrap">
+      <header class="run-top"><button class="iconbtn" data-act="chat-close" aria-label="会話を終える">${ic('close')}</button>
+        <div class="run-title"><b>${esc(this.scene.name)}</b><span>${esc(this.scene.goal)}</span></div>
+        <span class="chip">${LV[S.settings.level]}</span>
+        <button class="iconbtn" data-act="chat-cap" aria-pressed="${!this.cap}" aria-label="${this.cap ? 'AIの字幕を隠す' : 'AIの字幕を表示'}">${ic(this.cap ? 'eye' : 'eyeoff')}</button>
+      </header>
+      <div class="run-scroll" id="chat-scroll"><div class="run-body"><div class="chat" id="chat-list">${this.listHTML()}</div></div></div>
+      <div class="run-foot" id="chat-foot">${this.footHTML()}</div></div>`;
+    this.scrollEnd();
+  },
+  listHTML() {
+    let h = `<p class="sys">${this.cap ? '' : '字幕オフ：まず耳だけで聞き取ってみましょう。'}</p>`;
+    for (const m of this.msgs) {
+      if (m.role === 'ai') {
+        const hidden = !this.cap && !m.show;
+        h += `<div class="msg ai">${hidden ? `<button class="bubble hidden-cap" data-act="chat-show" data-id="${m.id}">${ic('eye')} 字幕を見る</button>` : `<div class="bubble">${esc(m.en)}${m.showJa && m.ja ? `<span class="tr">${esc(m.ja)}</span>` : ''}</div>`}
+          <div class="msg-tools"><button data-act="chat-say" data-id="${m.id}">${ic('play')} 聞く</button>${m.ja && !hidden ? `<button data-act="chat-ja" data-id="${m.id}">${m.showJa ? '訳を隠す' : '訳'}</button>` : ''}</div></div>`;
+      } else {
+        h += `<div class="msg me"><div class="bubble ${hasJa(m.text) ? 'ja-msg' : ''}">${esc(m.text)}</div>${this.fbHTML(m)}</div>`;
+      }
+    }
+    if (this.busy) h += '<div class="msg ai"><div class="bubble typing" role="status" aria-label="返事を考えています"><i></i><i></i><i></i></div></div>';
+    return h;
+  },
+  fbHTML(m) {
+    if (m.err) return `<div class="sys">${esc(m.err)}${AI.ok() ? `<button class="btn sm" data-act="chat-retry" data-id="${m.id}">${ic('repeat')} もう一度送る</button>` : ''}</div>`;
+    const f = m.fb;
+    if (!f) return '';
+    const tools = `<div class="msg-tools"><button data-act="chat-say-fix" data-id="${m.id}">${ic('play')} 聞く</button><button data-act="chat-add" data-id="${m.id}" ${m.added ? 'disabled' : ''}>${ic('plus')} ${m.added ? '追加しました' : 'マイフレーズへ'}</button></div>`;
+    const showNat = f.natural && !sameText(f.natural, m.text);
+    if (f.ok && !hasJa(m.text)) {
+      return `<div class="fb good"><span class="fb-h">${ic('check')}通じます</span>${showNat ? `<div class="alt"><small>こんな言い方もできます</small>${esc(f.natural)}</div>` : ''}${f.point ? `<p>${esc(f.point)}</p>` : ''}${showNat ? tools : ''}</div>`;
+    }
+    const showCor = f.corrected && !sameText(f.corrected, m.text) && !(f.natural && sameText(f.corrected, f.natural));
+    return `<div class="fb fix"><span class="fb-h">${ic('repeat')}${hasJa(m.text) ? '英語ではこう言います' : 'こう言うともっと伝わります'}</span>${showCor ? `<div class="alt"><small>直すなら</small>${esc(f.corrected)}</div>` : ''}${f.natural ? `<div class="alt"><small>自然な言い方</small>${esc(f.natural)}</div>` : ''}${f.point ? `<p>${esc(f.point)}</p>` : ''}${f.natural || f.corrected ? tools : ''}</div>`;
+  },
+  footHTML() {
+    if (this.summary) return '';
+    const k = Mic.kind();
+    const hints = this.hintsOpen && this.hints.length ? `<div class="hints">${this.hints.map((x, i) => `<button data-act="chat-hint" data-i="${i}">${esc(x.en)}${x.ja ? `<small>${esc(x.ja)}</small>` : ''}</button>`).join('')}</div>` : '';
+    return `${hints}<div class="composer">
+      <button class="btn" data-act="chat-hints" aria-label="返事のヒント" aria-expanded="${this.hintsOpen}" ${this.hints.length ? '' : 'disabled'}>${ic('bulb')}</button>
+      <textarea id="chat-in" rows="1" placeholder="英語で返事" autocomplete="off" autocapitalize="sentences" autocorrect="off" spellcheck="false" aria-label="返事を入力">${esc(this.draft)}</textarea>
+      ${k !== 'none' ? `<button class="btn mouth ${Mic.active ? 'on mic' : ''}" data-act="chat-mic" id="mic-btn" aria-label="話して返事する">${ic('mic')}</button>` : ''}
+      <button class="btn ink" data-act="chat-send" aria-label="送る" ${this.busy ? 'disabled' : ''}>${ic('send')}</button>
+    </div>${k === 'none' ? `<p class="hint">${ic('info')}<span>キーボードを英語にして、キーボードのマイクで話せます。</span></p>` : ''}`;
+  },
+  paintList() { const l = $('#chat-list'); if (l) l.innerHTML = this.listHTML(); this.scrollEnd(); },
+  paintFoot() { const f = $('#chat-foot'); if (f) f.innerHTML = this.footHTML(); },
+  scrollEnd() { const sc = $('#chat-scroll'); if (sc) sc.scrollTop = sc.scrollHeight; },
+  say(m) { return Speech.say(m.en); },
+  prompt() {
+    const sc = this.scene;
+    const hist = this.msgs.filter((m) => !m.err).slice(-16).map((m) => (m.role === 'ai' ? 'Partner: ' + m.en : 'Learner: ' + m.text)).join('\n');
+    return `You are the conversation partner in an English speaking practice app for a Japanese learner.
+Role: you are ${sc.role}. Stay in character.
+The learner wants to practice: ${sc.aim}.
+Learner level: ${LV_PROMPT[S.settings.level]}.
+
+Write your next spoken line as the partner:
+- Natural spoken English that fits the learner's level. Keep it short so it is easy to catch by ear.
+- Keep the conversation going, usually with one simple question.
+- If the learner wrote in Japanese, they did not know how to say it in English. Treat it as if they had said it in English and continue.
+
+Also review the learner's LAST message:
+- "ok": true if it is understandable and grammatically correct (small differences in style are fine).
+- "corrected": the learner's message with minimal grammar fixes (if they wrote Japanese, the English for it).
+- "natural": how a native speaker would naturally say the same thing in this situation.
+- "natural_ja": a Japanese translation of "natural".
+- "point": one or two short sentences in Japanese with the most useful fix or tip. Use "" if there is nothing to add.
+
+Conversation so far:
+${hist}
+
+Reply with only a JSON object in this shape:
+{"reply": "your next line", "reply_ja": "Japanese translation of your line", "feedback": {"ok": true, "corrected": "...", "natural": "...", "natural_ja": "...", "point": "..."}, "hints": [{"en": "a possible next line for the learner", "ja": "its Japanese"}, {"en": "...", "ja": "..."}]}`;
+  },
+  send(text) {
+    text = String(text ?? ($('#chat-in')?.value || '')).trim();
+    if (!text || this.busy) return;
+    this.draft = '';
+    const me = { id: ++this.seq, role: 'me', text, fb: null, err: '' };
+    this.msgs.push(me);
+    this.request(me);
+  },
+  async request(me) {
+    this.busy = true; this.hintsOpen = false; me.err = '';
+    this.paintList(); this.paintFoot();
+    Speech.stop();
+    const ctl = (this.ctl = new AbortController());
+    try {
+      const r = await AI.json(this.prompt(), { signal: ctl.signal });
+      if (ctl !== this.ctl || Ov.mode !== 'chat') return;
+      const s = (v) => (typeof v === 'string' ? v.trim() : '');
+      const f = (r && r.feedback) || {};
+      me.fb = { ok: !!f.ok, corrected: s(f.corrected), natural: s(f.natural), naturalJa: s(f.natural_ja), point: s(f.point) };
+      const ai = { id: ++this.seq, role: 'ai', en: s(r && r.reply) || 'Sorry, could you say that again?', ja: s(r && r.reply_ja) };
+      this.msgs.push(ai);
+      this.hints = (Array.isArray(r && r.hints) ? r.hints : []).map((h) => (typeof h === 'string' ? { en: h.trim(), ja: '' } : { en: s(h && h.en), ja: s(h && h.ja) })).filter((h) => h.en).slice(0, 3);
+      this.turns++;
+      countItem(); commit();
+      this.busy = false;
+      this.paintList(); this.paintFoot();
+      if (S.settings.aiSpeak) this.say(ai);
+    } catch (e) {
+      if (ctl !== this.ctl) return;
+      this.busy = false;
+      if (!(e && e.code === 'cancelled')) me.err = AI.msg(e && e.code) || 'うまく返事が返ってきませんでした。';
+      if (Ov.mode === 'chat' && !this.summary) { this.paintList(); this.paintFoot(); }
+    }
+  },
+  mic() {
+    const ok = Mic.start({
+      onState: (st) => paintMic(st !== 'idle'),
+      onText: (fin, part) => { const t = $('#chat-in'); if (t) t.value = (fin + ' ' + part).trim(); },
+      onDone: (text) => { paintMic(false); if (text && Ov.mode === 'chat' && !this.summary) this.send(text); },
+    });
+    if (!ok) toast('この画面ではマイクが使えません。キーボードの音声入力を使ってください。');
+  },
+  fixes() { return this.msgs.filter((m) => m.role === 'me' && m.fb && (m.fb.natural || m.fb.corrected) && (!m.fb.ok || hasJa(m.text) || (m.fb.natural && !sameText(m.fb.natural, m.text)))); },
+  addFrom(m) {
+    if (!m || m.added || !m.fb) return;
+    const en = m.fb.natural || m.fb.corrected;
+    if (!en) return;
+    const ja = m.fb.naturalJa || (hasJa(m.text) ? m.text : `「${m.text}」を自然な英語で`);
+    addPhrase(en, ja);
+    m.added = true;
+  },
+  showSummary() {
+    this.summary = true;
+    this.ctl?.abort();
+    Speech.stop(); Mic.stop();
+    const items = this.fixes();
+    const body = `<div class="run-body"><h2 class="section-title">会話のふりかえり</h2>
+      <p class="note">${this.turns}往復話しました。${items.length ? '言い直しをマイフレーズに入れておくと、復習で言えるようになります。' : '直すところはありませんでした。すばらしい！'}</p>
+      ${items.map((m) => `<div class="card flat"><p class="heard"><b>あなた</b>${esc(m.text)}</p><p class="en mid-en">${esc(m.fb.natural || m.fb.corrected)}</p>${m.fb.point ? `<p class="small">${esc(m.fb.point)}</p>` : ''}<div class="msg-tools"><button data-act="chat-say-fix" data-id="${m.id}">${ic('play')} 聞く</button><button data-act="chat-add" data-id="${m.id}" ${m.added ? 'disabled' : ''}>${ic('plus')} ${m.added ? '追加しました' : 'マイフレーズへ'}</button></div></div>`).join('')}</div>`;
+    const foot = `${items.some((m) => !m.added) ? `<button class="btn big mouth" data-act="chat-add-all">${ic('plus')} すべてマイフレーズに追加</button>` : ''}<button class="btn big" data-act="chat-done">閉じる</button>`;
+    Ov.el.innerHTML = `<div class="ov-wrap"><header class="run-top"><button class="iconbtn" data-act="chat-done" aria-label="閉じる">${ic('close')}</button><div class="run-title"><b>${esc(this.scene.name)}</b><span>ふりかえり</span></div></header><div class="run-scroll">${body}</div><div class="run-foot">${foot}</div></div>`;
+  },
+  byId(id) { return this.msgs.find((m) => m.id === +id); },
+  act(a, el) {
+    switch (a) {
+      case 'chat-close':
+        if (this.turns > 0 && !this.summary) this.showSummary(); else { this.ctl?.abort(); Ov.close(); }
+        return true;
+      case 'chat-done': this.ctl?.abort(); Ov.close(); return true;
+      case 'chat-send': this.send(); return true;
+      case 'chat-mic': this.mic(); return true;
+      case 'chat-retry': { const m = this.byId(el.dataset.id); if (m && !this.busy) this.request(m); return true; }
+      case 'chat-say': { const m = this.byId(el.dataset.id); if (m) this.say(m); return true; }
+      case 'chat-say-fix': { const m = this.byId(el.dataset.id); if (m && m.fb) Speech.say(m.fb.natural || m.fb.corrected); return true; }
+      case 'chat-ja': { const m = this.byId(el.dataset.id); if (m) { m.showJa = !m.showJa; this.paintList(); } return true; }
+      case 'chat-show': { const m = this.byId(el.dataset.id); if (m) { m.show = true; this.paintList(); } return true; }
+      case 'chat-cap': this.cap = !this.cap; S.settings.aiCap = this.cap ? 1 : 0; commit(); this.render(); return true;
+      case 'chat-hints': this.hintsOpen = !this.hintsOpen; this.paintFoot(); return true;
+      case 'chat-hint': { const h = this.hints[+el.dataset.i]; if (h) { this.draft = h.en; this.hintsOpen = false; this.paintFoot(); const t = $('#chat-in'); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } } return true; }
+      case 'chat-add': { const m = this.byId(el.dataset.id); this.addFrom(m); toast('マイフレーズに追加しました'); if (this.summary) this.showSummary(); else this.paintList(); return true; }
+      case 'chat-add-all': { const items = this.fixes(); items.forEach((m) => this.addFrom(m)); toast(`${items.length}文をマイフレーズに追加しました`); this.showSummary(); return true; }
+    }
+    return false;
+  },
+};
+
+/* ---------- 聞き流し（ハンズフリー） ---------- */
+const HF_PHASES = [['ja', '日本語'], ['think', '考える'], ['en1', '英語'], ['rep', 'まねる'], ['en2', '英語']];
+const HF = {
+  list: [], i: 0, playing: false, tok: 0, phase: '',
+  open(src) {
+    let list = src === 'learned' ? learnedSentences() : levelPool();
+    if (src === 'learned' && list.length < 3) { list = levelPool(); toast('覚えた文がまだ少ないので、レベルの文を流します'); }
+    this.list = shuffle(list); this.i = 0; this.playing = false; this.phase = '';
+    Speech.stop();
+    Ov.open('hf');
+    this.render();
+  },
+  render() {
+    const s = this.list[this.i];
+    const hideEn = S.settings.hfHide && (this.phase === 'ja' || this.phase === 'think' || this.phase === '');
+    const cue = { ja: '日本語を聞いて…', think: '英語で言ってみよう', en1: 'お手本を聞こう', rep: '同じように声に出して', en2: 'もう一度お手本' }[this.phase] || '▶ で再生。画面を見なくても練習できます';
+    Ov.el.innerHTML = `<div class="ov-wrap">
+      <header class="run-top"><button class="iconbtn" data-act="hf-close" aria-label="聞き流しを終える">${ic('close')}</button><div class="run-title"><b>聞き流し</b><span>${this.i + 1} / ${this.list.length}文</span></div></header>
+      <div class="run-scroll"><div class="run-body" style="justify-content:center">
+        <div class="phases" aria-hidden="true">${HF_PHASES.map(([k, n]) => `<span class="${this.phase === k ? 'on' : ''}">${n}</span>`).join('')}</div>
+        <div class="card" style="min-height:230px;justify-content:center;gap:14px">
+          <p class="prompt-ja">${esc(s.ja)}</p>
+          <p class="${enClass('big-en')}" id="hf-en" style="${hideEn ? 'visibility:hidden' : ''}">${sentHTML(s.en)}</p>
+        </div>
+        <p class="q" style="justify-content:center" role="status">${cue}</p>
+      </div></div>
+      <div class="run-foot">
+        <div class="row" style="justify-content:center;gap:18px"><button class="iconbtn" data-act="hf-prev" aria-label="前の文">${ic('prev')}</button><button class="btn round ${this.playing ? 'ink' : 'ear'}" data-act="hf-toggle" aria-label="${this.playing ? '一時停止' : '再生'}">${ic(this.playing ? 'pause' : 'play')}</button><button class="iconbtn" data-act="hf-next" aria-label="次の文">${ic('skip')}</button></div>
+        ${toggleRow('hfHide', '英文はお手本のあとに表示')}
+      </div></div>`;
+  },
+  gap(s) { const w = s.en.split(/\s+/).length; return clamp(1100 + (w * 420) / (S.settings.rate || 1), 1800, 7000); },
+  async loop(my) {
+    const alive = () => this.playing && my === this.tok && Ov.mode === 'hf';
+    const set = (p) => { this.phase = p; this.render(); };
+    while (alive()) {
+      const s = this.list[this.i];
+      set('ja');
+      if (S.settings.hfJa && (Voices.ja || !Voices.loaded) && window.speechSynthesis) await Speech.say(s.ja, { lang: 'ja' }); else await sleep(1600);
+      if (!alive()) return;
+      set('think'); await sleep(this.gap(s)); if (!alive()) return;
+      set('en1'); await Speech.say(s.en, { onWord: karaoke($('#hf-en')) }); if (!alive()) return;
+      set('rep'); await sleep(this.gap(s)); if (!alive()) return;
+      set('en2'); await Speech.say(s.en, { onWord: karaoke($('#hf-en')) }); if (!alive()) return;
+      await sleep(900); if (!alive()) return;
+      this.i = (this.i + 1) % this.list.length;
+      countItem();
+    }
+  },
+  play() { this.playing = true; const my = ++this.tok; Wake.on(); this.render(); this.loop(my); },
+  pause() { this.playing = false; this.tok++; Speech.stop(); this.phase = ''; this.render(); },
+  skip(d) { const was = this.playing; this.pause(); this.i = (this.i + d + this.list.length) % this.list.length; this.render(); if (was) this.play(); },
+  act(a) {
+    if (a === 'hf-close') { this.playing = false; this.tok++; Ov.close(); return true; }
+    if (a === 'hf-toggle') { if (this.playing) this.pause(); else this.play(); return true; }
+    if (a === 'hf-next') { this.skip(1); return true; }
+    if (a === 'hf-prev') { this.skip(-1); return true; }
+    return false;
+  },
+};
+
+/* ---------- 操作 ---------- */
+function drill(title, make, empty) {
+  const o = () => ({ title, steps: make(), again: o, empty });
+  Run.start(o());
+}
+function compSource(src) {
+  if (src === 'due') return dueList().slice(0, REV_CAP).map((s) => new CompStep(s, { review: true }));
+  if (src === 'mine') return shuffle(S.custom.map(customAsSent)).slice(0, 10).map((s) => new CompStep(s, { review: true }));
+  return practicePool(S.settings.level).slice(0, 10).map((s) => new CompStep(s));
+}
+function sayHome(el, slow) {
+  const s = sentById(el.dataset.id); if (!s) return;
+  const box = $('#sod-en');
+  Speech.say(s.en, { slow, onWord: karaoke(box) }).then(() => clearKaraoke(box));
+}
+const ACT = {
+  tab: (el) => setTab(el.dataset.tab),
+  settings: () => Sheet.open('settings', settingsHTML),
+  'sheet-close': () => Sheet.close(),
+  set: (el) => {
+    const k = el.dataset.k;
+    let v = el.dataset.v;
+    if (['level', 'goal', 'newPer'].includes(k)) v = +v;
+    S.settings[k] = v;
+    commit();
+    if (Sheet.mode) Sheet.refresh();
+    if (!Ov.mode) render();
+  },
+  toggle: (el) => {
+    const k = el.dataset.k;
+    S.settings[k] = S.settings[k] ? 0 : 1;
+    commit();
+    if (Sheet.mode) Sheet.refresh();
+    if (Ov.mode === 'hf') HF.render(); else if (!Ov.mode) render();
+  },
+  'voice-test': () => Speech.say("Hi! This is how I sound. Let's practice English together."),
+  'sod-play': (el) => sayHome(el, false),
+  'sod-slow': (el) => sayHome(el, true),
+  'sod-shadow': (el) => { const s = sentById(el.dataset.id); if (s) Run.start({ title: '今日の一文', steps: [new ShadowStep(s)] }); },
+  daily: () => startDaily(),
+  'mp-start': (el) => { const k = el.dataset.k || null; drill('音の聞き分け', () => mpSteps(10, k)); },
+  'cs-start': (el) => { const r = el.dataset.r || null; drill('音の変化', () => csSteps(8, r)); },
+  'dict-start': () => drill('ディクテーション', () => practicePool(S.settings.level).slice(0, 10).map((s) => new DictStep(s, S.settings.dictMode))),
+  'hf-start': (el) => HF.open(el.dataset.src),
+  'comp-start': (el) => { const src = el.dataset.src; drill('瞬間英作文', () => compSource(src), src === 'due' ? '今日の復習はすべて終わりました' : undefined); },
+  'shadow-start': () => drill('シャドーイング', () => practicePool(S.settings.level).slice(0, 5).map((s) => new ShadowStep(s))),
+  'read-start': () => drill('音読チェック', () => practicePool(S.settings.level).slice(0, 5).map((s) => new ReadStep(s))),
+  'chat-open': (el) => Chat.open(el.dataset.id),
+  'phrase-add': () => { Object.assign(PF, { ja: '', en: '', note: '', busy: false }); Sheet.open('phrase', phraseHTML); },
+  'pf-ai': () => pfAI(),
+  'pf-save': () => {
+    if (!PF.en.trim() || !PF.ja.trim()) { toast('日本語と英語の両方を入れてください'); return; }
+    addPhrase(PF.en, PF.ja);
+    Sheet.close(); toast('マイフレーズに追加しました。今日の復習に出てきます。', 3200);
+    if (!Ov.mode) render();
+  },
+  library: (el) => { libLv = +el.dataset.lv; Sheet.open('library', libraryHTML); },
+  'lib-lv': (el) => { libLv = +el.dataset.v; Sheet.refresh(); const p = $('#sheet-panel'); if (p) p.scrollTop = 0; },
+  'lib-play': (el) => { const s = sentById(el.dataset.id); if (s) Speech.say(s.en); },
+  'lib-learn': (el) => { const s = sentById(el.dataset.id); if (!s) return; Sheet.close(); Run.start({ title: '例文を練習', steps: learnSteps([s]) }); },
+  'phrase-del': async (el) => {
+    const id = el.dataset.id;
+    const p = S.custom.find((x) => x.id === id);
+    if (!p || !(await ask('このフレーズを削除しますか？', p.en, '削除', 'やめる'))) return;
+    S.custom = S.custom.filter((x) => x.id !== id);
+    delete S.cards[id];
+    S.del[id] = Date.now();
+    commit(); Sheet.refresh();
+    if (!Ov.mode) render();
+  },
+  cal: (el) => {
+    let { y, m } = calMonth; m += +el.dataset.d;
+    if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; }
+    calMonth = { y, m }; render();
+  },
+  backup: () => {
+    const json = JSON.stringify(S);
+    const fallback = () => Sheet.open('backup', () => `<div class="sheet-head"><h2>バックアップ</h2><button class="iconbtn" data-act="sheet-close" aria-label="閉じる">${ic('close')}</button></div><p class="note">下の文字列をすべて選んでコピーし、メモなどに保管してください。</p><textarea class="full" rows="8" readonly>${esc(json)}</textarea>`);
+    try {
+      navigator.clipboard.writeText(json).then(() => toast('コピーしました。メモ帳などに貼り付けて保管してください。', 3600), fallback);
+    } catch { fallback(); }
+  },
+  restore: () => Sheet.open('restore', () => `<div class="sheet-head"><h2>バックアップから戻す</h2><button class="iconbtn" data-act="sheet-close" aria-label="閉じる">${ic('close')}</button></div><p class="note">「バックアップをコピー」で保管した文字列を貼り付けてください。いまの記録は置きかわります。</p><textarea class="full" id="restore-in" rows="7" aria-label="バックアップの文字列"></textarea><button class="btn big ink" data-act="restore-do">この内容で戻す</button>`),
+  'restore-do': async () => {
+    let o = null;
+    try { o = JSON.parse(($('#restore-in')?.value || '').trim()); } catch { o = null; }
+    if (!o || typeof o !== 'object' || !o.settings || !o.cards) { toast('バックアップの文字列として読み取れませんでした'); return; }
+    if (!(await ask('この内容で記録を置きかえますか？', 'いまの記録は上書きされます。', '置きかえる', 'やめる'))) return;
+    S = normalizeState(o); S.onb = 1; commit(); saveLocal();
+    Sheet.close(); render(); toast('記録を戻しました');
+  },
+  reset: async () => {
+    if (!(await ask('記録をすべて消しますか？', '覚えた文、ハンコ、マイフレーズが消えます。元には戻せません。', '消す', 'やめる'))) return;
+    const keep = S.settings;
+    S = defaults(); S.settings = keep; S.onb = 1; S.resetAt = Date.now();
+    commit(); saveLocal(); render(); toast('記録を消しました');
+  },
+  'onb-done': () => { S.onb = 1; commit(); Sheet.close(); render(); },
+};
+
+/* ---------- イベント ---------- */
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.disabled) return;
+  const a = el.dataset.act;
+  if (Ov.mode && Ov.el.contains(el)) {
+    if (Ov.mode === 'run' && Run.act(a, el, e)) return;
+    if (Ov.mode === 'chat' && Chat.act(a, el, e)) return;
+    if (Ov.mode === 'hf' && HF.act(a, el, e)) return;
+  }
+  const h = ACT[a];
+  if (h) h(el, e);
+});
+document.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target;
+  if (f.dataset.form === 'say') {
+    const inp = $('#say-in', f);
+    const v = (inp && inp.value || '').trim();
+    if (!v) { toast('話した英語を入力してください'); return; }
+    if (Mic.active) Mic.stop();
+    const st = Run.cur();
+    if (st && st.onSaid) st.onSaid(v, [v]);
+  }
+});
+const isTyping = (t) => t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
+document.addEventListener('keydown', (e) => {
+  const t = e.target;
+  if (e.key === 'Escape' && Sheet.mode && Sheet.mode !== 'onboard') { e.preventDefault(); Sheet.close(); return; }
+  if (e.isComposing || e.keyCode === 229) return;
+  if (e.key === 'Enter' && t.matches && t.matches('input.blank')) {
+    e.preventDefault();
+    const blanks = $$('input.blank', Ov.el);
+    const i = blanks.indexOf(t);
+    if (i >= 0 && i < blanks.length - 1) blanks[i + 1].focus(); else Run.act('check');
+    return;
+  }
+  if (e.key === 'Enter' && t.id === 'chat-in' && !e.shiftKey) { e.preventDefault(); Chat.send(); return; }
+  if (Ov.mode === 'run' && !isTyping(t) && !Sheet.mode && !document.querySelector('.dlg-wrap')) {
+    if (e.key === ' ') { e.preventDefault(); Run.act('replay'); }
+    else if (e.key === 'Enter' && !(t.tagName === 'BUTTON')) { const b = $('.run-foot .btn.big', Ov.el); if (b && !b.disabled) { e.preventDefault(); b.click(); } }
+    else if (e.key === '1' || e.key === '2') { const b = $(`[data-act="mp-pick"][data-i="${+e.key - 1}"]`, Ov.el); if (b && !b.disabled) b.click(); }
+  }
+});
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.id === 'rate') { S.settings.rate = +t.value; const o = $('#rate-out'); if (o) o.textContent = (+t.value).toFixed(2) + '×'; commit(); }
+  else if (t.dataset && t.dataset.bind) PF[t.dataset.bind] = t.value;
+  else if (t.id === 'chat-in') { Chat.draft = t.value; t.style.height = 'auto'; t.style.height = Math.min(120, t.scrollHeight) + 'px'; }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'voice-sel') { S.settings.voice = e.target.value; commit(); Speech.say('This is how I sound.'); }
+});
+
+/* ---------- 起動 ---------- */
+let lastAct = Date.now(), ticks = 0;
+['pointerdown', 'keydown'].forEach((ev) => document.addEventListener(ev, () => { lastAct = Date.now(); }, { passive: true, capture: true }));
+setInterval(() => {
+  if (!Ov.mode || document.hidden) return;
+  if (Date.now() - lastAct > 120000 && !(Ov.mode === 'hf' && HF.playing)) return;
+  dayLog().s += 5;
+  S.u = Date.now();
+  if (++ticks % 6 === 0) { saveLocal(); Sync.soon(); }
+}, 5000);
+
+function initCaps() {
+  if (!HAS_CLAUDE) { Caps.done = true; return; }
+  const use = (n) => Promise.resolve().then(() => window.claude.use(n)).catch(() => null);
+  const after = () => { if (!Ov.mode) render(); if (Sheet.mode === 'settings') Sheet.refresh(); };
+  const p1 = use('tts').then((x) => { Caps.tts = x; });
+  const p2 = use('dictation').then((x) => { Caps.dict = x; Mic.subscribe(); });
+  const p3 = use('sample').then((x) => { Caps.sample = x; });
+  Promise.all([use('db'), use('user')]).then(([db, user]) => { Caps.db = db; Caps.user = user; return Sync.init(); }).catch(() => {});
+  [p1, p2, p3].forEach((p) => p.then(after));
+  Promise.all([p1, p2, p3]).then(() => { Caps.done = true; after(); });
+}
+function boot(hot) {
+  Ov.el = $('#ov'); Sheet.el = $('#sheet');
+  $('.tabbar').innerHTML = TABS.map(([k, icon, name]) => `<button data-act="tab" data-tab="${k}" aria-current="false">${ic(icon)}<span>${name}</span></button>`).join('');
+  $('#settings-btn').innerHTML = ic('gear');
+  const h = (location.hash || '').slice(1);
+  tab = VIEWS[h] ? h : hot && VIEWS[hot.tab] ? hot.tab : 'home';
+  render();
+  const unlock = () => { Speech.unlock(); Sfx.ensure(); };
+  ['pointerdown', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, unlock, { once: true, capture: true }));
+  if (window.visualViewport) {
+    const vv = window.visualViewport, root = document.documentElement;
+    const fit = () => { root.style.setProperty('--vvh', vv.height + 'px'); root.style.setProperty('--vvt', vv.offsetTop + 'px'); };
+    vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); fit();
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { saveLocal(); Sync.soon(300); if (Mic.active) Mic.stop(); }
+    else if (Sync.ref && Date.now() - Sync.lastPull > 60000 && !Ov.mode) Sync.pull(false);
+  });
+  window.addEventListener('pagehide', saveLocal);
+  window.addEventListener('hashchange', () => { const k = (location.hash || '').slice(1); if (VIEWS[k] && k !== tab) { tab = k; render(); } });
+  try { window.claude?.hot?.snapshot?.(() => ({ tab })); } catch { /* noop */ }
+  if (!S.onb) Sheet.open('onboard', onboardHTML);
+  initCaps();
+}
+try {
+  const hot = window.claude && window.claude.hot;
+  if (hot && typeof hot.ready === 'function') hot.ready(boot); else boot((hot && hot.data) || {});
+} catch { boot({}); }
+
+</script>
+</body>
+</html>
