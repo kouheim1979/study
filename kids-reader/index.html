@@ -103,12 +103,25 @@ body.noscroll{overflow:hidden}
 .fs-auto{position:absolute;z-index:3;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);border:0;border-radius:12px;padding:9px 12px;font-size:.78rem;font-weight:800;color:#fff;background:rgba(0,0,0,.55);white-space:nowrap}.fs-auto[aria-pressed=false]{opacity:.6}
 .fs-nav.l{left:12px}.fs-nav.r{right:12px}
 .fs-nav:disabled{opacity:.25}
+
+.bar{flex-wrap:wrap}.bar h1{min-width:100px}
+.kg-btn{border:2px solid var(--accent);background:#fff1e3;border-radius:12px;padding:8px 10px;min-height:42px;font-weight:800;font-size:.84rem;color:var(--accent-ink)}
+.fs-kg{position:absolute;z-index:4;bottom:calc(82px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);border:0;border-radius:12px;padding:10px 12px;background:#c2560f;color:#fff;font-weight:800;white-space:nowrap}
+#kg-dialog{width:min(94vw,600px);max-height:85dvh;overflow:auto;padding:16px;border:2px solid var(--line);border-radius:20px;background:var(--card);color:var(--ink)}
+#kg-dialog::backdrop{background:#30241db0}
+#kg-dialog h2{font-size:1.1rem;margin:0}
+.kg-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:9px 0}
+.kg-row .act{min-height:42px;white-space:normal}
+.kg-primary{background:var(--accent);border-color:var(--accent);color:white}
+#kg-dialog select,#kg-dialog textarea{box-sizing:border-box;width:100%;font:inherit;font-size:16px;color:inherit;border:1px solid var(--line);border-radius:10px;background:#fffaf3;padding:9px}
+#kg-dialog textarea{min-height:190px;resize:vertical}
+#kg-dialog label{font-size:.82rem;font-weight:700}
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
  <a class="back" href="../">← まなびBOX</a>
- <div class="brand">🎒 Kids Reader</div>
+ <div class="brand">🎒 Kids Reader <small style="font-size:.65rem">v1.1</small></div>
  <button class="home" id="to-top" type="button">えらぶ</button>
 </div></header>
 
@@ -125,9 +138,9 @@ body.noscroll{overflow:hidden}
  </section>
 
  <section class="card reader" id="reader" hidden aria-label="教材を読む">
-  <div class="bar"><h1 id="title">—</h1><span class="pg" id="pg">1</span><button class="fs-open" id="fs-open" type="button">⛶ 大きく</button><button class="ra-btn" id="ra-open" type="button">🔊 音読</button></div>
+  <div class="bar"><h1 id="title">—</h1><span class="pg" id="pg">1</span><button class="fs-open" id="fs-open" type="button">⛶ 大きく</button><button class="ra-btn" id="ra-open" type="button">🔊 音読</button><button class="kg-btn" id="kg-open" type="button">ChatGPT練習</button></div>
   <div class="view" id="view">
-   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><button class="fs-auto" id="fs-auto" type="button" aria-pressed="true">自動で大きく: ON</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button><button class="fs-ra" id="fs-ra" type="button">🔊 音読</button></div>
+   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><button class="fs-auto" id="fs-auto" type="button" aria-pressed="true">自動で大きく: ON</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button><button class="fs-ra" id="fs-ra" type="button">🔊 音読</button><button class="fs-kg" id="fs-kg" type="button">ChatGPT練習</button></div>
 
    <div class="msg" id="msg"><div class="spin"></div><h3 id="msg-h">よみこみ中…</h3><p id="msg-p"></p></div>
    <div id="pages" hidden><canvas id="canvas" aria-label="教材ページ"></canvas></div>
@@ -151,6 +164,25 @@ body.noscroll{overflow:hidden}
  <footer>非公式の個人用ビューア · 教材の著作権はQQEnglishに帰属します（PDFは再配布していません）· 出典 <a href="https://www.qqeng.com/blog2/text-download/" target="_blank" rel="noopener noreferrer">QQEnglish 教材ダウンロード</a></footer>
 </main>
 
+<dialog id="kg-dialog" aria-labelledby="kg-title">
+ <div class="kg-row" style="justify-content:space-between"><h2 id="kg-title">ChatGPTで英語練習</h2><button id="kg-close" class="act" type="button">閉じる</button></div>
+ <p id="kg-location" class="note"></p>
+ <label for="kg-lesson">レッスン</label><select id="kg-lesson"></select>
+ <p class="note">教材PDFの英文を直接抽出して、1レッスン分の練習プロンプトを作ります。取り出した英文はこの端末内に保存します。</p>
+ <label><input type="checkbox" id="kg-extra"> 文字のない画像ページもOCRで補足する（任意）</label>
+ <div class="kg-row"><button class="act kg-primary" id="kg-generate" type="button">プロンプトを生成</button><button class="act" id="kg-retry" type="button">保存を使わず再抽出</button><label class="act">PDFを直接読み込む<input id="kg-file" type="file" accept=".pdf,application/pdf" hidden></label></div>
+ <section style="background:#fff1e3;border-radius:12px;padding:10px">
+ <b>教材の事前読取・保存</b><p class="note" id="kg-cache"></p>
+ <label for="kg-scope">一括読み取り範囲</label><select id="kg-scope"><option value="level">現在のBook・Level</option><option value="series">現在のシリーズ全体</option><option value="all">全シリーズ</option></select>
+ <div class="kg-row"><button class="act kg-primary" id="kg-batch" type="button">一括読取・端末に保存</button><button class="act" id="kg-stop" type="button" hidden>中断</button><button class="act" id="kg-clear" type="button">このレッスンの保存英文を削除</button></div>
+ <progress id="kg-progress" max="1" value="0" style="width:100%" hidden></progress>
+ <p class="note">一括処理中は画面を開いてください。中断後も保存済み教材は残ります。</p>
+ </section>
+ <p id="kg-status" class="note" role="status" aria-live="polite"></p>
+ <label for="kg-text">練習プロンプト（編集可）</label><textarea id="kg-text" spellcheck="false"></textarea>
+ <div class="kg-row"><button class="act kg-primary" id="kg-copy" type="button" disabled>プロンプトをコピー</button><a class="act" target="_blank" rel="noopener noreferrer" href="https://chatgpt.com/">ChatGPTを開く ↗</a><button class="act" id="kg-share" type="button" hidden disabled>共有</button><a class="act" id="kg-pdf" target="_blank" rel="noopener noreferrer">公式PDF ↗</a></div>
+ <p class="note">画像・イラストに依存する問題はPDFを確認してください。英文が取得できない場合は、空のプロンプトを生成しません。</p>
+</dialog>
 <script src="../shared/read-aloud.js"></script>
 <script>
 "use strict";
@@ -386,7 +418,7 @@ $("save").onclick=async()=>{
  }catch(e){b.textContent="↓ PDFを保存";if(confirm("自動で 保存できませんでした。\n公式PDFを ひらくので、共有ボタン→「ファイルに保存」で 保存してください。"))window.open(x.url,"_blank","noopener");}
  finally{delete b.dataset.busy;setTimeout(()=>{if(!b.dataset.busy)b.textContent="↓ PDFを保存";},2500);}
 };
-document.addEventListener("keydown",e=>{if(e.target.closest("input")||e.altKey||e.metaKey||e.ctrlKey||$("reader").hidden)return;if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);});
+document.addEventListener("keydown",e=>{if($("kg-dialog").open||e.target.closest("input,textarea,select")||e.altKey||e.metaKey||e.ctrlKey||$("reader").hidden)return;if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);});
 let sx=0,sy=0,st=0;
 $("view").addEventListener("touchstart",e=>{if(e.touches.length!==1){sx=NaN;return;}sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now();},{passive:true});
 $("view").addEventListener("touchend",e=>{const t=e.changedTouches[0];let dx=t.clientX-sx,dy=t.clientY-sy;if(full&&fullRot)[dx,dy]=[dy,-dx];if(!(Math.abs(dx)>60&&Math.abs(dy)<50&&Date.now()-st<600))return;if(window.visualViewport&&visualViewport.scale>1.05)return;go(dx<0?1:-1);},{passive:true});
@@ -415,7 +447,7 @@ $("fs-open").onclick=()=>setFull(true);
 $("fs-close").onclick=()=>{setFull(false);$("choose").scrollIntoView({block:"start"});};
 $("fs-prev").onclick=()=>{$("prev").click();fsSync();};
 $("fs-next").onclick=()=>{$("next").click();fsSync();};
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&full)setFull(false);});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&full&&!$("kg-dialog").open)setFull(false);});
 /* 自動で大きく（教材を開いたら全画面・向き自動）。設定は両リーダー共通 */
 const autoOn=()=>{try{return localStorage.getItem("reader-auto-full")!=="0";}catch(e){return true;}};
 function autoBig(){if(autoOn()&&!full)setFull(true);}
@@ -427,6 +459,172 @@ window.ReadAloud&&ReadAloud.init({
  next:()=>{const T=total();if(T&&state.page>=T)return false;go(1);return true;}
 });
 $("ra-open").onclick=()=>ReadAloud.toggle();$("fs-ra").onclick=()=>ReadAloud.toggle();
+
+
+/* ===== Kids Reader ChatGPT lesson practice ===== */
+const KG_PREFIX="kids-lesson-text-v1:";
+const kgKey=x=>KG_PREFIX+x.id+"|"+x.url;
+let kgRun=0,kgItem=null,kgBatch=false,kgOcrEngine=null,kgOcrTail=Promise.resolve();
+const kgIsActive=id=>id===kgRun&&$("kg-dialog").open;
+function kgStatus(id,s){if(kgIsActive(id))$("kg-status").textContent=s;}
+function kgClean(s){return s.replace(/\u00ad/g,"").replace(/\s+/g," ").trim();}
+function kgLines(items){
+ const rows=[];
+ for(const it of items){if(!it.str?.trim())continue;const x=it.transform[4],y=it.transform[5],h=Math.abs(it.transform[3])||it.height||10;
+  let row=rows.find(r=>Math.abs(r.y-y)<=Math.max(2,h*.24));if(!row){row={y,parts:[]};rows.push(row);}
+  row.parts.push({x,s:it.str});}
+ return rows.sort((a,b)=>b.y-a.y).map(r=>kgClean(r.parts.sort((a,b)=>a.x-b.x).map(p=>p.s).join(" "))).filter(Boolean);
+}
+function kgUseful(lines){return lines.filter(s=>/[A-Za-z]/.test(s)&&!/^(?:QQEnglish|All rights reserved|Copyright.*|www\.qqeng\.com|page\s*\d+|lesson\s*\d+)$/i.test(s));}
+function kgMode(x){
+ if(x.series==="Magic Phonics")return "フォニックスでは文字名と文字音を区別し、教材にある音・単語を一つずつ読み上げる。絵の名前や画像内の答えが不明な場合は作らない。";
+ if(x.series==="Time to Talk")return "会話練習として教材の質問を一つずつ出す。例文・模範回答を質問の前に言わない。自由回答は意味と文法を確認する。";
+ if(x.series==="Reading for Kids"||x.series==="Time to Read")return "教材の文を短く区切って音読練習し、教材にある読解質問は一問ずつ出す。";
+ if(x.series==="Write Source -writing for kids-")return "教材の書く課題を一つずつ提示し、音声で答えられる部分を練習する。記述が必要な課題はその旨を伝える。";
+ if(x.series==="We Sing We Learn")return "教材の語彙や英文の発音練習を中心にする。教材で確認できない曲や歌詞を作らない。";
+ return "教材の単語・例文・会話・問題を指示に従い一つずつ練習し、質問と復唱を混同しない。";
+}
+function kgPrompt(x,data){
+ return [
+ "あなたは子ども向け英語の先生です。音声モードで、QQEnglish教材を使って優しく練習してください。",
+ "【今回の教材】 "+x.series+" / "+x.level+" / "+lessonLabel(x)+" / PDF p.1–"+data.total,
+ "【公式PDF】 "+x.url,
+ "【練習ルール】",
+ "1. 今回のレッスンだけを教材のページ順・指示に従って進める。次のレッスンに進まない。",
+ "2. 反復・発音練習は対象の英文または単語を自然な速度で2回読み上げ、子どもの復唱を1回待つ。質問の場合は質問だけを言い、先に答えを言わない。",
+ "3. 1回に1問だけ出して回答を待つ。正解なら短く次へ。不正解なら正しい発音・英文を短く示して言い直しを待つ。",
+ "4. 基本は簡単な英語、必要な説明だけ短い日本語。単語中の不自然な空白はPDF抽出由来なので文脈に沿って自然な英語に復元して読み上げる。",
+ "5. "+kgMode(x),
+ "6. 絵・音声・画像内の指示がないと答えられない問題は、該当ページの画像を添付してもらうか、その問題だけ飛ばす。見えない教材内容を創作しない。最後に間違えた問題を復習する。",
+ "【教材から抽出した英文・指示】",
+ ...data.pages.filter(p=>p.lines.length).map(p=>"--- PDF p."+p.page+" ---\n"+p.lines.join("\n")),
+ ...(data.empty.length?["注意：PDF p."+data.empty.join(", ")+" は英文を抽出できていません。必要に応じて画像を確認してください。"]:[]),
+ "準備できたら、最初の練習から開始し、子どもの回答を待ってください。"
+ ].join("\n");
+}
+async function kgStored(x){const d=await dbGet(kgKey(x));return d?.url===x.url&&d.words>0&&Array.isArray(d.pages)?d:null;}
+async function kgRefresh(){
+ const x=kgItem;if(!x)return;const keys=await dbKeys(),prefix=KG_PREFIX;
+ if(kgItem!==x)return;
+ const inLevel=(TREE.get(x.series)?.get(x.level)||[]).filter(v=>v.type==="lesson"),set=new Set(keys);
+ $("kg-cache").textContent=(set.has(kgKey(x))?"現在のレッスン：保存済み":"現在のレッスン：未保存")+" · Book/Level "+inLevel.filter(v=>set.has(kgKey(v))).length+"/"+inLevel.length+"件 · 全教材 "+keys.filter(k=>typeof k==="string"&&k.startsWith(prefix)).length+"件";
+}
+async function kgDoc(x,id,manual){
+ if(manual){const lib=await pdfjs();return {d:await lib.getDocument({data:new Uint8Array(manual)}).promise,owned:true};}
+ const existing=docs.get(x.id);
+ if(existing){try{return {d:await (await pdfjs()).getDocument({data:new Uint8Array(await existing.getData())}).promise,owned:true};}catch(e){}}
+ let bytes=await dbGet(x.id);
+ if(!bytes){
+  const errors=[];
+  if(WORKER){try{bytes=toBuffer(await download(x));}catch(e){errors.push("専用サーバー："+e.message);}}
+  if(!bytes){try{bytes=toBuffer(await fetchStream(x.url));}catch(e){errors.push("直接取得："+e.message);}}
+  if(!bytes)throw Error("PDFを取得できません。公式PDFを保存して「PDFを直接読み込む」で選んでください。"+errors.join(" / "));
+  await dbPut(x.id,bytes).catch(()=>{});renderLib();
+ }
+ if(!kgIsActive(id))throw Error("cancelled");
+ const lib=await pdfjs();return {d:await lib.getDocument({data:new Uint8Array(bytes)}).promise,owned:true};
+}
+function kgOCRLoad(){
+ return kgOcrEngine||(kgOcrEngine=(async()=>{
+  if(!window.Tesseract)await new Promise((ok,ng)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";s.onload=ok;s.onerror=()=>ng(Error("OCRライブラリの取得失敗"));document.head.append(s);});
+  return window.Tesseract.createWorker("eng",1,{errorHandler:()=>{}});
+ })().catch(e=>{kgOcrEngine=null;throw e;}));
+}
+async function kgOCR(pg,id){
+ const job=async()=>{if(!kgIsActive(id))throw Error("cancelled");const w=await kgOCRLoad();if(!kgIsActive(id))throw Error("cancelled");
+  const base=pg.getViewport({scale:1}),vp=pg.getViewport({scale:Math.min(3,1600/base.width)}),cv=document.createElement("canvas");cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
+  try{await pg.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;await w.setParameters({tessedit_pageseg_mode:"3"});const out=await w.recognize(cv);return String(out.data.text||"").split(/\r?\n/).map(kgClean).filter(Boolean);}
+  finally{cv.width=1;cv.height=1;}
+ };
+ const p=kgOcrTail.catch(()=>{}).then(job);kgOcrTail=p.catch(()=>{});
+ let timer;
+ return Promise.race([p,new Promise((_,ng)=>{timer=setTimeout(()=>ng(Error("OCR時間切れ")),25000);})]).finally(()=>clearTimeout(timer));
+}
+async function kgExtract(x,id,{force=false,manual=null,extra=false}={}){
+ if(!force&&!manual){const stored=await kgStored(x);if(stored&&(!extra||stored.extra))return {data:stored,saved:true,cached:true};}
+ const {d,owned}=await kgDoc(x,id,manual);
+ const pages=[],empty=[],failed=[];let words=0,extraOK=true;
+ try{
+  for(let i=1;i<=d.numPages;i++){
+   if(!kgIsActive(id))throw Error("cancelled");
+   kgStatus(id,lessonLabel(x)+" · PDF p."+i+"/"+d.numPages+" テキスト抽出中");
+   let lines=[];
+   try{const pg=await d.getPage(i);lines=kgUseful(kgLines((await pg.getTextContent()).items));
+    if(extra&&lines.join(" ").length<20){try{kgStatus(id,lessonLabel(x)+" · p."+i+" 画像OCR中");const o=kgUseful(await kgOCR(pg,id));if(o.join(" ").length>lines.join(" ").length)lines=o;}catch(e){extraOK=false;}}
+   }catch(e){failed.push(i);}
+   if(!kgIsActive(id))throw Error("cancelled");
+   if(!lines.length)empty.push(i);else words+=lines.join(" ").split(/\s+/).length;
+   pages.push({page:i,lines});
+  }
+  if(!words)throw Error("英文を抽出できませんでした。画像OCRを有効にして再試行するか、別のPDFを確認してください。");
+  const data={url:x.url,total:d.numPages,pages,empty,failed,words,extra:extra&&extraOK,at:Date.now()};
+  let saved=false;
+  // PDF読取エラーのページがある結果は完全な保存として扱わない。
+  if(!failed.length){try{await dbPut(kgKey(x),data);saved=!!(await kgStored(x));}catch(e){}}
+  return {data,saved,cached:false};
+ }finally{if(owned)await d.destroy().catch(()=>{});}
+}
+function kgOutput(x,result){
+ const {data,saved,cached}=result;
+ $("kg-text").value=kgPrompt(x,data);$("kg-copy").disabled=false;$("kg-share").disabled=false;
+ $("kg-status").textContent=(cached?"保存英文から生成":"抽出完了")+" · 英文 "+(data.total-data.empty.length)+"/"+data.total+"ページ · 約"+data.words+"語"+(saved?" · 端末保存済み":" · 未保存")+(data.empty.length?" · 本文なし p."+data.empty.join(", "):"")+(data.failed.length?" · 読取失敗 p."+data.failed.join(", "):"");
+}
+function kgReset(){$("kg-text").value="";$("kg-copy").disabled=true;$("kg-share").disabled=true;}
+async function kgGenerate(opts={}){
+ if(kgBatch||!kgItem)return;const x=kgItem,id=++kgRun;kgReset();kgStatus(id,"教材PDF・保存英文を確認中…");
+ try{const result=await kgExtract(x,id,{...opts,extra:$("kg-extra").checked});if(kgIsActive(id)){kgOutput(x,result);kgRefresh();}}
+ catch(e){kgStatus(id,String(e.message||e));}
+}
+function kgPick(x){
+ kgItem=x;$("kg-lesson").value=x.id;
+ $("kg-location").textContent=x.series+" · "+x.level+" · "+lessonLabel(x);$("kg-pdf").href=x.url;
+ kgReset();kgRefresh();kgGenerate();
+}
+function kgOpen(){
+ const x=BY_ID.get(state.id);if(!x)return;
+ const items=(TREE.get(x.series)?.get(x.level)||[]).filter(t=>t.type!=="syllabus"||t.id===x.id);
+ $("kg-lesson").replaceChildren(...items.map(t=>{const o=document.createElement("option");o.value=t.id;o.textContent=lessonLabel(t);return o;}));
+ $("kg-share").hidden=!navigator.share;$("kg-progress").hidden=true;
+ $("kg-dialog").showModal();kgPick(x);
+}
+function kgBatchUI(on){
+ kgBatch=on;$("kg-stop").hidden=!on;
+ for(const k of ["kg-lesson","kg-generate","kg-retry","kg-batch","kg-clear","kg-scope","kg-extra","kg-file"])$(k).disabled=on;
+}
+$("kg-open").onclick=kgOpen;$("fs-kg").onclick=kgOpen;
+$("kg-close").onclick=()=>$("kg-dialog").close();
+$("kg-dialog").addEventListener("close",()=>{++kgRun;kgBatchUI(false);});
+$("kg-lesson").onchange=()=>{const x=BY_ID.get($("kg-lesson").value);if(x)kgPick(x);};
+$("kg-generate").onclick=()=>kgGenerate();
+$("kg-retry").onclick=()=>kgGenerate({force:true});
+$("kg-file").onchange=async e=>{const f=e.target.files?.[0];e.target.value="";if(!f||!kgItem)return;const x=kgItem;
+ if(!f.name.toLowerCase().includes(x.id.toLowerCase())&&!confirm("選択中の "+lessonLabel(x)+" の公式PDFですか？"))return;
+ try{const data=await f.arrayBuffer();if(kgItem===x&&$("kg-dialog").open)kgGenerate({force:true,manual:data});}catch(e){$("kg-status").textContent="PDF読込失敗："+e.message;}
+};
+$("kg-clear").onclick=async()=>{const x=kgItem;if(!x||kgBatch||!confirm("このレッスンの保存英文を削除しますか？ PDFは残ります。"))return;++kgRun;await dbDel(kgKey(x));if(kgItem!==x)return;kgReset();$("kg-status").textContent="保存英文を削除しました。";kgRefresh();};
+$("kg-batch").onclick=async()=>{
+ const x=kgItem;if(!x||kgBatch)return;const scope=$("kg-scope").value,extra=$("kg-extra").checked;
+ const targets=ITEMS.filter(t=>t.type==="lesson"&&(scope==="all"||(t.series===x.series&&(scope==="series"||t.level===x.level))));
+ if(!targets.length){$("kg-status").textContent="対象の通常レッスンがありません。";return;}
+ if(scope==="all"&&!confirm(targets.length+"レッスンを端末に読み取ります。中断しても保存済みの教材は残ります。"))return;
+ const id=++kgRun;kgBatchUI(true);kgReset();const meter=$("kg-progress");meter.hidden=false;meter.max=targets.length;meter.value=0;
+ let ok=0,bad=0,consecutive=0,done=0;
+ try{
+  for(const t of targets){
+   if(!kgIsActive(id))break;
+   kgStatus(id,t.series+" "+t.level+" "+lessonLabel(t)+" · "+done+"/"+targets.length);
+   try{const result=await kgExtract(t,id,{extra});if(!kgIsActive(id))break;if(result.saved){ok++;consecutive=0;}else{bad++;consecutive++;}}
+   catch(e){if(!kgIsActive(id))break;bad++;consecutive++;kgStatus(id,String(e.message||e));}
+   meter.value=++done;
+   $("kg-cache").textContent="一括処理 "+done+"/"+targets.length+" · 保存 "+ok+" · 未保存 "+bad;
+   if(consecutive>=3){kgStatus(id,"3件連続で保存できませんでした。PDFの取得設定を確認し、再開してください。");return;}
+  }
+  if(kgIsActive(id))kgStatus(id,"一括処理完了 · 保存 "+ok+"/"+targets.length+"件 · 未保存 "+bad+"件。レッスンを選んで生成してください。");
+ }finally{if(id===kgRun){kgBatchUI(false);kgRefresh();}}
+};
+$("kg-stop").onclick=()=>{++kgRun;kgBatchUI(false);$("kg-status").textContent="中断しました。保存済みの英文は残ります。";kgRefresh();};
+$("kg-copy").onclick=async()=>{const t=$("kg-text");if(!t.value.trim())return;try{await navigator.clipboard.writeText(t.value);}catch(e){t.focus();t.select();try{if(!document.execCommand("copy"))throw Error("copy");}catch(e){$("kg-status").textContent="文章を選択しました。長押しでコピーしてください。";return;}}$("kg-status").textContent="コピーしました。ChatGPTに貼り付けて音声モードで練習してください。";};
+$("kg-share").onclick=async()=>{if(!$("kg-text").value.trim())return;try{await navigator.share({title:"Kids Reader 英語練習",text:$("kg-text").value});}catch(e){if(e.name!=="AbortError")$("kg-status").textContent="共有できません。コピーしてください。";}};
 
 window.visualViewport?.addEventListener("resize",()=>{if(full){clearTimeout(rz);rz=setTimeout(()=>show(),150);}});
 window.addEventListener("hashchange",()=>{const m=/^#([A-Za-z0-9_.\-]+)\/(\d+)$/.exec(location.hash);if(m&&BY_ID.has(m[1])&&(m[1]!==state.id||+m[2]!==state.page))open(m[1],+m[2]);});
