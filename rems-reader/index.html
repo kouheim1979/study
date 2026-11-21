@@ -194,7 +194,7 @@ body.noscroll{overflow:hidden}
  <p class="note" id="gpt-cache-status" aria-live="polite">保存状況を確認中…</p>
  <label for="gpt-batch-scope">読取範囲（現在の問題／解答設定）</label>
  <select id="gpt-batch-scope"><option value="pdf">現在の教材PDF（複数レッスン）</option><option value="unit">現在のUnit全体</option><option value="all">全Book・全Unit</option></select>
- <div class="gpt-actions"><button class="act primary" id="gpt-batch" type="button">一括読取・端末に保存</button><button class="act" id="gpt-stop" type="button" hidden>中断</button><button class="act" id="gpt-clear" type="button">現在の教材の保存英文を削除</button></div>
+ <div class="gpt-actions"><button class="act primary" id="gpt-batch" type="button">一括読取・端末に保存</button><button class="act" id="gpt-stop" type="button" hidden>中断</button><button class="act" id="gpt-generate" type="button">選択レッスンのプロンプト生成</button><button class="act" id="gpt-clear" type="button">現在の教材の保存英文を削除</button></div>
  <progress id="gpt-batch-progress" max="1" value="0" style="width:100%;margin-top:8px" hidden></progress>
  <p class="note" style="margin:6px 0 0">初回は時間がかかります。画面を開いたまま実行してください。途中まで保存したページは次回スキップできます。英文はこのブラウザ内だけに保存されます。</p>
  </section>
@@ -933,7 +933,7 @@ function gptBatchUI(running){
  gptBatchRunning=running;
  $("gpt-batch").disabled=running;$("gpt-stop").hidden=!running;
  $("gpt-batch-scope").disabled=running;$("gpt-clear").disabled=running;
- for(const id of ["gpt-lesson","gpt-range","gpt-file","gpt-retry","gpt-apply"])$(id).disabled=running;
+ for(const id of ["gpt-lesson","gpt-range","gpt-file","gpt-retry","gpt-apply","gpt-generate"])$(id).disabled=running;
 }
 function gptBatchContexts(ctx,scope){
  const units=scope==="all"?BOOKS.join("").split(""):[ctx.unit];
@@ -986,6 +986,7 @@ $("gpt-batch").onclick=async()=>{
   if(id===gptRun){gptBatchUI(false);await gptRefreshSaved(ctx);}
  }
 };
+$("gpt-generate").onclick=()=>{if(gptContext&&!gptBatchRunning)gptAnalyze(gptContext,++gptRun);};
 $("gpt-stop").onclick=()=>{
  if(!gptBatchRunning)return;++gptRun;gptBatchUI(false);
  $("gpt-status").textContent="中断しました。すでに保存した英文は残ります。";
