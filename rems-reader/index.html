@@ -115,13 +115,25 @@ body.noscroll{overflow:hidden}
 .fs-auto{position:absolute;z-index:3;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);border:0;border-radius:12px;padding:9px 12px;font-size:.78rem;font-weight:800;color:#fff;background:rgba(0,0,0,.55);white-space:nowrap}.fs-auto[aria-pressed=false]{opacity:.6}
 .fs-nav.l{left:12px}.fs-nav.r{right:12px}
 .fs-nav:disabled{opacity:.25}
+
+/* ChatGPT practice */
+.gpt-btn{border:1px solid var(--accent);background:var(--soft);color:var(--accent-ink);border-radius:10px;min-height:42px;padding:0 10px;font-weight:800;font-size:.86rem;white-space:nowrap}
+.fs-gpt{position:absolute;z-index:4;bottom:calc(82px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);border:0;border-radius:12px;padding:10px 12px;background:rgba(18,60,64,.95);color:#fff;font-weight:800;font-size:.82rem;white-space:nowrap}
+#gpt-dialog{width:min(94vw,580px);max-height:85dvh;overflow:auto;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);box-shadow:0 16px 80px #0004}
+#gpt-dialog::backdrop{background:#102a2bb0}
+#gpt-dialog h2{margin:0;font-size:1.1rem}.gpt-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#gpt-dialog label{display:block;font-size:.8rem;font-weight:800;margin:12px 0 5px}
+#gpt-dialog select,#gpt-dialog textarea,#gpt-dialog input{font:inherit;font-size:16px;color:inherit;background:#f8faf8;border:1px solid var(--line);border-radius:9px;padding:8px;max-width:100%}
+#gpt-dialog select,#gpt-dialog textarea{width:100%}#gpt-dialog textarea{height:190px;resize:vertical;line-height:1.5}
+.gpt-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.gpt-actions .act{min-height:42px;white-space:normal}
+.gpt-status{font-size:.78rem;color:var(--muted);min-height:1.3em;margin:8px 0;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
  <a class="back" href="../">← まなびBOX</a>
  <div class="brand">R.E.M.S. <span>Reader</span></div>
- <span class="ver">v3.2</span>
+ <span class="ver">v3.3</span>
 </div></header>
 
 <main class="main">
@@ -131,12 +143,12 @@ body.noscroll{overflow:hidden}
    <button class="nav" id="prev" type="button" aria-label="前のページ">←</button>
    <label class="pageno"><input id="page" type="number" inputmode="numeric" min="1" aria-label="ページ番号"><span id="total">/ 258</span></label>
    <button class="nav" id="next" type="button" aria-label="次のページ">→</button>
-   <button class="fs-open" id="fs-open" type="button">⛶ 大きく</button><button class="ra-btn" id="ra-open" type="button">🔊 音読</button>
+   <button class="fs-open" id="fs-open" type="button">⛶ 大きく</button><button class="ra-btn" id="ra-open" type="button">🔊 音読</button><button class="gpt-btn" id="gpt-open" type="button">ChatGPT練習</button>
    <button class="nav star" id="star" type="button" aria-pressed="false">☆</button>
   </div>
   <div class="meter"><i id="meter"></i></div>
   <div class="view" id="view">
-   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><button class="fs-auto" id="fs-auto" type="button" aria-pressed="true">自動で大きく: ON</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button><button class="fs-ra" id="fs-ra" type="button">🔊 音読</button></div>
+   <div class="fs-ui"><button class="fs-close" id="fs-close" type="button">✕ もどる</button><button class="fs-auto" id="fs-auto" type="button" aria-pressed="true">自動で大きく: ON</button><span class="fs-pg" id="fs-pg"></span><button class="fs-nav l" id="fs-prev" type="button" aria-label="前のページ">◀</button><button class="fs-nav r" id="fs-next" type="button" aria-label="次のページ">▶</button><button class="fs-ra" id="fs-ra" type="button">🔊 音読</button><button class="fs-gpt" id="fs-gpt" type="button">ChatGPT練習</button></div>
 
    <div class="msg" id="msg"><div class="spin"></div><h2 id="msg-h">読み込み中…</h2><p id="msg-p"></p></div>
    <div id="pages" hidden><canvas id="canvas" aria-label="教材ページ"></canvas></div>
@@ -173,6 +185,16 @@ body.noscroll{overflow:hidden}
  <footer>非公式の個人用ビューア · 出典 <a href="https://www.qqeng.com/blog2/r-e-m-s-textbooks/" target="_blank" rel="noopener noreferrer">QQEnglish R.E.M.S. Textbooks</a></footer>
 </main>
 
+<dialog id="gpt-dialog" aria-labelledby="gpt-heading">
+ <div class="gpt-head"><h2 id="gpt-heading">ChatGPTでR.E.M.S.練習</h2><button class="act" id="gpt-close" type="button">閉じる</button></div>
+ <p class="note" id="gpt-location"></p>
+ <p class="note">教材の見出しを探して、ドリル・練習項目ごとに分割します。ページ途中の見出しにも対応。判定できない場合は公式PDFを添付して練習できます。</p>
+ <p class="gpt-status" id="gpt-status" role="status" aria-live="polite"></p>
+ <label for="gpt-section">練習するまとまり</label><select id="gpt-section" disabled></select>
+ <label for="gpt-text">生成プロンプト（編集可）</label><textarea id="gpt-text" spellcheck="false"></textarea>
+ <div class="gpt-actions"><button class="act primary" id="gpt-copy" type="button">プロンプトをコピー</button><a class="act" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPTを開く ↗</a><button class="act" id="gpt-share" type="button" hidden>共有</button><a class="act" id="gpt-pdf" target="_blank" rel="noopener noreferrer">公式PDF ↗</a></div>
+ <p class="note" style="margin-top:10px">コピーした文章をChatGPTに貼り付け、音声モードで開始してください。教材の本文は端末で抽出し、コピー・共有するまで外部送信しません。</p>
+</dialog>
 <script src="../shared/read-aloud.js"></script>
 <script>
 "use strict";
@@ -441,7 +463,7 @@ $("reload").onclick=()=>{
  if(current.mode==="frame"){gTries=0;relayDownAt=0;loadFrame($("frame").dataset.src);return show();}
  docs.get(current.key)?.destroy();docs.delete(current.key);show();
 };
-document.addEventListener("keydown",e=>{if(e.target.closest("input")||e.altKey||e.metaKey||e.ctrlKey)return;if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();});
+document.addEventListener("keydown",e=>{if($("gpt-dialog").open||e.target.closest("input,textarea,select")||e.altKey||e.metaKey||e.ctrlKey)return;if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();});
 /* スワイプでページ送り */
 let sx=0,sy=0,st=0;
 $("view").addEventListener("touchstart",e=>{if(e.touches.length!==1)return sx=NaN;sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now();},{passive:true});
@@ -471,7 +493,7 @@ $("fs-open").onclick=()=>setFull(true);
 $("fs-close").onclick=()=>setFull(false);
 $("fs-prev").onclick=()=>{$("prev").click();fsSync();};
 $("fs-next").onclick=()=>{$("next").click();fsSync();};
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&full)setFull(false);});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&full&&!$("gpt-dialog").open)setFull(false);});
 /* 自動で大きく（教材を開いたら全画面・向き自動）。設定は両リーダー共通 */
 const autoOn=()=>{try{return localStorage.getItem("reader-auto-full")!=="0";}catch(e){return true;}};
 function autoBig(){if(autoOn()&&!full)setFull(true);}
@@ -512,6 +534,151 @@ $("file").addEventListener("change",async e=>{
  try{const buf=await f.arrayBuffer();await dbPut(key,buf.slice(0)).catch(()=>{});docs.get(key)?.destroy();docs.delete(key);await docFromData(key,buf);await renderLib();show();}
  catch(err){message("読み込めませんでした",String(err.message||err),false);}
 });
+
+
+/* ===== ChatGPT 練習：教材見出しで区切る ===== */
+let gptRun=0,gptContext=null,gptSections=[];
+const gptHeading=/^(?:(?:[A-T]\d+(?:[.-]\d+)?|\d+|[A-Z])[.)\s:–-]+)?(?:(?:lesson\s+\d+)(?:\s*[:–-].{1,70})?|(?:(?:[A-Za-z]+[ -]){0,5}drills?)(?:\s*(?:no\.?\s*)?[A-Z0-9]+(?:[.-]\d+)?)?(?:\s*[:–-]\s*.{1,75})?|(?:new\s+)?(?:vocabulary|grammar|pronunciation|language focus|word list|review|revision|picture description|free conversation|open questions?|exercise|practice)(?:\s+(?:[A-Z0-9]+|practice|drill|exercise|review))?(?:\s*[:–-]\s*.{1,75})?)\s*[:.]?$/i;
+function gptHeadingOf(line){
+ const s=line.text.trim().replace(/\s+/g," ");
+ if(s.length>110||!gptHeading.test(s))return "";
+ return s;
+}
+function gptNorm(s){return s.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
+function gptSelectText(ctx,sec){
+ const location="Book "+bookOf(ctx.unit)+" / Unit "+ctx.unit+" / "+lessonName(ctx.seg);
+ const pages="p."+sec.start+(sec.end!==sec.start?"–"+sec.end:"");
+ const base=[
+ "あなたは英語のR.E.M.S.（Rapid English Mental Switching）練習の講師です。音声モードで、私に1問ずつ英語で出題してください。",
+ "【今回の範囲】 "+location+" / "+pages+" / "+sec.title,
+ "【教材PDF】 "+ctx.url+"#page="+(sec.start-ctx.seg.start+1),
+ "【練習ルール】",
+ "1. 今回のまとまりだけを、教材の指示・順番に従って練習する。別のドリルやレッスンに勝手に進まない。",
+ "2. 先生の指示・例文・キューは英語で話す。例文を指定通り読み上げ、反復・置換・変換・拡張など教材に明記された方式を使う。問題の正解は先に言わない。",
+ "3. 毎回必ず私の回答を待つ。正解なら短く反応して次へ。不正解なら正しい英文を一度示し、私が言い直せるまで同じ問題を練習する。",
+ "4. 説明が必要な時だけ日本語で短く補足。私が「もう一回」「ゆっくり」「次へ」と言ったら対応する。音声認識で判断できない場合は聞き直す。",
+ "5. 教材にない問題・解答を公式教材として作らない。文字抽出が不明瞭、答えが確認できない、または本文が不足する場合はPDF・該当ページの画像を私に添付してもらう。",
+ "6. このまとまりが終わったら、間違えた問題を再出題し、練習終了を知らせる。次のまとまりは私が指定するまで始めない。"
+ ];
+ if(sec.text){
+  base.push("【教材から抽出した文字（読み順や文字の誤りがあればPDFで確認）】",sec.text);
+  if(!sec.complete)base.push("注意：区切りを完全には確認できていません。添付PDFで同じ見出しの開始・終了を確認してください。");
+ }else{
+  base.push("【教材本文は未取得】上記のPDFを参照するか、参照できない場合は最初にPDFの添付を求めてください。表示ページを含むドリルの開始・終了を見出しで確認し、その1まとまりだけを練習すること。ページ単位で機械的に切らないこと。");
+ }
+ base.push("準備できたら、長い説明はせず最初の問題から開始してください。");
+ return base.join("\n");
+}
+async function gptReadPage(doc,n,absolute){
+ const pg=await doc.getPage(n),tc=await pg.getTextContent(),rows=[];
+ for(const item of tc.items){
+  if(!item.str||!item.str.trim())continue;
+  const [,,,,x,y]=item.transform,h=Math.abs(item.transform[3])||item.height||10;
+  let row=rows.find(l=>Math.abs(l.y-y)<=Math.max(2,h*.34));
+  if(!row){row={y,parts:[]};rows.push(row);}
+  row.parts.push({x,text:item.str});
+ }
+ return rows.sort((a,b)=>b.y-a.y).map(row=>({page:absolute,text:row.parts.sort((a,b)=>a.x-b.x).map(x=>x.text.trim()).join(" ").trim()})).filter(x=>x.text);
+}
+function gptBuildSections(lines,ctx,lo,hi){
+ const starts=[];
+ for(let i=0;i<lines.length;i++){
+  const title=gptHeadingOf(lines[i]);if(!title)continue;
+  // 同じ見出しをページ上部に繰り返す場合は1単元として維持する
+  const prior=starts.at(-1);
+  if(prior&&gptNorm(prior.title)===gptNorm(title)&&lines[i].page!==lines[prior.i].page)continue;
+  // Lesson見出しの直後にドリル見出しがある場合はドリルを優先
+  starts.push({i,title});
+ }
+ const out=[];
+ if(!starts.length)return out;
+ if(starts[0].i>0){
+  const part=lines.slice(0,starts[0].i);
+  if(part.some(x=>x.page===ctx.page))out.push({title:"前の練習の続き（見出し未確認）",start:part[0].page,end:part.at(-1).page,text:gptText(part),complete:false});
+ }
+ for(let j=0;j<starts.length;j++){
+  const a=starts[j],b=starts[j+1],part=lines.slice(a.i,b?b.i:lines.length);
+  if(!part.length)continue;
+  const content=part.slice(1).filter(x=>/[A-Za-z]{2,}/.test(x.text));
+  if(!content.length)continue;
+  const start=part[0].page,end=part.at(-1).page;
+  out.push({title:a.title,start,end,text:gptText(part),complete:!!b||hi===ctx.seg.end});
+ }
+ return out;
+}
+function gptText(rows){
+ let p=0,out=[];
+ for(const row of rows){
+  if(row.page!==p){p=row.page;out.push("\n--- p."+p+" ---");}
+  out.push(row.text);
+ }
+ return out.join("\n").trim();
+}
+function gptShow(sections,ctx){
+ gptSections=sections;const sel=$("gpt-section");
+ sel.replaceChildren(...sections.map((s,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=s.title+" · p."+s.start+(s.end!==s.start?"–"+s.end:"")+(s.complete?"":"（要確認）");return o;}));
+ // 表示ページから始まるドリルを優先。なければ現在ページを含む直近のまとまり
+ let idx=sections.findIndex(s=>s.start===ctx.page&&!/^lesson\b/i.test(s.title));
+ if(idx<0)idx=sections.findIndex(s=>s.start<=ctx.page&&s.end>=ctx.page);
+ sel.value=String(Math.max(0,idx));sel.disabled=false;gptUpdate();
+}
+function gptUpdate(){
+ const sec=gptSections[Number($("gpt-section").value)];
+ $("gpt-text").value=sec&&gptContext?gptSelectText(gptContext,sec):"";
+ $("gpt-copy").disabled=!$("gpt-text").value;
+}
+function gptFallback(ctx,status){
+ $("gpt-status").textContent=status;
+ gptShow([{title:"現在ページを含む練習項目（PDFで区切り確認）",start:ctx.page,end:ctx.page,text:"",complete:false}],ctx);
+}
+async function gptOpen(){
+ const id=++gptRun,ctx={unit:state.unit,page:state.page,ans:state.ans,seg:segOf(state.unit,state.page)};
+ ctx.key=docKey(ctx.unit,ctx.seg,ctx.ans);ctx.url=pdfUrl(ctx.unit,ctx.seg,ctx.ans);gptContext=ctx;
+ $("gpt-location").textContent="Book "+bookOf(ctx.unit)+" · Unit "+ctx.unit+" · p."+ctx.page;
+ $("gpt-pdf").href=ctx.url+"#page="+(ctx.page-ctx.seg.start+1);
+ $("gpt-share").hidden=!navigator.share;
+ $("gpt-dialog").showModal();
+ gptFallback(ctx,"教材の見出しを検索しています…（先にPDF添付用プロンプトもコピーできます）");
+ try{
+  let doc=docs.get(ctx.key);
+  if(!doc){const cached=await dbGet(ctx.key);if(id!==gptRun)return;if(cached)doc=await docFromData(ctx.key,cached);}
+  if(!doc&&relayBusy.has(ctx.key)){const data=await relayBusy.get(ctx.key);if(id!==gptRun)return;doc=docs.get(ctx.key)||await docFromData(ctx.key,toBuffer(data));}
+  if(!doc){gptFallback(ctx,"本文を取得できません。PDFを添付して見出し単位で練習してください。教材の保存後に再試行できます。");return;}
+  let lo=Math.max(ctx.seg.start,ctx.page-4),hi=Math.min(ctx.seg.end,ctx.page+5);
+  const cache=new Map();
+  for(;;){
+   const missing=[];for(let p=lo;p<=hi;p++)if(!cache.has(p))missing.push(p);
+   for(let k=0;k<missing.length;k+=4){
+    await Promise.all(missing.slice(k,k+4).map(async p=>{const n=p-ctx.seg.start+1;cache.set(p,n<=doc.numPages?await gptReadPage(doc,n,p):[]);}));
+    if(id!==gptRun)return;
+   }
+   const lines=[...cache.entries()].sort((a,b)=>a[0]-b[0]).flatMap(e=>e[1]);
+   const candidate=gptBuildSections(lines,ctx,lo,hi);
+   const before=candidate.some(s=>s.start<=ctx.page&&s.end>=ctx.page&&!s.title.includes("未確認"));
+   const after=candidate.some(s=>s.start>ctx.page)||candidate.some(s=>s.start<=ctx.page&&s.end>=ctx.page&&s.complete);
+   const newLo=before?lo:Math.max(ctx.seg.start,ctx.page-20,lo-4);
+   const newHi=after?hi:Math.min(ctx.seg.end,ctx.page+20,hi+4);
+   if(newLo===lo&&newHi===hi){
+    if(!candidate.length||!candidate.some(s=>s.start<=ctx.page&&s.end>=ctx.page)){gptFallback(ctx,"見出しを特定できません。PDFを添付して、練習項目の区切りを確認してください。");return;}
+    const nearby=candidate.filter(s=>s.end>=ctx.page-2&&s.start<=ctx.page+8);
+    $("gpt-status").textContent=nearby.length+"個の練習項目を検出しました。「要確認」はPDFで範囲を確認してください。";
+    gptShow(nearby,ctx);return;
+   }
+   lo=newLo;hi=newHi;
+  }
+ }catch(e){if(id===gptRun)gptFallback(ctx,"文字の抽出に失敗しました。PDF添付用のプロンプトを利用してください。");}
+}
+$("gpt-open").onclick=gptOpen;$("fs-gpt").onclick=gptOpen;
+$("gpt-close").onclick=()=>$("gpt-dialog").close();
+$("gpt-dialog").addEventListener("close",()=>{gptRun++;});
+$("gpt-section").onchange=gptUpdate;
+$("gpt-copy").onclick=async()=>{
+ const el=$("gpt-text"),value=el.value;
+ try{if(!navigator.clipboard)throw Error("clipboard");await navigator.clipboard.writeText(value);}
+ catch(e){el.focus();el.select();try{if(!document.execCommand("copy"))throw Error("copy");}catch(_){$("gpt-status").textContent="文章を選択しました。長押しメニューからコピーしてください。";return;}}
+ $("gpt-status").textContent="コピーしました。ChatGPTに貼り付けてください。";
+};
+$("gpt-share").onclick=async()=>{try{await navigator.share({title:"R.E.M.S. 練習プロンプト",text:$("gpt-text").value});}catch(e){if(e.name!=="AbortError")$("gpt-status").textContent="共有できません。コピーを使ってください。";}};
 
 renderWorker();
 go(state.unit,state.page,state.ans);
