@@ -133,7 +133,7 @@ body.noscroll{overflow:hidden}
 <header class="top"><div class="top-in">
  <a class="back" href="../">← まなびBOX</a>
  <div class="brand">R.E.M.S. <span>Reader</span></div>
- <span class="ver">v3.7</span>
+ <span class="ver">v3.8</span>
 </div></header>
 
 <main class="main">
@@ -188,7 +188,7 @@ body.noscroll{overflow:hidden}
 <dialog id="gpt-dialog" aria-labelledby="gpt-heading">
  <div class="gpt-head"><h2 id="gpt-heading">ChatGPTでR.E.M.S.練習</h2><button class="act" id="gpt-close" type="button">閉じる</button></div>
  <p class="note" id="gpt-location"></p>
- <p class="note">E1・E2など1レッスン分の英文を端末に保存し、次回から再抽出せずに使えます。</p>
+ <p class="note">PDFの埋め込み英文を直接抽出します。通常はOCRを使いません。英文の取得結果を端末に保存します。</p><label style="font-size:.82rem"><input type="checkbox" id="gpt-ocr-extra"> 画像の見出し・指示もOCRで補足（必要な場合のみ）</label><p class="note" id="gpt-diagnostic" role="status"></p>
  <section style="background:var(--soft);padding:12px;border-radius:12px;margin:10px 0" aria-label="教材の事前読取">
  <b>教材の事前読取・保存</b>
  <p class="note" id="gpt-cache-status" aria-live="polite">保存状況を確認中…</p>
@@ -582,19 +582,19 @@ function gptSelectText(ctx,sec){
 /* OCRは本文に文字レイヤーがあっても実行する。
    公式教材のExerciseラベル・指示文は画像のことが多いため。 */
 const GPT_VERIFIED_RANGES={E:{1:[1,15],2:[16,29],3:[30,42],4:[60,72],5:[73,85]}};
-const GPT_OFFICIAL_VERSIONS={"E-1-5-questions":"20240115105244","E-1-5-answers":"20240115114427"};
+const GPT_OFFICIAL_VERSIONS={"E-1-5-questions":"20240115195244","E-1-5-answers":"20240115204427"};
 function gptOfficialURL(ctx){const v=GPT_OFFICIAL_VERSIONS[ctx.unit+"-"+ctx.seg.ls+"-"+ctx.seg.le+"-"+(ctx.ans?"answers":"questions")];return pdfUrl(ctx.unit,ctx.seg,ctx.ans)+(v?"?v="+v:"");}
 const GPT_OCR_URL="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
 let gptEngine=null,gptOcrQueue=Promise.resolve(),gptProgress=null;
 const gptPageCache=new Map();
-const GPT_STORE_PREFIX="rems-text-v1:";
+const GPT_STORE_PREFIX="rems-text-v2:";
 const gptDiskKey=(key,p)=>GPT_STORE_PREFIX+key+"/"+p;
 const gptDiskRead=async(key,p)=>{
  const item=await dbGet(gptDiskKey(key,p));
- return item&&item.ocrOK&&Array.isArray(item.content)&&item.content.length?item:null;
+ return item&&item.ocrOK&&Array.isArray(item.content)?item:null;
 };
 async function gptDiskWrite(key,p,item){
- if(!item?.ocrOK||!item.content?.length)return false;
+ if(!item?.ocrOK||!Array.isArray(item.content))return false;
  try{await dbPut(gptDiskKey(key,p),item);return true;}catch(e){return false;}
 }
 async function gptSavedKeys(){
@@ -720,61 +720,61 @@ async function gptGetDoc(ctx,id){
  }
  ctx.doc=doc;return doc;
 }
+
+function gptTextLayerLines(items){
+ const rows=[];
+ for(const it of items){
+  if(!it.str?.trim())continue;
+  const x=it.transform[4],y=it.transform[5],h=Math.abs(it.transform[3])||it.height||10;
+  let row=rows.find(r=>Math.abs(r.y-y)<=Math.max(2,h*.24));
+  if(!row){row={y,parts:[]};rows.push(row);}
+  row.parts.push({x,s:it.str});
+ }
+ return rows.sort((a,b)=>b.y-a.y).map(r=>gptClean(r.parts.sort((a,b)=>a.x-b.x).map(p=>p.s).join(" "))).filter(Boolean).filter(gptStrip);
+}
+function gptWithLimit(p,ms,label){let timer;return Promise.race([p,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label)),ms);})]).finally(()=>clearTimeout(timer));}
 async function gptReadPage(ctx,absolute,id){
- const cacheKey=ctx.key+"/"+absolute;
- if(gptPageCache.has(cacheKey))return gptPageCache.get(cacheKey);
- const saved=await gptDiskRead(ctx.key,absolute);
+ const cacheKey=ctx.key+"/"+absolute,extra=$("gpt-ocr-extra").checked;
+ const status=(s)=>{if(id===gptRun)$("gpt-diagnostic").textContent=s;};
+ const saved=gptPageCache.get(cacheKey)||await gptDiskRead(ctx.key,absolute);
  if(id!==gptRun)throw Error("cancelled");
- if(saved){gptPageCache.set(cacheKey,saved);return saved;}
- const status=msg=>{if(id===gptRun)$("gpt-status").textContent=msg;};
- const progress=m=>{if(m.status==="recognizing text")status("p."+absolute+" 画像内の文字を認識中 "+Math.round((m.progress||0)*100)+"%");};
- let cv=null,layer=[],header=[],body=[],info=null,ocrOK=false,confidence=0;
+ if(saved&&(!extra||saved.ocrSupplement)){gptPageCache.set(cacheKey,saved);return saved;}
  let doc=ctx.doc;
- if(!doc&&!ctx.pdfAttempted){ctx.pdfAttempted=true;try{doc=await gptGetDoc(ctx,id);}catch(e){if(id!==gptRun)throw e;}}
- // PDFテキスト抽出は描画やOCRの成否と完全に分離する。
- if(doc){
-  try{
-   const pg=await doc.getPage(absolute-ctx.seg.start+1);
-   layer=gptPageTextLayer(await pg.getTextContent(),absolute,pg).filter(gptStrip);
+ if(!doc&&!ctx.pdfAttempted){
+  ctx.pdfAttempted=true;
+  try{doc=await gptGetDoc(ctx,id);}catch(e){ctx.pdfError=String(e.message||e);}
+ }
+ if(!doc)throw Error("PDF本体を取得できません："+(ctx.pdfError||"取得失敗")+"。PDFを直接読み込むを使ってください。");
+ status("PDF本体取得済み · "+doc.numPages+"ページ · p."+absolute+" テキスト抽出中");
+ const pg=await doc.getPage(absolute-ctx.seg.start+1);
+ const tc=await pg.getTextContent();
+ let body=gptTextLayerLines(tc.items),header=[],info=gptHeader(body.slice(0,12),ctx),ocrSupplement=false,confidence=0;
+ if(extra) {
+  let cv;
+  try {
    const v=pg.getViewport({scale:1}),vp=pg.getViewport({scale:Math.min(3,1600/v.width)});
-   cv=gptCanvas(vp.width,vp.height);await pg.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;
-  }catch(e){cv=null;}
- }
- body=layer.slice();info=gptHeader(layer.slice(0,12),ctx);
- if(!cv&&!gptUseful(layer).length){try{cv=await gptImagePage(ctx,absolute);}catch(e){}}
- if(id!==gptRun)throw Error("cancelled");
- if(cv){
-  // 番号・ドリル見出し・指示はページ上部の画像。本文がPDFテキストにある場合はそちらを保持。
-  try{
-   const top=gptCrop(cv,0,.40),a=await gptOCR(top,11,id,progress);
-   header=gptRows(a.text).filter(gptStrip);confidence=a.confidence;
-   info=gptHeader([...header,...layer.slice(0,12)],ctx)||info;
-   if(!info?.lesson){
-    const badge=gptCanvas(cv.width*.22,cv.height*.085);
-    badge.getContext("2d").drawImage(cv,cv.width*.355,cv.height*.04,cv.width*.22,cv.height*.085,0,0,badge.width,badge.height);
-    const b=await gptOCR(badge,7,id,progress);const lines=gptRows(b.text);
-    info=gptHeader([...lines,...header],ctx)||info;header=[...lines,...header];
+   cv=gptCanvas(vp.width,vp.height);
+   await pg.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;
+   const top=gptCrop(cv,0,.40);
+   const progress=m=>{if(m.status==="recognizing text")status("p."+absolute+" 見出しOCR "+Math.round((m.progress||0)*100)+"%");};
+   const a=await gptWithLimit(gptOCR(top,11,id,progress),20000,"見出しOCR時間切れ");
+   header=gptRows(a.text).filter(gptStrip);confidence=a.confidence;info=gptHeader([...header,...body.slice(0,12)],ctx)||info;ocrSupplement=!!header.length;
+   if(!gptUseful(body).length&&!body.some(t=>/definition file/i.test(t))){
+    const full=await gptWithLimit(gptOCR(cv,3,id,progress),20000,"本文OCR時間切れ");
+    const lines=gptRows(full.text).filter(gptStrip);
+    if(gptUseful(lines).length){body=lines;header=[];info=gptHeader(lines.slice(0,14),ctx)||info;}
    }
-  }catch(e){if(id!==gptRun)throw e;}
-  // 本文が画像のみのページも取得する。案内文だけのページは本文なしとして正直に扱う。
-  if(gptUseful(layer).join(" ").length<35&&!layer.some(t=>/definition file/i.test(t))){
-   try{
-    const a=await gptOCR(cv,3,id,progress),full=gptRows(a.text).filter(gptStrip);
-    if(gptUseful(full).join(" ").length>gptUseful(body).join(" ").length){
-     body=full;header=[];info=gptHeader(full.slice(0,14),ctx)||info;confidence=a.confidence;
-    }
-   }catch(e){if(id!==gptRun)throw e;}
-  }
-  cv.width=1;cv.height=1;
+  }catch(e){if(id!==gptRun)throw e;status("p."+absolute+" 見出しOCRを省略。PDF英文は保持します。");}
+  finally{if(cv){cv.width=1;cv.height=1;}}
  }
- const seen=new Set();
- const uniqueHeader=header.filter(t=>{const k=gptNorm(t);if(!k||seen.has(k)||body.some(v=>gptNorm(v)===k))return false;seen.add(k);return true;});const content=[...uniqueHeader,...body];
- // 本文の存在判定に画像見出しだけを使わない。
+ if(id!==gptRun)throw Error("cancelled");
+ const seen=new Set(body.map(gptNorm));
+ const content=[...header.filter(t=>{const n=gptNorm(t);if(!n||seen.has(n))return false;seen.add(n);return true;}),...body];
  const useful=gptUseful(body),hasText=useful.join(" ").length>=20;
- ocrOK=hasText||body.some(t=>/definition file/i.test(t));
- const value={page:absolute,info,content,body:useful,hasText,ocrOK,confidence,headerOK:!!header.length||!!info,numbers:gptNumber(body)};
- if(ocrOK&&content.length){gptPageCache.set(cacheKey,value);if(gptPageCache.size>200)gptPageCache.delete(gptPageCache.keys().next().value);await gptDiskWrite(ctx.key,absolute,value);}
- return value;
+ const value={page:absolute,info,content,body:useful,hasText,ocrOK:true,confidence,headerOK:!!info||!!header.length,ocrSupplement,numbers:gptNumber(body),textItems:tc.items.length};
+ status("p."+absolute+" · PDF文字要素 "+tc.items.length+" · 英文 "+useful.length+"行"+(extra?" · OCR補足"+(ocrSupplement?"済":"なし"):" · OCRなし"));
+ gptPageCache.set(cacheKey,value);if(gptPageCache.size>200)gptPageCache.delete(gptPageCache.keys().next().value);
+ await gptDiskWrite(ctx.key,absolute,value);return value;
 }
 function gptBuildPageSections(pages,ctx,lo,hi){
  const groups=[];
@@ -839,7 +839,7 @@ function gptSectionFromPages(ctx,lesson,start,end,pages,complete){
  for(let p=start;p<=end;p++){
   const item=pages.get(p);
   if(!item||!item.ocrOK){missing.push(p);continue;}
-  if(item.hasText){bodyCount++;words+=item.body.join(" ").split(/\s+/).length;}if(!item.headerOK)headers.push(p);
+  if(item.hasText){bodyCount++;words+=item.body.join(" ").split(/\s+/).length;}if(!item.headerOK&&item.hasText)headers.push(p);
   for(const line of item.content)rows.push({page:p,text:line});
  }
  return {lesson:gptLessonName(ctx,lesson),title:"Lesson "+gptLessonName(ctx,lesson),start,end,text:bodyCount?gptText(rows):"",complete:complete&&!missing.length&&!headers.length,bodyCount,words,missing,headers};
@@ -866,7 +866,7 @@ async function gptAnalyze(ctx,id,manual=null){
    if(!active())throw Error("cancelled");
    if(!pages.has(p)){
     $("gpt-status").textContent="p."+p+" 教材の英文を取得中…";
-    try{pages.set(p,await gptReadPage(ctx,p,id));}catch(e){if(!active())throw e;pages.set(p,{page:p,content:[],body:[],hasText:false,ocrOK:false,info:null});}
+    try{pages.set(p,await gptReadPage(ctx,p,id));}catch(e){if(!active())throw e;throw Error("p."+p+"： "+String(e.message||e));}
    }
    return pages.get(p);
   };
@@ -924,7 +924,7 @@ $("gpt-retry").onclick=async()=>{
  if(!gptContext||gptBatchRunning)return;const ctx=gptContext,id=++gptRun;
  // 保存済みでも認識が不完全なページだけを再認識する。
  for(const k of await gptSavedKeys())if(k.startsWith(GPT_STORE_PREFIX+ctx.key+"/")){
-  const v=await dbGet(k);if(!v?.headerOK||!v?.info?.lesson){await dbDel(k);gptPageCache.delete(k.slice(GPT_STORE_PREFIX.length));}
+  const v=await dbGet(k);if(!v?.ocrOK||($("gpt-ocr-extra").checked&&!v?.ocrSupplement)){await dbDel(k);gptPageCache.delete(k.slice(GPT_STORE_PREFIX.length));}
  }
  if(id!==gptRun)return;gptAnalyze(ctx,id);
 };
@@ -963,7 +963,7 @@ $("gpt-batch").onclick=async()=>{
    for(let p=target.seg.start;p<=target.seg.end;p++){
     if(!active())break;
     const k=gptDiskKey(target.key,p);
-    if(keys.has(k)){savedCount++;done++;meter.value=done;continue;}
+    if(keys.has(k)&&(!$("gpt-ocr-extra").checked||(await gptDiskRead(target.key,p))?.ocrSupplement)){savedCount++;done++;meter.value=done;continue;}
     $("gpt-cache-status").textContent=target.unit+" p."+p+" 読取中 · "+done+"/"+total+" · 保存 "+savedCount+" · 未取得 "+failed;
     let item=null;
     try{item=await gptReadPage(target,p,id);}catch(e){if(!active())break;}
