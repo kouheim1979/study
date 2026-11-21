@@ -190,7 +190,7 @@ body.noscroll{overflow:hidden}
  <p class="note" id="gpt-location"></p>
  <p class="note">E1・E2など1レッスン分を抽出します。PDFの文字情報を優先し、画像の見出し・指示を文字認識します。</p>
  <p class="gpt-status" id="gpt-status" role="status" aria-live="polite"></p><div class="gpt-actions"><button class="act" id="gpt-retry" type="button" hidden>読み取りを再試行</button><button class="act" id="gpt-fallback" type="button" hidden>PDF添付用に切替</button></div>
- <label for="gpt-lesson">レッスン</label><select id="gpt-lesson"></select><div class="gpt-actions"><label>開始ページ <input id="gpt-start" type="number" inputmode="numeric" style="width:85px"></label><label>終了ページ <input id="gpt-end" type="number" inputmode="numeric" style="width:85px"></label><button class="act" id="gpt-range" type="button">範囲を指定して抽出</button></div><p class="note">自動判定できない場合は教材の開始・終了ページを入力してください。</p><label for="gpt-section" hidden>抽出結果</label><select id="gpt-section" hidden disabled></select>
+ <label for="gpt-lesson">レッスン</label><select id="gpt-lesson"></select><div class="gpt-actions"><label>開始ページ <input id="gpt-start" type="number" inputmode="numeric" style="width:85px"></label><label>終了ページ <input id="gpt-end" type="number" inputmode="numeric" style="width:85px"></label><button class="act" id="gpt-range" type="button">範囲を指定して抽出</button><label class="act" for="gpt-file" style="margin:0">PDFを直接読み込む</label><input id="gpt-file" type="file" accept="application/pdf,.pdf" hidden></div><p class="note">自動判定できない場合は教材の開始・終了ページを入力してください。</p><label for="gpt-section" hidden>抽出結果</label><select id="gpt-section" hidden disabled></select>
  <details style="margin:10px 0"><summary>英文を手動で補足（読み取りに失敗した場合）</summary><label for="gpt-manual">教材からコピーした英文・指示文</label><textarea id="gpt-manual" placeholder="教材の英文を貼り付け"></textarea><button class="act" id="gpt-apply" type="button">英文をプロンプトに追加</button></details><label for="gpt-text">生成プロンプト（編集可）</label><textarea id="gpt-text" spellcheck="false"></textarea>
  <div class="gpt-actions"><button class="act primary" id="gpt-copy" type="button">プロンプトをコピー</button><a class="act" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPTを開く ↗</a><button class="act" id="gpt-share" type="button" hidden>共有</button><a class="act" id="gpt-pdf" target="_blank" rel="noopener noreferrer">公式PDF ↗</a></div>
  <p class="note" style="margin-top:10px">コピーした文章をChatGPTに貼り付け、音声モードで開始してください。文字認識は端末内で行います（初回は認識エンジンのダウンロードが必要）。コピー前に練習番号・本文を確認してください。</p>
@@ -572,7 +572,7 @@ function gptSelectText(ctx,sec){
 
 /* OCRは本文に文字レイヤーがあっても実行する。
    公式教材のExerciseラベル・指示文は画像のことが多いため。 */
-const GPT_VERIFIED_RANGES={E:{1:[1,15]}};
+const GPT_VERIFIED_RANGES={E:{1:[1,15],2:[16,29],3:[30,42],4:[60,72],5:[73,85]}};
 const GPT_OFFICIAL_VERSIONS={"E-1-5-questions":"20240115105244","E-1-5-answers":"20240115114427"};
 function gptOfficialURL(ctx){const v=GPT_OFFICIAL_VERSIONS[ctx.unit+"-"+ctx.seg.ls+"-"+ctx.seg.le+"-"+(ctx.ans?"answers":"questions")];return pdfUrl(ctx.unit,ctx.seg,ctx.ans)+(v?"?v="+v:"");}
 const GPT_OCR_URL="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
@@ -730,11 +730,11 @@ async function gptReadPage(ctx,absolute,id){
   cv.width=1;cv.height=1;
  }
  const seen=new Set();
- const content=[...header,...body].filter(t=>{const k=gptNorm(t);if(!k||seen.has(k))return false;seen.add(k);return true;});
+ const uniqueHeader=header.filter(t=>{const k=gptNorm(t);if(!k||seen.has(k)||body.some(v=>gptNorm(v)===k))return false;seen.add(k);return true;});const content=[...uniqueHeader,...body];
  // 本文の存在判定に画像見出しだけを使わない。
  const useful=gptUseful(body),hasText=useful.join(" ").length>=20;
  ocrOK=hasText||body.some(t=>/definition file/i.test(t));
- const value={page:absolute,info,content,body:useful,hasText,ocrOK,confidence,numbers:gptNumber(body)};
+ const value={page:absolute,info,content,body:useful,hasText,ocrOK,confidence,headerOK:!!header.length||!!info,numbers:gptNumber(body)};
  if(ocrOK&&info?.lesson)gptPageCache.set(cacheKey,value);
  return value;
 }
@@ -797,16 +797,17 @@ function gptFallback(ctx,status){
 
 
 function gptSectionFromPages(ctx,lesson,start,end,pages,complete){
- const rows=[],missing=[];let bodyCount=0,words=0;
+ const rows=[],missing=[],headers=[];let bodyCount=0,words=0;
  for(let p=start;p<=end;p++){
   const item=pages.get(p);
   if(!item||!item.ocrOK){missing.push(p);continue;}
-  if(item.hasText){bodyCount++;words+=item.body.join(" ").split(/\s+/).length;}
+  if(item.hasText){bodyCount++;words+=item.body.join(" ").split(/\s+/).length;}if(!item.headerOK)headers.push(p);
   for(const line of item.content)rows.push({page:p,text:line});
  }
- return {lesson:ctx.unit+lesson,title:"Lesson "+ctx.unit+lesson,start,end,text:bodyCount?gptText(rows):"",complete:complete&&!missing.length,bodyCount,words,missing};
+ return {lesson:gptLessonName(ctx,lesson),title:"Lesson "+gptLessonName(ctx,lesson),start,end,text:bodyCount?gptText(rows):"",complete:complete&&!missing.length&&!headers.length,bodyCount,words,missing,headers};
 }
-function gptRangeFor(ctx,lesson){return GPT_VERIFIED_RANGES[ctx.unit]?.[lesson]||null;}
+function gptRangeFor(ctx,lesson){return lesson==="REV1"&&ctx.unit==="E"&&ctx.seg.ls===1?[43,59]:(GPT_VERIFIED_RANGES[ctx.unit]?.[lesson]||null);}
+function gptLessonName(ctx,lesson){return lesson==="REV1"?"REV 1":ctx.unit+lesson;}
 function gptSelectLesson(ctx,n){
  ctx.lesson=n;
  $("gpt-lesson").value=String(n);
@@ -868,22 +869,21 @@ async function gptAnalyze(ctx,id,manual=null){
 function gptOpen(){
  const id=++gptRun,ctx={unit:state.unit,page:state.page,ans:state.ans,seg:segOf(state.unit,state.page)};
  ctx.key=docKey(ctx.unit,ctx.seg,ctx.ans);ctx.baseUrl=pdfUrl(ctx.unit,ctx.seg,ctx.ans);ctx.url=gptOfficialURL(ctx);gptContext=ctx;
- const select=$("gpt-lesson");select.replaceChildren(...Array.from({length:ctx.seg.le-ctx.seg.ls+1},(_,i)=>{
-  const n=ctx.seg.ls+i,o=document.createElement("option");o.value=String(n);o.textContent="Lesson "+ctx.unit+n;return o;
- }));
+ const select=$("gpt-lesson");const options=Array.from({length:ctx.seg.le-ctx.seg.ls+1},(_,i)=>ctx.seg.ls+i);if(ctx.unit==="E"&&ctx.seg.ls===1)options.splice(3,0,"REV1");select.replaceChildren(...options.map(n=>{const o=document.createElement("option");o.value=String(n);o.textContent=n==="REV1"?"REV 1（復習）":"Lesson "+ctx.unit+n;return o;}));
  const known=Object.entries(GPT_VERIFIED_RANGES[ctx.unit]||{}).find(([n,r])=>ctx.page>=r[0]&&ctx.page<=r[1]);
- gptSelectLesson(ctx,known?Number(known[0]):ctx.seg.ls);
+ gptSelectLesson(ctx,known?Number(known[0]):ctx.unit==="E"&&ctx.seg.ls===1&&ctx.page>=43&&ctx.page<=59?"REV1":ctx.seg.ls);
  $("gpt-location").textContent="Book "+bookOf(ctx.unit)+" · Unit "+ctx.unit+" · p."+ctx.page;
  $("gpt-pdf").href=ctx.url+"#page="+(ctx.page-ctx.seg.start+1);$("gpt-share").hidden=!navigator.share;
  $("gpt-manual").value="";$("gpt-dialog").showModal();gptAnalyze(ctx,id);
 }
-$("gpt-lesson").onchange=()=>{if(!gptContext)return;gptContext.explicit=true;gptSelectLesson(gptContext,Number($("gpt-lesson").value));gptAnalyze(gptContext,++gptRun);};
+$("gpt-lesson").onchange=()=>{if(!gptContext)return;gptContext.explicit=true;gptSelectLesson(gptContext,$("gpt-lesson").value==="REV1"?"REV1":Number($("gpt-lesson").value));gptAnalyze(gptContext,++gptRun);};
 $("gpt-range").onclick=()=>{
  if(!gptContext)return;
  const lo=Number($("gpt-start").value),hi=Number($("gpt-end").value);
  if(!Number.isInteger(lo)||!Number.isInteger(hi)||lo<gptContext.seg.start||hi>gptContext.seg.end||lo>hi){$("gpt-status").textContent="教材内の正しい開始・終了ページを指定してください。";return;}
  gptAnalyze(gptContext,++gptRun,[lo,hi]);
 };
+$("gpt-file").onchange=async e=>{const file=e.target.files?.[0],ctx=gptContext;e.target.value="";if(!file||!ctx)return;const id=++gptRun;$("gpt-status").textContent="端末のPDFを読み込み中…";try{const buf=await file.arrayBuffer();const lib=await pdfjs();const doc=await lib.getDocument({data:new Uint8Array(buf)}).promise;if(id!==gptRun)return;if(doc.numPages!==ctx.seg.end-ctx.seg.start+1){await doc.destroy();throw Error("ページ数が教材と一致しません");}ctx.doc=doc;for(const k of [...gptPageCache.keys()])if(k.startsWith(ctx.key+"/"))gptPageCache.delete(k);gptAnalyze(ctx,id);}catch(e){if(id===gptRun)$("gpt-status").textContent="PDF読込失敗："+String(e.message||e);}};
 $("gpt-retry").onclick=()=>{
  if(!gptContext)return;for(const k of [...gptPageCache.keys()])if(k.startsWith(gptContext.key+"/"))gptPageCache.delete(k);
  gptAnalyze(gptContext,++gptRun);
