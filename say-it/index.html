@@ -245,7 +245,7 @@ function sync(){
  document.body.dataset.page=page;
  document.querySelectorAll('[data-nav]').forEach(el=>{el.setAttribute('aria-current',(el.dataset.nav===page||(page==='finish'&&el.dataset.nav==='home')||(page==='practice'&&el.dataset.nav==='home'))?'page':'false')});
 }
-function navigate(dest){stopClock();if(dest==='home')session=null;page=dest;render();window.scrollTo({top:0,left:0,behavior:'instant'})}
+function navigate(dest){stopClock();if(dest==='home')session=null;page=dest;render();window.scrollTo(0,0)}
 function home(){
  const p=pool(),available=cfg.count==='全部'?p.length:Math.min(p.length,Number(cfg.count));
  const rate=pct(progress.correct,progress.total);
