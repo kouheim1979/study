@@ -15,6 +15,188 @@ button,select,input{font:inherit}button{cursor:pointer}button:focus-visible,sele
 @media(max-width:400px){.daytag{font-size:10px;padding:9px 12px}.homehero h2{font-size:24px}.chip{padding:10px 11px}.stat-card .stat-number{font-size:23px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
+<style>
+/* SAY IT. — Editorial speaking studio, November 2026 */
+:root{
+  --ink:#172a27;
+  --muted:#75827b;
+  --paper:#f8f7f2;
+  --white:#fffefa;
+  --line:#dfe6dc;
+  --purple:#ef6246;
+  --purpleDeep:#d34c34;
+  --lime:#c9f27c;
+  --good:#197758;
+  --bad:#c65a4a;
+  --shadow:0 7px 0 rgba(28,51,43,.035);
+}
+html{scroll-behavior:smooth}
+body{background:#eeeee8;color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
+button{transition:transform .15s,background .15s,border-color .15s}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #e5a45c;outline-offset:3px}
+.app{max-width:1580px;grid-template-columns:242px minmax(0,1fr);background:var(--paper);box-shadow:none;border-left:1px solid #e5e7df;border-right:1px solid #e5e7df}
+.sidebar{background:#fffefa;color:var(--ink);border-right:1px solid #e5e8e0;padding:32px 20px;gap:29px}
+.brand{margin:0 9px 18px;gap:12px}
+.brandmark{height:45px;width:45px;border-radius:13px;background:var(--purple);color:#fff;font-size:22px;transform:none;box-shadow:4px 4px 0 #facdbb}
+.brand h1{font-size:26px;letter-spacing:-.07em}
+.brand p{color:#849085;letter-spacing:.09em;font-size:10px}
+.nav button{color:#66746b;border-radius:11px;font-size:13px;padding:14px 13px;font-weight:780}
+.nav button:hover{background:#f4f3ee;color:var(--ink)}
+.nav button.active{background:#183a31;color:#fff}
+.nav button.active .navico{color:var(--lime)}
+.navico{font-size:22px}
+.sideline{background:#e7e9e1}
+.sidebar>div[style*="padding:0 11px"]{color:#7f8d83!important}
+.sidefoot{border:1px solid #dce5d8;background:#f0f5e7;border-radius:18px;padding:19px}
+.sidefoot .small{color:#60776b;font-weight:750}
+.sidefoot .big{color:#193a31;font-size:38px}
+.sidefoot .big span{color:#60776b}
+.sidefoot .mini-track{background:#d7e5d2}
+.sidefoot .mini-track i{background:var(--purple)}
+.main{max-width:1190px;width:100%;margin:0 auto;padding:35px clamp(30px,4.4vw,72px) 90px}
+.topline{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--purple);letter-spacing:.13em;font-size:11px;font-weight:900}
+.daytag{background:#edf1e8;color:#617369;border:1px solid #e2e7dc;border-radius:8px;font-size:11px;padding:8px 12px}
+.homehero{min-height:320px;background:#fc8363;border-radius:26px;padding:42px 46px;box-shadow:6px 7px 0 #e9e9df;color:#1e302c;isolation:isolate}
+.homehero::before{width:425px;height:425px;right:-85px;top:-185px;background:#ffb29c;border:0;opacity:.7;transform:rotate(-18deg);border-radius:47% 53% 65% 35%}
+.homehero::after{width:295px;height:295px;right:18%;top:56%;border:1px solid #1b393522;border-radius:50%}
+.hero-content{max-width:590px}
+.hero-kicker{display:inline-flex;background:#17392f;border-radius:100px;color:#ddf69f;font-size:10px;letter-spacing:.14em;padding:9px 14px;margin-bottom:22px}
+.homehero h2{font-size:clamp(33px,3.8vw,49px);line-height:1.37;letter-spacing:-.085em;margin:0 0 13px;color:#132c26;position:relative}
+.homehero p{color:#344d43;line-height:1.85;font-size:13px;font-weight:600}
+.hero-start{background:#163a30;color:#fff;min-height:46px;border-radius:10px;padding:14px 22px;box-shadow:4px 5px 0 #ffe0c5;margin-top:23px;font-weight:900;font-size:13px}
+.hero-start:hover{background:#244b3e;filter:none;transform:translateY(-2px)}
+.hero-art{right:7%;top:70px;transform:rotate(11deg);opacity:1}
+.bubble{width:178px;height:125px;font-size:50px;letter-spacing:-.075em;border-radius:28px 28px 8px 28px;background:#fffcef;box-shadow:9px 10px 0 #153a3129;color:#18382d;transform:rotate(-8deg);border:2px solid #18382d}
+.bubble::after{right:-10px;bottom:-23px;width:45px;height:38px;transform:rotate(-25deg);background:#c9f27c;border:2px solid #18382d;border-radius:14px 14px 9px 14px}
+.section-head{margin:42px 0 17px;align-items:baseline}
+.section-head h3{font-size:20px;letter-spacing:-.055em}
+.section-head h3::before{content:"";display:inline-block;width:9px;height:9px;margin-right:10px;background:var(--purple);border-radius:2px;transform:rotate(-12deg) translateY(-2px)}
+.section-head span{color:#88978d;font-size:11px}
+.setup{background:#fffefa;border-radius:22px;border:1px solid #e1e8de;box-shadow:5px 5px 0 #eaece4;padding:30px}
+.form-label{color:#4c6157;font-size:12px;margin:0 0 11px;letter-spacing:0}
+.form-label::before{content:"";display:inline-block;height:6px;width:6px;border-radius:50%;background:#ee7a62;margin-right:7px;vertical-align:2px}
+.choices{gap:8px}
+.chip{border-radius:9px;border:1px solid #dae2da;background:#f6f7f1;color:#64746a;padding:12px 19px;font-weight:800;font-size:13px}
+.chip:hover{border-color:#f2a18f;color:#b94b37}
+.chip.selected{background:#193d32;border-color:#193d32;color:#fff;box-shadow:none}
+.setupgrid{gap:26px;margin-top:28px}
+.control-select{border-radius:9px;background-color:#f6f7f1;border-color:#dae2da;color:#223c33;min-height:48px}
+.timers .chip{padding:12px 13px}
+.start-row{border-top:1px dashed #d7e0d3;margin-top:30px;padding-top:25px}
+.start-row .caption{color:#78887b}
+.primary{background:#ee6245;color:#fff;border-radius:11px;box-shadow:4px 4px 0 #ffdbca;font-size:14px;padding:16px 24px}
+.primary:hover{background:#d24c37;transform:translateY(-2px)}
+.mini-grid{gap:13px}
+.stat-card{background:#fffefa;border:1px solid #e0e7dc;border-radius:17px;box-shadow:3px 3px 0 #eaede5;padding:19px 22px}
+.stat-card .stat-title{color:#7a897d;font-size:12px}
+.stat-card .stat-number{color:#1a3b30;font-size:32px}
+.stat-card .stat-caption{color:#929f95}
+.progress-header{margin-top:2px}
+.back{border-color:#dbe4d9;background:#fffefa;color:#466055;border-radius:9px}
+.back:hover{background:#f2f3eb;color:#203d32}
+.progress-meta{color:#65796b;font-size:13px}
+.progress-header strong{color:#183b30!important}
+.progress-track{height:9px;margin:18px 0 22px;background:#e6ece3;border-radius:30px}
+.progress-track>div{background:#f06d4c}
+.question-card{border:1px solid #e2e7db;border-radius:24px;background:#fffcf5;box-shadow:7px 8px 0 #e8ede4;min-height:480px;padding:clamp(25px,4vw,47px)}
+.question-card::before{content:"SPEAK OUT LOUD";position:absolute;right:30px;bottom:19px;color:#dde5d8;font-size:9px;letter-spacing:.2em;font-weight:900;pointer-events:none}
+.pill{background:#e7f0e6;color:#2c654c;border:1px solid #d0e5d0;padding:9px 15px;font-weight:800}
+.timer{font-size:19px;color:#e96047;font-variant-numeric:tabular-nums}
+.timer-dot{background:#ed674d;box-shadow:0 0 0 5px #ffecdc}
+.timer.out{color:var(--bad)}
+.qbody{padding:36px 0 30px}
+.q-kicker{font-size:11px;letter-spacing:.18em;color:#e5775e;font-weight:900}
+.japanese{font-size:clamp(29px,3.85vw,47px);color:#1b372e;line-height:1.5;letter-spacing:-.065em;font-weight:900}
+.prompt{display:inline-flex;align-items:center;gap:8px;background:#eef2e8;border-radius:99px;color:#5f786a;padding:9px 16px;margin-top:26px;font-size:12px;font-weight:750}
+.prompt::before{content:"●";font-size:10px;color:#ed795c}
+.answer-zone{border-top:1px dashed #d9e2d4;padding-top:23px;min-height:100px;z-index:1}
+.reveal{background:#ed6748;color:#fff;min-width:205px;border-radius:12px;box-shadow:5px 6px 0 #fac7b0;font-size:15px}
+.reveal:active{box-shadow:1px 2px 0 #fac7b0}
+.en-text{color:#1a4b3b;font-size:clamp(23px,3vw,34px);line-height:1.45}
+.tip{color:#697e6f}
+.ghost{border:1px solid #dce4d8;color:#405d4f;border-radius:10px;background:#fffefa}
+.ghost:hover{background:#eff4eb}
+.miss,.got{border-radius:10px;font-size:13px;min-height:48px}
+.miss{background:#fff0e8;color:#bb563f;border:1px solid #f7d7cd}
+.got{background:#d4f2b8;color:#1d5c40;border:1px solid #b9e59b}
+.miss:hover{background:#fce5db}.got:hover{background:#c5eaa4}
+.assist-row{color:#819185}
+.typing-btn{color:#517461}
+.typebox{background:#eef2e9}
+.typebox label{color:#6c7e71}
+.typebox input{border-color:#cfdbcc}
+.typebox input:focus{border-color:#e57860}
+.finish-card{background:#fffefa;border-color:#dfe8da;box-shadow:7px 7px 0 #e5ebe1}
+.finish-emblem{background:#f7bd91;color:#173c2f;box-shadow:6px 6px 0 #d4e9c7}
+.finish-card h2{color:#183b30}
+.finish-card p{color:#78887b}
+.finish-scores small{color:#758879}
+.stats-section{background:#fffefa;border:1px solid #dee7da;border-radius:20px;box-shadow:5px 5px 0 #e8ede4}
+.stats-section h3{color:#173b30}
+.weak-item{background:#fffefa;border-color:#e4e9df}
+.weak-tag{background:#ffebe1;color:#b15d43}
+.secondary{background:#fffefa;border-color:#d4e2d5;color:#486152}
+.secondary:hover{background:#eff4eb}
+.kbd{background:#eff3eb;border-color:#dbe5d8;color:#687a6d}
+.toast{background:#183e32;border-radius:11px}
+@media(max-width:1100px){
+  .hero-art{right:3%;opacity:.78}
+  .homehero h2{max-width:520px}
+}
+@media(max-width:760px){
+  body{background:#f8f7f2}
+  .app{padding-bottom:92px;border:0}
+  .main{padding:22px 17px 42px}
+  .topline{margin-bottom:17px;padding-bottom:13px}
+  .eyebrow{font-size:10px;letter-spacing:.09em}
+  .daytag{font-size:10px}
+  .homehero{min-height:260px;padding:30px 25px 32px;border-radius:21px;box-shadow:4px 5px 0 #ebece4}
+  .hero-kicker{font-size:9px;letter-spacing:.1em;padding:8px 11px;margin-bottom:18px}
+  .homehero h2{font-size:clamp(30px,8vw,37px);max-width:340px;line-height:1.4}
+  .homehero p{font-size:11px;max-width:275px;color:#375044;line-height:1.8}
+  .hero-art{right:-7px;top:33px;opacity:.32;transform:rotate(15deg)}
+  .bubble{font-size:34px;width:121px;height:83px}
+  .hero-start{font-size:12px;margin-top:22px;padding:13px 17px}
+  .section-head{margin:32px 0 15px}
+  .section-head h3{font-size:19px}
+  .section-head span{font-size:10px}
+  .setup{padding:22px 17px;box-shadow:3px 4px 0 #eaede5}
+  .setupgrid{grid-template-columns:1fr;gap:25px;margin-top:26px}
+  .chip{padding:11px 15px;font-size:12px}
+  .timers .chip{padding:11px 12px}
+  .start-row{margin-top:26px;padding-top:22px}
+  .primary{box-shadow:4px 4px 0 #f9d1c1}
+  .mini-grid{gap:7px}
+  .stat-card{padding:16px 10px;border-radius:13px;box-shadow:2px 3px 0 #e8ece4}
+  .stat-card .stat-number{font-size:25px}
+  .stat-card .stat-title{font-size:10px}
+  .question-card{min-height:calc(100dvh - 280px);padding:23px 20px;border-radius:19px;box-shadow:4px 5px 0 #e4ebdf}
+  .question-card::before{right:18px;bottom:12px;font-size:8px}
+  .qbody{padding:26px 0}
+  .japanese{font-size:clamp(28px,7vw,37px);line-height:1.53}
+  .prompt{font-size:11px;margin-top:22px}
+  .en-text{font-size:clamp(23px,6.5vw,29px)}
+  .answer-actions{flex-direction:column;align-items:stretch}
+  .answer-actions .ghost{align-self:flex-start}
+  .rate-actions{width:100%;gap:9px}
+  .rate-actions button{flex:1;padding:12px 8px;min-width:0}
+  .mobile-nav{bottom:12px;left:12px;right:12px;border:1px solid #dfe8df;background:#fffefa;box-shadow:0 8px 30px rgba(20,55,43,.12);border-radius:19px;padding:9px 8px calc(9px + env(safe-area-inset-bottom)*.25)}
+  .mobile-nav button{color:#879488;font-size:10px;gap:2px;min-height:48px}
+  .mobile-nav button span{font-size:21px}
+  .mobile-nav button.active{color:#e7593f}
+  .stats-section{padding:20px 16px}
+}
+@media(max-width:390px){
+ .homehero{padding:25px 21px}
+ .homehero h2{font-size:28px}
+ .hero-art{opacity:.20}
+ .chip{padding:11px 13px}
+ .rate-actions button{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+</style>
 </head>
 <body>
 <div class="app">
@@ -24,7 +206,7 @@ button,select,input{font:inherit}button{cursor:pointer}button:focus-visible,sele
  <div class="sideline"></div><div style="padding:0 11px;color:#8490a2;font-size:11px;line-height:1.9">見て、言って、確かめる。<br>英語を口から出す練習。</div>
  <div class="sidefoot"><div class="small">累計トレーニング</div><div class="big" id="sideTotal">0 <span>文</span></div><div class="mini-track"><i id="sideBar"></i></div></div>
 </aside>
-<main class="main"><div class="topline"><div class="eyebrow">TRAIN YOUR ENGLISH REFLEX</div><div class="daytag" id="dayTag">DAILY PRACTICE</div></div><div id="view" aria-live="polite"></div></main>
+<main class="main"><div class="topline"><div class="eyebrow">SAY IT. / SPEAKING STUDIO</div><div class="daytag" id="dayTag">DAILY PRACTICE</div></div><div id="view" aria-live="polite"></div></main>
 </div>
 <nav class="mobile-nav" aria-label="メニュー"><button class="active" data-nav="home"><span>⌂</span>練習</button><button data-nav="weak"><span>↻</span>苦手</button><button data-nav="stats"><span>▤</span>記録</button></nav>
 <div id="toast" class="toast" role="status"></div>
@@ -74,7 +256,7 @@ function go(p){if(p==='weak'&&!weakItems().length){page='weak';render();return}p
 function currentPool(){return BANK.filter(q=>(config.level==='すべて'||q.level===config.level)&&(config.topic==='すべて'||q.topic===config.topic))}
 function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function buttonSet(items,selected,attr){return items.map(item=>`<button class="chip ${selected===item?'selected':''}" data-${attr}="${escapeHTML(item)}" aria-pressed="${selected===item}">${item==='all'?'全部':escapeHTML(item)}</button>`).join('')}
-function renderHome(){const available=currentPool().length;els.view.innerHTML=`<div class="view"><section class="homehero"><div class="hero-content"><div class="hero-kicker">SPEAK FAST. THINK IN ENGLISH.</div><h2>考えるより先に、<br>英語が出てくる自分へ。</h2><p>日本語を見て声に出す → 答えを確認。<br>短い反復で、英語の反射神経を鍛えよう。</p><button id="heroStart" class="hero-start">今すぐ10問チャレンジ →</button></div><div class="hero-art" aria-hidden="true"><div class="bubble">Hello!</div></div></section>
+function renderHome(){const available=currentPool().length;els.view.innerHTML=`<div class="view"><section class="homehero"><div class="hero-content"><div class="hero-kicker">SPEAK WITH CONFIDENCE · EVERY DAY</div><h2>英語が、<br>口から出る。</h2><p>日本語を見て声に出す → 答えを確認。<br>短い反復で、英語の反射神経を鍛えよう。</p><button id="heroStart" class="hero-start">10問ではじめる ↗</button></div><div class="hero-art" aria-hidden="true"><div class="bubble">SAY!</div></div></section>
 <div class="section-head"><h3>今日のトレーニング</h3><span>設定はいつでも変更できます</span></div><section class="setup"><div class="form-label">難易度を選ぶ</div><div class="choices" id="levels">${buttonSet(['すべて','初級','中級','上級'],config.level,'level')}</div><div class="setupgrid"><div><div class="form-label">出題テーマ</div><select class="control-select" id="topic" aria-label="出題テーマ">${uniqueTopics.map(t=>`<option value="${t}" ${t===config.topic?'selected':''}>${t}</option>`).join('')}</select></div><div><div class="form-label">制限時間</div><div class="timers">${[3,5,10,0].map(t=>`<button class="chip ${config.timer===t?'selected':''}" data-timer="${t}">${t===0?'なし':t+'秒'}</button>`).join('')}</div></div></div><div class="setupgrid"><div><div class="form-label">練習する問題数</div><div class="choices">${buttonSet([5,10,20,'全部'],config.count,'count')}</div></div><div><div class="form-label">練習のコツ</div><div style="font-size:12px;line-height:1.9;color:#818da0">まず声に出して、答えを確認。<br>別の自然な英語でもOKです。</div></div></div><div class="start-row"><div class="caption">対象 <b>${available}問</b> ／ 全 <b>${BANK.length}問</b> からランダム出題</div><button class="primary" id="start">練習スタート <span aria-hidden="true">→</span></button></div></section>
 <div class="section-head"><h3>これまでの記録</h3><span>学習データはこの端末に保存</span></div><div class="mini-grid">${statCards()}</div></div>`;
 els.view.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{config.level=b.dataset.level;config.topic='すべて';renderHome()});els.view.querySelectorAll('[data-count]').forEach(b=>b.onclick=()=>{config.count=isNaN(Number(b.dataset.count))?'全部':Number(b.dataset.count);renderHome()});els.view.querySelectorAll('[data-timer]').forEach(b=>b.onclick=()=>{config.timer=Number(b.dataset.timer);renderHome()});document.getElementById('topic').onchange=e=>{config.topic=e.target.value;renderHome()};document.getElementById('start').onclick=()=>start(false);document.getElementById('heroStart').onclick=()=>{const oldCount=config.count;config.count=10;start(false);config.count=oldCount}}
