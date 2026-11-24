@@ -7,6 +7,7 @@ GitHub Pages: https://kouheim1979.github.io/study/
 | フォルダ | タイトル | 分野 |
 |---|---|---|
 | [say-it](say-it/) | SAY IT.（瞬間英作文・初級〜上級140問・音声再生・苦手復習） | 英語 |
+| [rems-drill](rems-drill/) | REMS ドリル（R.E.M.S.式の反復スピーキングドリル・10ユニット211文・間隔復習・発音ラボ） | 英語 |
 | [rems-reader](rems-reader/) | R.E.M.S. Reader（QQEnglish公式PDF教材ビューア） | 英語 |
 | [shadowing-studio](shadowing-studio/) | Shadowing Studio（6ステップの英語シャドーイング・録音と添削の受け渡し） | 英語 |
 | [echo-lines](echo-lines/) | Echo Lines（テキストから自動でシャドーイング教材を作成・端末の読み上げを使用） | 英語 |
