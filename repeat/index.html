@@ -2579,12 +2579,12 @@ a {
 /**
  * REPEAT – English Speaking Lab
  * Voice Interaction Engine with Strict Finite State Machine (FSM)
- * States: IDLE -> SPEAKING -> LISTENING -> EVALUATING -> CORRECTING | NEXT
+ * A turn owns playback, microphone startup, listening, and delayed callbacks.
  *
  * Safeguards:
- * - Monotonic session token prevents stale callbacks from advancing state
+ * - Aborting the turn releases pending operations before another turn starts
  * - Strict mutual exclusion: STT never runs while TTS is speaking
- * - iPhone Safari Audio/SpeechSynthesis unlock & silent-gap guard
+ * - The first microphone request on Safari starts from the learner's tap
  * - Graceful handling of mic denial, network error, Bluetooth disconnect, visibilitychange
  * - Screen Wake Lock API integration for Walking Mode
  */
@@ -2594,6 +2594,8 @@ a {
   const STATES = Object.freeze({
     IDLE: 'IDLE',
     SPEAKING: 'SPEAKING',
+    READY: 'READY',
+    STARTING: 'STARTING',
     LISTENING: 'LISTENING',
     EVALUATING: 'EVALUATING',
     CORRECTING: 'CORRECTING',
@@ -2601,20 +2603,23 @@ a {
   });
 
   const ALLOWED_TRANSITIONS = {
-    IDLE: ['SPEAKING', 'LISTENING', 'IDLE'],
-    SPEAKING: ['LISTENING', 'EVALUATING', 'NEXT', 'IDLE', 'SPEAKING'],
-    LISTENING: ['EVALUATING', 'SPEAKING', 'NEXT', 'IDLE'],
-    EVALUATING: ['CORRECTING', 'NEXT', 'LISTENING', 'IDLE'],
-    CORRECTING: ['SPEAKING', 'LISTENING', 'NEXT', 'IDLE'],
-    NEXT: ['SPEAKING', 'LISTENING', 'IDLE']
+    IDLE: ['SPEAKING', 'READY', 'STARTING', 'EVALUATING', 'IDLE'],
+    SPEAKING: ['SPEAKING', 'READY', 'STARTING', 'NEXT', 'IDLE'],
+    READY: ['STARTING', 'SPEAKING', 'EVALUATING', 'IDLE'],
+    STARTING: ['LISTENING', 'EVALUATING', 'IDLE'],
+    LISTENING: ['EVALUATING', 'IDLE'],
+    EVALUATING: ['CORRECTING', 'NEXT', 'SPEAKING', 'READY', 'STARTING', 'IDLE'],
+    CORRECTING: ['SPEAKING', 'READY', 'STARTING', 'NEXT', 'IDLE'],
+    NEXT: ['SPEAKING', 'READY', 'IDLE']
   };
 
   class VoiceEngine {
     constructor(options = {}) {
       this.state = STATES.IDLE;
       this.paused = false;
-      this.sessionToken = 0; // Incremented on stop/reset/navigation to invalidate stale callbacks
-      this.activeTimers = new Set();
+      this.turn = new AbortController();
+      this.utterance = null;
+      this.outputReadyAt = 0;
       this.recognition = null;
       this.wakeLock = null;
       this.voices = [];
@@ -2624,6 +2629,7 @@ a {
       this.onAudioLevel = options.onAudioLevel || (() => {});
 
       this.capabilities = this._detectCapabilities();
+      this.needsMicTap = this.capabilities.isIOS || this.capabilities.isSafari;
       this._bindVisibilityGuard();
       this._loadVoices();
     }
@@ -2686,34 +2692,17 @@ a {
       return true;
     }
 
-    _setTimer(fn, ms, token) {
-      const id = setTimeout(() => {
-        this.activeTimers.delete(id);
-        if (token !== this.sessionToken || this.paused) return;
-        fn();
-      }, ms);
-      this.activeTimers.add(id);
-      return id;
-    }
-
-    clearAllTimers() {
-      for (const id of this.activeTimers) {
-        clearTimeout(id);
-      }
-      this.activeTimers.clear();
-    }
-
-    /**
-     * Must be called inside a user tap/click handler on iOS Safari to unlock SpeechSynthesis
-     */
-    unlockAudioForIOS() {
-      if (!this.capabilities.hasTTS) return;
-      try {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance('');
-        u.volume = 0;
-        window.speechSynthesis.speak(u);
-      } catch (_) { /* ignore */ }
+    wait(ms, signal = this.turn.signal) {
+      if (signal.aborted) return Promise.resolve(false);
+      return new Promise((resolve) => {
+        const finish = () => {
+          clearTimeout(timer);
+          signal.removeEventListener('abort', finish);
+          resolve(!signal.aborted);
+        };
+        const timer = setTimeout(finish, ms);
+        signal.addEventListener('abort', finish, { once: true });
+      });
     }
 
     async requestWakeLock() {
@@ -2756,311 +2745,258 @@ a {
       else this.releaseWakeLock();
     }
 
-    /**
-     * Hard stop: cancels TTS, aborts STT, clears all timers, invalidates all pending callbacks
-     */
     stopAll() {
-      this.sessionToken += 1;
+      this.turn.abort();
+      this.turn = new AbortController();
       this.paused = false;
-      this.clearAllTimers();
-      this._stopRecognitionInternal();
-      this._stopSpeechInternal();
       this.transition(STATES.IDLE, { reason: 'stopped' });
     }
 
     pause() {
       if (this.paused) return;
+      this.stopAll();
       this.paused = true;
-      this.sessionToken += 1;
-      this.clearAllTimers();
-      this._stopRecognitionInternal();
-      this._stopSpeechInternal();
-      this.onStateChange(this.state, this.state, { paused: true });
     }
 
     resume() {
-      if (!this.paused) return;
       this.paused = false;
-      this.onStateChange(this.state, this.state, { paused: false });
     }
 
-    _stopSpeechInternal() {
-      if (this.capabilities.hasTTS) {
-        try { window.speechSynthesis.cancel(); } catch (_) { /* ignore */ }
-      }
-    }
-
-    _stopRecognitionInternal() {
-      if (this.recognition) {
-        const rec = this.recognition;
-        this.recognition = null;
-        rec.onresult = null;
-        rec.onerror = null;
-        rec.onend = null;
-        rec.onspeechstart = null;
-        try { rec.abort(); } catch (_) { /* ignore */ }
-      }
-    }
-
-    /**
-     * Speak a single utterance with strict echo-guard (stops STT first)
-     */
     speak(text, settings = {}) {
-      const token = this.sessionToken;
-      return new Promise((resolve) => {
-        if (!text || token !== this.sessionToken || this.paused) {
-          return resolve({ completed: false, cancelled: true });
-        }
+      return this.speakSequence([text], settings, 0);
+    }
 
-        // Guarantee STT is never active during TTS
-        this._stopRecognitionInternal();
-        this.transition(STATES.SPEAKING, { text });
-
-        if (!this.capabilities.hasTTS) {
-          // Graceful fallback delay when TTS is unavailable (e.g., headless test env)
-          this._setTimer(() => resolve({ completed: true, fallback: true }), 250, token);
-          return;
-        }
-
-        try {
-          window.speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(text);
-          const accent = settings.accent || 'en-US';
-          utter.lang = accent;
-          utter.rate = Math.max(0.6, Math.min(1.5, Number(settings.speechRate) || 1.0));
-
-          const voices = this.getEnglishVoices(accent);
-          if (settings.voiceURI) {
-            const chosen = this.voices.find((v) => v.voiceURI === settings.voiceURI);
-            if (chosen) utter.voice = chosen;
-          } else if (voices.length) {
-            // Prefer natural/enhanced voices
-            const preferred = voices.find((v) => /Samantha|Daniel|Google|Natural|Enhanced|Karen|Moira/i.test(v.name)) || voices[0];
-            utter.voice = preferred;
+    async speakSequence(lines, settings = {}, gapMs = 450) {
+      const signal = this.turn.signal;
+      if (this.paused || this.recognition || this.utterance) return { completed: false, cancelled: true };
+      const prompts = lines.filter((line) => line && line.trim());
+      if (!prompts.length) return { completed: true };
+      this.transition(STATES.SPEAKING);
+      if (!this.capabilities.hasTTS) {
+        return this._speechError('unsupported', '読み上げを利用できません。字幕で問題を確認してください。');
+      }
+      // Let a cancelled utterance or a released microphone give the output device back.
+      const handoffMs = Math.min(250, this.outputReadyAt - Date.now());
+      if (handoffMs > 0 && !await this.wait(handoffMs, signal)) return { completed: false, cancelled: true };
+      const accent = settings.accent || 'en-US';
+      const voices = this.getEnglishVoices(accent);
+      const voice = this.voices.find((v) => v.voiceURI === settings.voiceURI)
+        || voices.find((v) => v.localService && /Samantha|Daniel|Natural|Enhanced|Karen|Moira/i.test(v.name))
+        || voices.find((v) => v.localService) || voices[0];
+      const rate = Math.max(0.6, Math.min(1.5, Number(settings.speechRate) || 1));
+      const maxChars = Math.round(140 * Math.min(1.1, rate));
+      for (let i = 0; i < prompts.length; i++) {
+        // Short breath groups avoid very long native synthesis jobs on imported passages.
+        const parts = [];
+        let part = '';
+        for (const word of prompts[i].trim().split(/\s+/)) {
+          if (part && part.length + 1 + word.length > maxChars) {
+            parts.push(part);
+            part = '';
           }
+          part += (part ? ' ' : '') + word;
+          if (prompts[i].length > maxChars && part.length >= maxChars * 0.6 && /[.!?,;:]$/.test(word)) {
+            parts.push(part);
+            part = '';
+          }
+        }
+        if (part) parts.push(part);
+        for (const text of parts) {
+          if (signal.aborted) return { completed: false, cancelled: true };
+          const result = await this._speakPart(text, accent, rate, voice, signal);
+          if (!result.completed || signal.aborted) return { ...result, completed: false };
+        }
+        if (i + 1 < prompts.length && gapMs && !await this.wait(gapMs, signal)) {
+          return { completed: false, cancelled: true };
+        }
+      }
+      // Give the last syllable time to leave the speaker before opening the mic.
+      return { completed: await this.wait(250, signal) };
+    }
 
-          let settled = false;
-          const finish = (res) => {
-            if (settled) return;
-            settled = true;
-            if (watchdog) {
-              clearTimeout(watchdog);
-              this.activeTimers.delete(watchdog);
-            }
-            resolve(res);
-          };
+    _speechError(code, message) {
+      this.onError({ type: 'tts_error', code, message });
+      this.transition(STATES.IDLE);
+      return { completed: false, error: code };
+    }
 
-          // Safety watchdog in case Safari speechSynthesis fails to fire onend
-          const estimatedMs = Math.max(4500, Math.min(25000, (text.length / 8) * 1000 / utter.rate + 3500));
-          const watchdog = this._setTimer(() => finish({ completed: true, watchdog: true }), estimatedMs, token);
-
-          utter.onend = () => {
-            if (token !== this.sessionToken) return finish({ completed: false, cancelled: true });
-            // Small acoustic tail buffer (220ms) so speaker echo decays before mic opens
-            this._setTimer(() => finish({ completed: true }), 220, token);
-          };
-
-          utter.onerror = (ev) => {
-            if (token !== this.sessionToken) return finish({ completed: false, cancelled: true });
-            this.onError({ type: 'tts_error', code: ev.error || 'unknown', message: '音声の読み上げでエラーが発生しました。' });
-            finish({ completed: false, error: ev.error || 'tts_error' });
-          };
-
-          window.speechSynthesis.speak(utter);
-        } catch (err) {
-          this.onError({ type: 'tts_error', code: 'exception', message: '音声合成を開始できませんでした。' });
-          resolve({ completed: false, error: err.message });
+    _speakPart(text, accent, rate, voice, signal) {
+      return new Promise((resolve) => {
+        const synth = window.speechSynthesis;
+        const utter = new SpeechSynthesisUtterance(text);
+        this.utterance = utter;
+        utter.lang = accent;
+        utter.rate = rate;
+        if (voice) utter.voice = voice;
+        let timer;
+        const release = () => {
+          if (this.utterance !== utter) return false;
+          clearTimeout(timer);
+          utter.onend = utter.onerror = null;
+          signal.removeEventListener('abort', cancel);
+          this.utterance = null;
+          return true;
+        };
+        const cancel = () => {
+          if (!release()) return;
+          this.outputReadyAt = Date.now() + 150;
+          try { synth.cancel(); } catch (_) { /* already stopped */ }
+          resolve({ completed: false, cancelled: true });
+        };
+        const fail = (code) => {
+          if (!release()) return;
+          if (!synth.speaking && synth.pending) {
+            try { synth.cancel(); } catch (_) { /* stalled queue */ }
+          }
+          resolve(this._speechError(code, '読み上げが止まりました。再生ボタンでもう一度聴くか、字幕で問題を確認してください。'));
+        };
+        const check = () => {
+          if (synth.speaking) {
+            timer = setTimeout(check, 5000);
+          } else {
+            fail('missing-end');
+          }
+        };
+        utter.onend = () => {
+          if (release()) resolve({ completed: true });
+        };
+        utter.onerror = (event) => fail(event.error || 'synthesis-failed');
+        signal.addEventListener('abort', cancel, { once: true });
+        // Elapsed time alone never finishes or cancels a playing utterance.
+        timer = setTimeout(check, Math.max(12000, text.length * 150 / rate + 3000));
+        try {
+          synth.speak(utter);
+        } catch (_) {
+          fail('synthesis-failed');
         }
       });
     }
 
-    /**
-     * Speak a sequence of lines with pauses between them
-     */
-    async speakSequence(lines, settings = {}, gapMs = 450) {
-      const token = this.sessionToken;
-      for (let i = 0; i < lines.length; i++) {
-        if (token !== this.sessionToken || this.paused) return { completed: false, cancelled: true };
-        const res = await this.speak(lines[i], settings);
-        if (!res.completed || token !== this.sessionToken || this.paused) return res;
-        if (i < lines.length - 1 && gapMs > 0) {
-          await new Promise((r) => this._setTimer(r, gapMs, token));
-        }
-      }
-      return { completed: token === this.sessionToken && !this.paused };
-    }
-
-    /**
-     * Listen for student response via Web Speech API
-     * Returns { transcript, recognitionFailed, errorCode, responseStartMs, responseCompleteMs, timedOut }
-     */
     listen(settings = {}) {
-      const token = this.sessionToken;
+      const signal = this.turn.signal;
+      if (this.paused || this.utterance || this.recognition) {
+        return Promise.resolve({ cancelled: true });
+      }
+      const errors = {
+        unsupported: 'このブラウザでは音声認識を利用できません。英語を入力して回答できます。',
+        'not-allowed': this.capabilities.isIOS
+          ? 'Safariでこのサイトのマイクと音声認識を許可して、「音声で回答」をもう一度タップしてください。'
+          : 'マイクまたは音声認識の許可を確認し、「音声で回答」をタップしてください。',
+        'service-not-allowed': this.capabilities.isIOS
+          ? '音声認識を利用できません。iPhoneのSiri設定と、このサイトの音声認識の許可を確認してください。'
+          : '音声認識の利用が許可されていません。ブラウザと端末の音声認識設定を確認してください。',
+        network: '音声認識の通信が途切れました。接続を確認して「音声で回答」で再試行してください。',
+        'audio-capture': 'マイクから音を取得できません。使用中のマイクやイヤホンの接続を確認してください。',
+        aborted: '音声入力が中断されました。「音声で回答」で再開できます。',
+        'start-timeout': 'マイクを開始できませんでした。許可を確認して「音声で回答」で再試行してください。'
+      };
+      const failure = (code) => ({
+        transcript: '', recognitionFailed: true, errorCode: code,
+        message: errors[code] || '音声認識を開始できませんでした。「音声で回答」で再試行してください。'
+      });
+      if (!this.capabilities.hasSTT) return Promise.resolve(failure('unsupported'));
+
       return new Promise((resolve) => {
-        if (token !== this.sessionToken || this.paused) {
-          return resolve({ transcript: '', recognitionFailed: false, cancelled: true });
+        let rec;
+        try {
+          rec = new this.capabilities.SpeechRecognitionCtor();
+        } catch (_) {
+          return resolve(failure('start-failed'));
         }
-
-        // Ensure TTS is completely stopped
-        this._stopSpeechInternal();
-        this._stopRecognitionInternal();
-
-        if (!this.capabilities.hasSTT) {
-          this.transition(STATES.LISTENING, { fallbackMode: true });
-          return resolve({
-            transcript: '',
-            recognitionFailed: true,
-            errorCode: 'unsupported',
-            message: 'このブラウザはWeb Speech API音声認識に非対応です。文字入力または自己採点モードをご利用ください。'
-          });
-        }
-
-        this.transition(STATES.LISTENING, { fallbackMode: false });
-
-        const RecCtor = this.capabilities.SpeechRecognitionCtor;
-        const rec = new RecCtor();
         this.recognition = rec;
-
         rec.lang = settings.accent || 'en-US';
         rec.continuous = false;
         rec.interimResults = true;
         rec.maxAlternatives = 3;
-
-        const listenStartAt = Date.now();
-        let speechStartAt = null;
-        let finalTranscript = '';
-        let interimTranscript = '';
+        let readyAt = null;
+        let speechAt = null;
+        let transcript = '';
+        let speaking = false;
+        let stopping = false;
         let settled = false;
-        let silenceTimer = null;
-
-        const maxWaitMs = Math.max(3000, (Number(settings.responseWaitSec) || 8) * 1000);
-        const silenceMs = Math.max(1500, (Number(settings.silenceTimeoutSec) || 3.5) * 1000);
-
-        const cleanupAndResolve = (payload) => {
+        let responseTimer;
+        let finalTimer;
+        const waitMs = Math.max(3, Number(settings.responseWaitSec) || 8) * 1000;
+        const silenceMs = Math.max(1.5, Number(settings.silenceTimeoutSec) || 3.5) * 1000;
+        const answer = () => ({
+          transcript, recognitionFailed: false, timedOut: !transcript,
+          responseStartMs: speechAt === null ? null : speechAt - readyAt,
+          responseCompleteMs: transcript ? Date.now() - readyAt : null
+        });
+        const finish = (result, abortNative = false) => {
           if (settled) return;
           settled = true;
-          if (maxTimer) { clearTimeout(maxTimer); this.activeTimers.delete(maxTimer); }
-          if (silenceTimer) { clearTimeout(silenceTimer); this.activeTimers.delete(silenceTimer); }
-          this._stopRecognitionInternal();
-          if (token === this.sessionToken && !this.paused) {
-            this.transition(STATES.EVALUATING, { transcript: payload.transcript });
+          clearTimeout(responseTimer);
+          clearTimeout(finalTimer);
+          signal.removeEventListener('abort', cancel);
+          rec.onstart = rec.onaudiostart = rec.onspeechstart = rec.onspeechend = null;
+          rec.onresult = rec.onerror = rec.onend = null;
+          this.recognition = null;
+          if (readyAt !== null) this.outputReadyAt = Date.now() + 250;
+          if (abortNative) {
+            try { rec.abort(); } catch (_) { /* already stopped */ }
           }
-          resolve(payload);
+          resolve(result);
         };
-
-        const resetSilenceTimer = () => {
-          if (silenceTimer) { clearTimeout(silenceTimer); this.activeTimers.delete(silenceTimer); }
-          silenceTimer = this._setTimer(() => {
-            try { rec.stop(); } catch (_) { /* ignore */ }
-            const combined = (finalTranscript || interimTranscript).trim();
-            cleanupAndResolve({
-              transcript: combined,
-              recognitionFailed: false,
-              timedOut: !combined,
-              responseStartMs: speechStartAt ? speechStartAt - listenStartAt : null,
-              responseCompleteMs: combined ? Date.now() - listenStartAt : null
-            });
-          }, silenceMs, token);
+        const cancel = () => finish({ cancelled: true }, true);
+        const stopAndWaitForResult = () => {
+          if (stopping || settled) return;
+          stopping = true;
+          // stop() can deliver its final transcript asynchronously, even on Safari.
+          finalTimer = setTimeout(() => finish(answer(), true), 5000);
+          try { rec.stop(); } catch (_) { /* onend can already be in flight */ }
         };
-
-        const maxTimer = this._setTimer(() => {
-          try { rec.stop(); } catch (_) { /* ignore */ }
-          const combined = (finalTranscript || interimTranscript).trim();
-          cleanupAndResolve({
-            transcript: combined,
-            recognitionFailed: false,
-            timedOut: !combined,
-            responseStartMs: speechStartAt ? speechStartAt - listenStartAt : null,
-            responseCompleteMs: combined ? Date.now() - listenStartAt : null
-          });
-        }, maxWaitMs, token);
-
+        const armResponseTimer = (ms) => {
+          clearTimeout(responseTimer);
+          if (!stopping) responseTimer = setTimeout(stopAndWaitForResult, ms);
+        };
+        const ready = () => {
+          if (settled || readyAt !== null) return;
+          readyAt = Date.now();
+          this.needsMicTap = false;
+          this.transition(STATES.LISTENING);
+          armResponseTimer(waitMs);
+        };
+        const markSpeech = () => {
+          ready();
+          if (speechAt === null) speechAt = Date.now();
+        };
+        rec.onstart = rec.onaudiostart = ready;
         rec.onspeechstart = () => {
-          if (!speechStartAt) speechStartAt = Date.now();
-          this.onAudioLevel(0.85);
-          resetSilenceTimer();
+          if (settled) return;
+          markSpeech();
+          speaking = true;
+          // The response-start deadline no longer applies while the learner is talking.
+          armResponseTimer(120000);
         };
-
+        rec.onspeechend = () => {
+          if (settled) return;
+          speaking = false;
+          armResponseTimer(silenceMs);
+        };
         rec.onresult = (event) => {
-          if (token !== this.sessionToken) return;
-          if (!speechStartAt) speechStartAt = Date.now();
-          let finals = '';
-          let interims = '';
-          for (let i = 0; i < event.results.length; i++) {
-            const res = event.results[i];
-            if (res.isFinal) finals += res[0].transcript + ' ';
-            else interims += res[0].transcript + ' ';
-          }
-          finalTranscript = finals.trim();
-          interimTranscript = interims.trim();
-          const liveText = (finalTranscript + ' ' + interimTranscript).trim();
-          this.onInterimTranscript(liveText);
-          this.onAudioLevel(0.95);
-          resetSilenceTimer();
+          if (settled) return;
+          markSpeech();
+          const results = Array.from(event.results);
+          transcript = results.map((r) => r[0].transcript.trim()).filter(Boolean).join(' ');
+          this.onInterimTranscript(transcript);
+          armResponseTimer(speaking && !results.every((r) => r.isFinal) ? 120000 : silenceMs);
         };
-
         rec.onerror = (event) => {
-          if (token !== this.sessionToken) return;
+          if (settled) return;
           const code = event.error || 'unknown';
-          if (code === 'no-speech') {
-            return cleanupAndResolve({
-              transcript: '',
-              recognitionFailed: false,
-              timedOut: true,
-              errorCode: 'no-speech',
-              responseStartMs: null,
-              responseCompleteMs: null
-            });
-          }
-          if (code === 'aborted') {
-            return cleanupAndResolve({
-              transcript: (finalTranscript || interimTranscript).trim(),
-              recognitionFailed: false,
-              cancelled: true,
-              errorCode: 'aborted'
-            });
-          }
-
-          const errorMessages = {
-            'not-allowed': 'マイクの使用が拒否されました。ブラウザの設定からマイク権限を許可するか、文字入力モードをご利用ください。',
-            'service-not-allowed': '音声認識サービスが許可されていません。端末の設定をご確認ください。',
-            'network': '音声認識の通信エラーが発生しました。ネットワーク接続を確認してください（不正解にはカウントされません）。',
-            'audio-capture': 'マイクまたはBluetoothオーディオを検出できませんでした。接続を確認してください。'
-          };
-          const msg = errorMessages[code] || `音声認識エラー (${code}) が発生しました。`;
-          this.onError({ type: 'stt_error', code, message: msg });
-          cleanupAndResolve({
-            transcript: '',
-            recognitionFailed: true,
-            errorCode: code,
-            message: msg,
-            responseStartMs: null,
-            responseCompleteMs: null
-          });
+          if (code === 'not-allowed' || code === 'service-not-allowed') this.needsMicTap = true;
+          finish(code === 'no-speech' ? answer() : failure(code));
         };
-
-        rec.onend = () => {
-          if (token !== this.sessionToken) return;
-          const combined = (finalTranscript || interimTranscript).trim();
-          cleanupAndResolve({
-            transcript: combined,
-            recognitionFailed: false,
-            timedOut: !combined,
-            responseStartMs: speechStartAt ? speechStartAt - listenStartAt : null,
-            responseCompleteMs: combined ? Date.now() - listenStartAt : null
-          });
-        };
-
+        rec.onend = () => finish(readyAt === null ? failure('start-failed') : answer());
+        signal.addEventListener('abort', cancel, { once: true });
+        this.transition(STATES.STARTING);
+        // Permission prompts have a separate startup deadline, independent of the answer timer.
+        responseTimer = setTimeout(() => finish(failure('start-timeout'), true), 60000);
         try {
           rec.start();
         } catch (err) {
-          this.onError({ type: 'stt_error', code: 'start_failed', message: '音声認識を開始できませんでした。' });
-          cleanupAndResolve({
-            transcript: '',
-            recognitionFailed: true,
-            errorCode: 'start_failed',
-            message: err.message
-          });
+          finish(failure(err.name === 'NotAllowedError' ? 'not-allowed' : 'start-failed'));
         }
       });
     }
@@ -5472,8 +5408,12 @@ a {
   }
 
   function navigate(route, opts = {}) {
-    if (ui.route !== route && (ui.route === 'lesson' || ui.route === 'walking' || ui.route === 'levelcheck')) {
-      stopActiveSession(true);
+    if (ui.route !== route) {
+      if (ui.route === 'lesson' || ui.route === 'walking' || ui.route === 'levelcheck') {
+        stopActiveSession(true);
+      } else if (voice) {
+        voice.stopAll();
+      }
     }
     ui.route = route;
     ui.mobileMenuOpen = false;
@@ -5488,7 +5428,6 @@ a {
   // =========================================================================
   function startSession(config) {
     stopActiveSession(false);
-    voice.unlockAudioForIOS();
 
     const stages = config.stages || [{ id: 'drills', name: 'Drills and Exercises', ja: '反復トレーニング', items: config.items || [] }, { id: 'summary', name: 'Summary', ja: '学習結果' }];
     const startStageIdx = config.startAtDrills ? Math.max(0, stages.findIndex((s) => s.id === 'drills')) : 0;
@@ -5606,6 +5545,7 @@ a {
       return;
     }
 
+    const signal = voice.turn.signal;
     sess.errorBanner = '';
     sess.interimTranscript = '';
     const plan = DrillRunner.buildDrillPromptPlan(q, {
@@ -5621,33 +5561,37 @@ a {
     render();
 
     const speakRes = await voice.speakSequence(plan.teacherLines, store.state.settings, 420);
-    if (!speakRes.completed || !ui.session || ui.session.id !== sess.id || sess.paused) return;
-
-    // Decide listening mode (auto STT vs manual text/self fallback)
-    const fallbackPref = store.state.settings.inputFallbackMode;
-    if (!voice.capabilities.hasSTT || fallbackPref === 'text' || fallbackPref === 'self') {
-      voice.transition(VoiceLib.STATES.LISTENING, { fallbackMode: true });
-      render();
-      return;
-    }
-
-    await startListeningTurn();
+    if (speakRes.completed && !signal.aborted) await beginAnswerTurn();
   }
 
-  async function startListeningTurn() {
+  function beginAnswerTurn() {
+    if (voice.capabilities.hasSTT && store.state.settings.inputFallbackMode === 'auto' && !voice.needsMicTap && !ui.session.tapEachAnswer) {
+      return startListeningTurn(true);
+    }
+    if (!voice.capabilities.hasSTT && store.state.settings.inputFallbackMode === 'auto') {
+      ui.session.errorBanner = voice.capabilities.isIOS
+        ? 'この画面では音声認識を利用できません。iPhoneのSafariで開くか、下の欄に英語で回答してください。'
+        : 'このブラウザでは音声認識を利用できません。下の欄に英語で回答できます。';
+    }
+    voice.transition(VoiceLib.STATES.READY);
+  }
+
+  async function startListeningTurn(automatic = false) {
     const sess = ui.session;
     if (!sess || sess.paused) return;
     const q = currentQuestion();
-    if (!q) return;
+    if (!q || voice.recognition || voice.utterance) return;
 
+    const signal = voice.turn.signal;
     sess.interimTranscript = '';
     sess.errorBanner = '';
-    render();
 
     const res = await voice.listen(store.state.settings);
-    if (!ui.session || ui.session.id !== sess.id || sess.paused || res.cancelled) return;
+    if (signal.aborted || res.cancelled) return;
 
+    sess.interimTranscript = '';
     if (res.recognitionFailed) {
+      if (automatic && res.errorCode === 'not-allowed') sess.tapEachAnswer = true;
       sess.errorBanner = res.message || '音声認識に失敗しました。不正解にはカウントされません。再試行するか文字入力をご利用ください。';
       const evalRes = Evaluator.evaluateAnswer({ transcript: '', question: q, recognitionFailed: true });
       sess.lastEval = evalRes;
@@ -5656,6 +5600,7 @@ a {
       return;
     }
 
+    voice.transition(VoiceLib.STATES.EVALUATING);
     // Walking Mode voice commands
     if (sess.mode === 'walking' && res.transcript) {
       const cmd = DrillRunner.detectVoiceCommand(res.transcript, q);
@@ -5666,12 +5611,12 @@ a {
     }
 
     // Silence handling
-    if (!res.transcript || res.timedOut && !res.transcript) {
+    if (!res.transcript) {
       sess.lastTranscript = '';
       sess.lastEval = Evaluator.evaluateAnswer({ transcript: '', question: q, recognitionFailed: false });
       if (sess.mode === 'walking') {
-        await voice.speak('No response detected. Let me repeat.', store.state.settings);
-        if (ui.session && ui.session.id === sess.id && !sess.paused) runCurrentQuestion();
+        const replay = await voice.speak('No response detected. Let me repeat.', store.state.settings);
+        if (replay.completed && !signal.aborted) runCurrentQuestion();
         return;
       }
       voice.transition(VoiceLib.STATES.IDLE);
@@ -5688,13 +5633,14 @@ a {
   async function handleWalkingVoiceCommand(cmd) {
     const sess = ui.session;
     if (!sess) return;
+    const signal = voice.turn.signal;
     if (cmd === 'repeat') {
       showToast('音声コマンド: Repeat（再読み上げ）');
       await runCurrentQuestion();
     } else if (cmd === 'skip') {
       showToast('音声コマンド: Skip（スキップ）');
       await voice.speak('Skipping to the next item.', store.state.settings);
-      goNextQuestion();
+      if (!signal.aborted) goNextQuestion();
     } else if (cmd === 'hint') {
       showToast('音声コマンド: Hint（ヒント）');
       sess.showHint = true;
@@ -5702,7 +5648,7 @@ a {
       const q = currentQuestion();
       render();
       if (q) await voice.speak(q.expectedAnswer, store.state.settings);
-      await startListeningTurn();
+      if (!signal.aborted) await beginAnswerTurn();
     } else if (cmd === 'pause') {
       showToast('音声コマンド: Pause（一時停止）');
       togglePauseSession();
@@ -5714,6 +5660,8 @@ a {
     if (!sess) return;
     const q = currentQuestion();
     if (!q) return;
+    const signal = voice.turn.signal;
+    if (voice.state !== VoiceLib.STATES.EVALUATING) voice.transition(VoiceLib.STATES.EVALUATING);
 
     const plan = sess.currentPlan || DrillRunner.buildDrillPromptPlan(q, { subStep: sess.subStep });
     const evalQuestion = { ...q, expectedAnswer: plan.targetAnswer || q.expectedAnswer };
@@ -5741,7 +5689,7 @@ a {
     if (evalRes.needsSelfEval && sess.mode === 'walking') {
       recordAndTrack(q, 'Not evaluated', true, evalRes.errorCategories, timing, false);
       await voice.speak(`Model answer: ${evalQuestion.expectedAnswer}`, store.state.settings);
-      if (ui.session && ui.session.id === sess.id && !sess.paused) goNextQuestion();
+      if (!signal.aborted) goNextQuestion();
       return;
     }
 
@@ -5754,6 +5702,7 @@ a {
         if (sess.mode === 'walking') {
           await voice.speak('Good.', store.state.settings);
         }
+        if (signal.aborted) return;
         render();
         runCurrentQuestion();
         return;
@@ -5768,9 +5717,7 @@ a {
       }
 
       if (store.state.settings.autoAdvance || sess.mode === 'walking') {
-        setTimeout(() => {
-          if (ui.session && ui.session.id === sess.id && !sess.paused) goNextQuestion();
-        }, sess.mode === 'walking' ? 450 : 850);
+        if (await voice.wait(sess.mode === 'walking' ? 450 : 850, signal)) goNextQuestion();
       }
       return;
     }
@@ -5788,10 +5735,8 @@ a {
       voice.transition(VoiceLib.STATES.CORRECTING);
       render();
       await voice.speak(`The correct sentence is: ${evalQuestion.expectedAnswer}. Added to your review list.`, store.state.settings);
-      if (ui.session && ui.session.id === sess.id && !sess.paused && (store.state.settings.autoAdvance || sess.mode === 'walking')) {
-        setTimeout(() => {
-          if (ui.session && ui.session.id === sess.id && !sess.paused) goNextQuestion();
-        }, 1200);
+      if (store.state.settings.autoAdvance || sess.mode === 'walking') {
+        if (await voice.wait(1200, signal)) goNextQuestion();
       }
       return;
     }
@@ -5807,14 +5752,7 @@ a {
       store.state.settings,
       350
     );
-    if (!corrRes.completed || !ui.session || ui.session.id !== sess.id || sess.paused) return;
-
-    if (voice.capabilities.hasSTT && store.state.settings.inputFallbackMode === 'auto') {
-      await startListeningTurn();
-    } else {
-      voice.transition(VoiceLib.STATES.LISTENING, { fallbackMode: true });
-      render();
-    }
+    if (corrRes.completed && !signal.aborted) await beginAnswerTurn();
   }
 
   function recordAndTrack(q, rating, passed, errorCategories, timing, forceWeak) {
@@ -6154,6 +6092,36 @@ a {
     `;
   }
 
+  function canStartMic(sess) {
+    return sess && !sess.paused && voice.capabilities.hasSTT
+      && (voice.state === VoiceLib.STATES.READY || voice.state === VoiceLib.STATES.IDLE);
+  }
+
+  function voiceStatus(sess) {
+    if (sess.paused) return '一時停止中';
+    switch (sess.fsmState) {
+      case 'SPEAKING': return '講師が読み上げ中';
+      case 'READY': return voice.capabilities.hasSTT && store.state.settings.inputFallbackMode === 'auto'
+        ? '「音声で回答」をタップしてください' : '回答を入力してください';
+      case 'STARTING': return 'マイクを準備中… 許可を求められたら「許可」を選んでください';
+      case 'LISTENING': return '聞き取り中 · 英語でどうぞ';
+      case 'EVALUATING': return '回答を評価中';
+      case 'CORRECTING': return 'お手本を読み上げ中';
+      case 'NEXT': return '正解';
+      default: return '待機中';
+    }
+  }
+
+  function micButton(sess, style) {
+    let label = '音声で回答';
+    if (!voice.capabilities.hasSTT) label = '音声入力は非対応';
+    else if (sess.fsmState === 'STARTING') label = 'マイクを準備中';
+    else if (sess.fsmState === 'LISTENING') label = '聞き取り中';
+    return `<button class="btn ${style}" data-action="listen-now" ${canStartMic(sess) ? '' : 'disabled'}>
+      <i data-lucide="mic"></i> ${label}
+    </button>`;
+  }
+
   function renderLesson() {
     const sess = ui.session;
     if (!sess) {
@@ -6300,14 +6268,6 @@ a {
     const pct = list.length ? Math.round(((sess.index + 1) / list.length) * 100) : 0;
 
     const fsm = sess.fsmState || VoiceLib.STATES.IDLE;
-    const stateLabels = {
-      IDLE: sess.paused ? '一時停止中' : '待機中',
-      SPEAKING: '教師が読み上げ中',
-      LISTENING: 'あなたの発話を待機中',
-      EVALUATING: '回答を評価中',
-      CORRECTING: '訂正・お手本を読み上げ中',
-      NEXT: '正解・次へ進みます'
-    };
     const pillClass = fsm === 'SPEAKING' ? 'speaking' : fsm === 'LISTENING' ? 'listening' : fsm === 'CORRECTING' ? 'correcting' : '';
 
     const evalClass = sess.lastEval ? sess.lastEval.rating.toLowerCase().replace(/\s+/g, '_') : '';
@@ -6342,7 +6302,7 @@ a {
             <div class="video-overlay-top">
               <span class="video-badge ${pillClass}">
                 <span class="live-dot"></span>
-                <span>${esc(TutorAvatar.getTutor(ui.tutorId, store.state.settings.accent).name)} · ${esc(stateLabels[fsm] || fsm)}</span>
+                <span role="status">${esc(TutorAvatar.getTutor(ui.tutorId, store.state.settings.accent).name)} · ${esc(voiceStatus(sess))}</span>
               </span>
               <div class="btn-row" style="gap:6px;">
                 <span class="video-badge">${formatDuration(sess.elapsedSec)}</span>
@@ -6365,15 +6325,13 @@ a {
               <div class="pip-student ${fsm === 'LISTENING' && !sess.paused ? 'active-mic' : ''}">
                 <div style="font-size:10px;opacity:0.8;letter-spacing:0.06em;">YOU</div>
                 <div class="pip-wave"><span></span><span></span><span></span><span></span><span></span></div>
-                <div style="font-size:11px;font-weight:600;">${fsm === 'LISTENING' && !sess.paused ? '発話中' : '待機'}</div>
+                <div style="font-size:11px;font-weight:600;">${fsm === 'LISTENING' && !sess.paused ? 'マイク受付中' : '待機'}</div>
               </div>
             </div>
           </div>
 
           <div class="call-controls">
-            <button class="btn btn-primary" data-action="listen-now" ${sess.paused ? 'disabled' : ''}>
-              <i data-lucide="mic"></i> 音声で回答
-            </button>
+            ${micButton(sess, 'btn-primary')}
             <button class="btn btn-secondary" data-action="repeat-prompt" ${sess.paused ? 'disabled' : ''}>
               <i data-lucide="volume-2"></i> もう一度聴く
             </button>
@@ -6417,12 +6375,10 @@ a {
                 <div>${entry.role === 'teacher' && !sess.showText ? '（音声で指示を読み上げました — 字幕ボタンで確認可）' : esc(entry.text)}</div>
               </div>
             `).join('')}
-            ${sess.interimTranscript ? `
-              <div class="chat-bubble student" style="opacity:0.78;">
-                <div class="chat-role">You (聞き取り中...)</div>
-                <div>${esc(sess.interimTranscript)}</div>
-              </div>
-            ` : ''}
+            <div class="chat-bubble student" style="opacity:0.78;" data-live-panel ${sess.interimTranscript ? '' : 'hidden'}>
+              <div class="chat-role">You · 聞き取り中</div>
+              <div data-live-transcript>${esc(sess.interimTranscript)}</div>
+            </div>
             ${(!sess.dialogueLog || sess.dialogueLog.length === 0) && !sess.interimTranscript ? `
               <div style="font-size:12px;color:var(--ink-muted);text-align:center;padding:18px 8px;">講師とのやり取りがここにライブ表示されます</div>
             ` : ''}
@@ -6537,24 +6493,30 @@ a {
           ${Array.from({ length: 9 }, () => '<div class="wave-bar" style="background:rgba(255,255,255,0.85);"></div>').join('')}
         </div>
 
-        <div style="font-size:16px;font-weight:600;margin-bottom:8px;">
-          ${fsm === 'SPEAKING' ? '教師が読み上げています...' : fsm === 'LISTENING' ? '英語で回答してください（Repeat / Skip / Hint / Pause 可）' : fsm === 'CORRECTING' ? '正しい英文を読み上げています...' : sess.paused ? '一時停止中' : '待機中'}
+        <div role="status" style="font-size:16px;font-weight:600;margin-bottom:8px;">
+          ${esc(voiceStatus(sess))}
         </div>
 
-        ${sess.interimTranscript || sess.lastTranscript ? `
-          <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:10px 14px;margin:12px auto;max-width:480px;font-size:14px;">
-            ${esc(sess.interimTranscript || sess.lastTranscript)}
-          </div>
-        ` : ''}
+        <div data-live-panel ${sess.interimTranscript || sess.lastTranscript ? '' : 'hidden'} style="background:rgba(255,255,255,0.12);border-radius:10px;padding:10px 14px;margin:12px auto;max-width:480px;font-size:14px;">
+          <span data-live-transcript>${esc(sess.interimTranscript || sess.lastTranscript)}</span>
+        </div>
+        ${sess.errorBanner ? `<div role="status">${esc(sess.errorBanner)}</div>` : ''}
 
         ${sess.showText && q ? `<div style="margin:10px 0;font-family:var(--font-serif);font-size:20px;">${esc(q.expectedAnswer)}</div>` : ''}
 
         <div class="btn-row" style="justify-content:center;margin-top:24px;">
+          ${micButton(sess, 'btn-walk-control')}
           <button class="btn btn-walk-control" data-action="toggle-pause">${sess.paused ? '再開' : '一時停止'}</button>
           <button class="btn btn-walk-control" data-action="repeat-prompt">Repeat</button>
           <button class="btn btn-walk-control" data-action="show-hint">Hint</button>
           <button class="btn btn-walk-control" data-action="skip-question">Skip</button>
         </div>
+        ${!voice.capabilities.hasSTT || store.state.settings.inputFallbackMode !== 'auto' || sess.errorBanner ? `
+          <form id="manual-answer-form" class="btn-row" style="justify-content:center;margin-top:12px;">
+            <input class="input" id="manual-answer-input" aria-label="英語で回答" placeholder="英語で回答を入力" autocomplete="off" />
+            <button type="submit" class="btn btn-walk-control">送信</button>
+          </form>
+        ` : ''}
       </div>
     `;
   }
@@ -7227,6 +7189,7 @@ a {
     if (manualForm) {
       manualForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        if (!ui.session || ui.session.paused) return;
         const inp = document.getElementById('manual-answer-input');
         const val = inp ? inp.value.trim() : '';
         if (!val) return;
@@ -7486,12 +7449,13 @@ a {
           togglePauseSession();
           break;
         case 'listen-now':
-          voice.unlockAudioForIOS();
-          startListeningTurn();
+          if (canStartMic(ui.session)) startListeningTurn();
           break;
         case 'repeat-prompt':
-          voice.unlockAudioForIOS();
-          runCurrentQuestion();
+          if (ui.session && !ui.session.paused) {
+            voice.stopAll();
+            runCurrentQuestion();
+          }
           break;
         case 'show-hint':
           if (ui.session) {
@@ -7507,11 +7471,11 @@ a {
           submitSelfEvaluation(actBtn.getAttribute('data-rating'));
           break;
         case 'speak-sample':
-          voice.unlockAudioForIOS();
+          voice.stopAll();
           voice.speak(actBtn.getAttribute('data-text'), store.state.settings);
           break;
         case 'test-voice':
-          voice.unlockAudioForIOS();
+          voice.stopAll();
           voice.speak('Welcome to REPEAT English Speaking Lab. Listen carefully and repeat after me.', store.state.settings);
           break;
         case 'analytics-period':
@@ -7744,14 +7708,20 @@ a {
       onInterimTranscript: (text) => {
         if (ui.session) {
           ui.session.interimTranscript = text;
-          const box = document.querySelector('.transcript-box');
-          if (box) box.innerHTML = `<span style="color:var(--ink-muted);">聞き取り中: </span>${esc(text)}`;
+          const live = document.querySelector('[data-live-transcript]');
+          if (live) {
+            live.textContent = text;
+            live.closest('[data-live-panel]').hidden = !text;
+            const log = live.closest('.session-log');
+            if (log) log.scrollTop = log.scrollHeight;
+          }
         }
       },
       onError: (err) => {
-        if (ui.session) {
-          ui.session.errorBanner = err.message || '音声処理でエラーが発生しました。';
-        }
+        if (ui.session && ['lesson', 'walking', 'levelcheck'].includes(ui.route)) {
+          ui.session.errorBanner = err.message;
+          if (err.type === 'tts_error') ui.session.showText = true;
+        } else showToast(err.message);
       }
     });
 
