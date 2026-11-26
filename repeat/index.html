@@ -2613,6 +2613,87 @@ a {
     NEXT: ['SPEAKING', 'READY', 'IDLE']
   };
 
+  // Render English locally when the browser exposes synthesis but has no working voice.
+  class BackupSpeech {
+    constructor() {
+      this.context = null;
+      this.worker = null;
+      this.requestId = 0;
+      this.busy = false;
+    }
+
+    enableOutput() {
+      try {
+        const Context = window.AudioContext || window.webkitAudioContext;
+        if (!this.context) this.context = new Context();
+        if (this.context.state !== 'running') this.context.resume().catch(() => {});
+      } catch (_) { /* play() reports an unavailable output */ }
+    }
+
+    play(text, rate, signal) {
+      this.enableOutput();
+      if (!this.context || signal.aborted) return Promise.resolve({ completed: false, cancelled: signal.aborted });
+      return new Promise((resolve) => {
+        const context = this.context;
+        const id = ++this.requestId;
+        let source, worker, timer;
+        let settled = false;
+        this.busy = true;
+        const finish = (completed) => {
+          if (settled) return;
+          settled = true;
+          this.busy = false;
+          clearTimeout(timer);
+          signal.removeEventListener('abort', cancel);
+          if (worker) {
+            worker.removeEventListener('message', onAudio);
+            worker.removeEventListener('error', onError);
+          }
+          if (source) {
+            source.onended = null;
+            if (!completed) {
+              try { source.stop(); } catch (_) { /* already ended */ }
+            }
+            source.disconnect();
+          }
+          resolve({ completed, cancelled: signal.aborted });
+        };
+        const cancel = () => finish(false);
+        const onError = () => {
+          if (worker) worker.terminate();
+          this.worker = null;
+          finish(false);
+        };
+        const onAudio = (event) => {
+          if (settled || event.data.id !== id) return;
+          clearTimeout(timer);
+          const { samples, sampleRate } = event.data;
+          if (!samples || !samples.length) return onError();
+          try {
+            const audio = context.createBuffer(1, samples.length, sampleRate);
+            audio.getChannelData(0).set(samples);
+            source = context.createBufferSource();
+            source.buffer = audio;
+            source.connect(context.destination);
+            source.onended = () => finish(true);
+            source.start();
+            // An output that remained locked needs a fresh tap on the replay button.
+            timer = setTimeout(() => { if (context.state !== 'running') finish(false); }, 2000);
+          } catch (_) { finish(false); }
+        };
+        signal.addEventListener('abort', cancel, { once: true });
+        try {
+          if (!this.worker) this.worker = new Worker('./speech/worker.js');
+          worker = this.worker;
+          worker.addEventListener('message', onAudio);
+          worker.addEventListener('error', onError);
+          timer = setTimeout(onError, 30000);
+          worker.postMessage({ id, text, rate });
+        } catch (_) { onError(); }
+      });
+    }
+  }
+
   class VoiceEngine {
     constructor(options = {}) {
       this.state = STATES.IDLE;
@@ -2620,6 +2701,7 @@ a {
       this.turn = new AbortController();
       this.utterance = null;
       this.outputReadyAt = 0;
+      this.backup = new BackupSpeech();
       this.recognition = null;
       this.wakeLock = null;
       this.voices = [];
@@ -2629,6 +2711,7 @@ a {
       this.onAudioLevel = options.onAudioLevel || (() => {});
 
       this.capabilities = this._detectCapabilities();
+      this.useBackup = !this.capabilities.hasTTS;
       this.needsMicTap = this.capabilities.isIOS || this.capabilities.isSafari;
       this._bindVisibilityGuard();
       this._loadVoices();
@@ -2768,13 +2851,11 @@ a {
 
     async speakSequence(lines, settings = {}, gapMs = 450) {
       const signal = this.turn.signal;
-      if (this.paused || this.recognition || this.utterance) return { completed: false, cancelled: true };
+      if (this.paused || this.recognition || this.utterance || this.backup.busy) return { completed: false, cancelled: true };
       const prompts = lines.filter((line) => line && line.trim());
       if (!prompts.length) return { completed: true };
       this.transition(STATES.SPEAKING);
-      if (!this.capabilities.hasTTS) {
-        return this._speechError('unsupported', '読み上げを利用できません。字幕で問題を確認してください。');
-      }
+      if (this.useBackup) this.backup.enableOutput();
       // Let a cancelled utterance or a released microphone give the output device back.
       const handoffMs = Math.min(250, this.outputReadyAt - Date.now());
       if (handoffMs > 0 && !await this.wait(handoffMs, signal)) return { completed: false, cancelled: true };
@@ -2803,8 +2884,17 @@ a {
         if (part) parts.push(part);
         for (const text of parts) {
           if (signal.aborted) return { completed: false, cancelled: true };
-          const result = await this._speakPart(text, accent, rate, voice, signal);
-          if (!result.completed || signal.aborted) return { ...result, completed: false };
+          if (!this.useBackup) {
+            const native = await this._speakPart(text, accent, rate, voice, signal);
+            if (signal.aborted || native.cancelled) return { completed: false, cancelled: true };
+            if (native.completed) continue;
+            this.useBackup = true;
+          }
+          const result = await this.backup.play(text, rate, signal);
+          if (signal.aborted) return { completed: false, cancelled: true };
+          if (!result.completed) {
+            return this._speechError('playback-failed', '読み上げが止まりました。再生ボタンをタップして音声を再開してください。');
+          }
         }
         if (i + 1 < prompts.length && gapMs && !await this.wait(gapMs, signal)) {
           return { completed: false, cancelled: true };
@@ -2848,7 +2938,7 @@ a {
           if (!synth.speaking && synth.pending) {
             try { synth.cancel(); } catch (_) { /* stalled queue */ }
           }
-          resolve(this._speechError(code, '読み上げが止まりました。再生ボタンでもう一度聴くか、字幕で問題を確認してください。'));
+          resolve({ completed: false, error: code });
         };
         const check = () => {
           if (synth.speaking) {
@@ -2874,7 +2964,7 @@ a {
 
     listen(settings = {}) {
       const signal = this.turn.signal;
-      if (this.paused || this.utterance || this.recognition) {
+      if (this.paused || this.utterance || this.backup.busy || this.recognition) {
         return Promise.resolve({ cancelled: true });
       }
       const errors = {
