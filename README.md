@@ -6,6 +6,7 @@ GitHub Pages: https://kouheim1979.github.io/study/
 
 | フォルダ | タイトル | 分野 |
 |---|---|---|
+| [mimitore](mimitore/) | ミミトレ（英語リスニング特化・音の聞き分け・数字・応答問題・ディクテーション・音の変化・シャドーイング・間隔復習・端末の読み上げを使用） | 英語 |
 | [say-it](say-it/) | SAY IT.（瞬間英作文・初級〜上級140問・音声再生・苦手復習） | 英語 |
 | [rems-drill](rems-drill/) | REMS ドリル（R.E.M.S.式の反復スピーキングドリル・10ユニット211文・間隔復習・発音ラボ） | 英語 |
 | [rems-reader](rems-reader/) | R.E.M.S. Reader（QQEnglish公式PDF教材ビューア） | 英語 |
