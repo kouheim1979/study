@@ -855,6 +855,125 @@ button {
 .mt-16 { margin-top: 16px; }
 .hidden { display: none !important; }
 
+
+/* Motivation-first visual refresh — ENGLISH 80 */
+:root {
+ --bg:#f4f5ff;--surface:#fff;--surface-2:#f2f3fb;--border:#e0e2f0;--border-strong:#c8cce1;
+ --text:#20243e;--text-2:#4c5672;--text-3:#626b84;--accent:#5145db;--accent-hover:#4133bf;
+ --accent-soft:#efedff;--radius:22px;--radius-sm:14px;--nav-h:72px;
+ --shadow-sm:0 3px 12px #2528590a;--shadow-md:0 10px 28px #25285915;
+ --lv1:#f8f8fc;--lv1-text:#515b74;--lv2:#e6e3ff;--lv2-text:#4737b7;
+ --lv3:#dcecff;--lv3-text:#174da0;--lv4:#d5f6e8;--lv4-text:#08654b;--lv5:#087b59;--lv5-text:#fff;
+}
+[data-theme="dark"]{
+ --bg:#111324;--surface:#1c2036;--surface-2:#252a43;--border:#353b56;--border-strong:#525b7c;
+ --text:#f3f4ff;--text-2:#c9cde4;--text-3:#aeb6d2;--accent:#a99cff;--accent-hover:#bdb2ff;--accent-soft:#343054;
+ --lv1:#252a43;--lv1-text:#c9cde4;--lv2:#423676;--lv2-text:#e0d9ff;--lv3:#234b83;--lv3-text:#e0edff;
+ --lv4:#1e594c;--lv4-text:#baf6da;--lv5:#0a7857;--lv5-text:#fff;
+}
+html,body{background:var(--bg)}
+.app-main{max-width:940px;padding-top:20px}
+.app-header{height:var(--header-h);padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.brand-mark{width:34px;height:34px;border-radius:12px;background:linear-gradient(145deg,#7865ff,#4332bd);box-shadow:0 3px 0 #32269c;font-size:15px}
+.brand{font-size:18px;letter-spacing:-.035em}
+.streak-pill{background:#fff1d5;color:#9b4900;padding:6px 10px}
+[data-theme="dark"] .streak-pill{background:#543916;color:#ffcf83}
+.streak-pill svg{width:16px;height:16px}
+.card{border-radius:22px;box-shadow:var(--shadow-sm);padding:20px}
+.btn{border-radius:14px;min-height:46px;font-weight:750;transition:transform .12s,background .15s,box-shadow .15s}
+.btn-sm{min-height:36px}
+.btn-primary{background:#5145db;color:white;box-shadow:0 3px 0 #382ca6}
+.btn-primary:hover{background:#4337c4}
+.btn-success{background:#087b59;color:white;box-shadow:0 3px 0 #065c43}
+.btn-secondary{box-shadow:0 2px 0 var(--border)}
+.btn:active{transform:translateY(2px);box-shadow:none}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.bottom-nav{box-shadow:0 -4px 22px #2528590b}
+.nav-item{margin:6px 3px 5px;border-radius:15px;gap:4px;font-size:10.5px}
+.nav-item.active{background:var(--accent-soft);color:var(--accent);font-weight:800}
+.nav-item svg{width:23px;height:23px}
+.hero-card.mot-hero{display:grid;grid-template-columns:minmax(0,1fr) 136px;gap:18px;align-items:center;position:relative;overflow:hidden;background:linear-gradient(135deg,#28226f 0%,#5041c6 65%,#7260de 100%);color:#fff;border:0;padding:25px;box-shadow:0 12px 25px #4232aa26}
+.mot-hero:before{content:"";position:absolute;right:-45px;top:-70px;width:245px;height:245px;border:38px solid #ffffff0b;border-radius:50%;pointer-events:none}
+.mot-hero>*{position:relative}
+.mot-eyebrow{font-size:10px;letter-spacing:.15em;font-weight:850;color:#e0d9ff;text-transform:uppercase}
+.mot-hero h1{font-size:clamp(24px,4.6vw,34px);line-height:1.22;margin:8px 0 9px;letter-spacing:-.045em;font-weight:850}
+.mot-hero p{font-size:13px;line-height:1.65;color:#f0edff;margin:0}
+.mot-hero .btn-primary{background:#fff;color:#34279e;box-shadow:0 3px 0 #d3caff;min-height:48px}
+.mot-hero .btn-secondary{background:#ffffff17;border-color:#ffffff45;color:white;box-shadow:none}
+.mot-ring{--pct:0;display:grid;place-items:center;width:124px;height:124px;margin:auto;border-radius:50%;background:conic-gradient(#a9f5cf calc(var(--pct)*1%),#ffffff25 0);padding:9px}
+.mot-ring-inner{display:grid;place-content:center;text-align:center;width:100%;height:100%;border-radius:50%;background:#4237a3;color:white}
+.mot-ring-inner strong{font-size:32px;line-height:1;letter-spacing:-.05em}
+.mot-ring-inner span{font-size:11px;color:#ece7ff;margin-top:6px}
+.mot-hero-footer{display:flex;justify-content:center;color:#e0d9ff;font-size:11px;margin-top:9px;font-weight:700}
+.mot-today{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:16px}
+.mot-today .card{margin:0;min-width:0}
+.mot-kicker{font-size:10px;letter-spacing:.12em;color:var(--accent);font-weight:850}
+.mot-heading{font-size:17px;font-weight:850;margin:4px 0 10px;line-height:1.35;letter-spacing:-.02em}
+.mot-goal-number{font-size:30px;font-weight:850;line-height:1;letter-spacing:-.04em}
+.mot-goal-number small{font-size:13px;color:var(--text-3);font-weight:650;letter-spacing:0}
+.mot-progress{height:12px;background:var(--surface-2);border-radius:20px;overflow:hidden;margin:12px 0 8px}
+.mot-progress>span{display:block;height:100%;background:linear-gradient(90deg,#7162ef,#14a876);border-radius:20px;transition:width .4s}
+.mot-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-top:10px;text-align:center}
+.mot-day{display:grid;justify-items:center;gap:6px;font-size:10px;color:var(--text-3)}
+.mot-day i{width:30px;height:30px;display:grid;place-items:center;border-radius:11px;background:var(--surface-2);border:1px solid var(--border);font-size:13px;font-style:normal;font-weight:800}
+.mot-day.done i{background:#d3f5e5;color:#08654b;border-color:#a4e6c8}
+.mot-day.today i{outline:2px solid var(--accent);outline-offset:1px}
+[data-theme="dark"] .mot-day.done i{background:#215b49;color:#c0ffe2;border-color:#408c72}
+.mot-mini{font-size:12px;color:var(--text-3);margin-top:9px}
+.kpi-row{gap:10px;margin-top:16px}
+.kpi-box{background:var(--surface);border:1px solid var(--border);border-radius:17px;box-shadow:var(--shadow-sm);padding:14px}
+.kpi-val{font-size:24px;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+.kpi-lbl{font-size:11px;line-height:1.35;margin-top:6px}
+.mot-map{margin-top:18px}
+.mot-map .section-head{align-items:flex-start}
+.mot-map .section-title{font-size:20px;font-weight:850;letter-spacing:-.03em}
+.mot-map .legend-row{gap:6px 11px;line-height:1.5}
+.mot-map .legend-dot{border:1px solid var(--border-strong)}
+.cat-block{margin-top:22px;border-top:1px solid var(--border);padding-top:16px}
+.cat-header{align-items:center;gap:10px}
+.cat-badge{gap:10px;min-width:0;font-size:14px;font-weight:800}
+.mot-cat-number{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:12px;background:var(--cat-color);color:#fff;font-size:13px;font-weight:850}
+.mot-cat-progress{flex:0 0 72px;text-align:right;font-size:11px;font-weight:800;color:var(--text-2)}
+.mot-cat-progress .bar-track{height:5px;margin-top:4px}
+.map-grid{gap:9px}
+.map-tile{border-radius:15px;min-height:92px;padding:10px;box-shadow:0 2px 0 var(--border);justify-content:flex-start;gap:3px;overflow:hidden}
+.map-tile.lv-5{border-color:#087b59;box-shadow:0 3px 0 #065c43}
+.map-tile.lv-4{border-color:#9cddc4}
+[data-theme="dark"] .map-tile.lv-4{border-color:#357c68}
+.tile-top{opacity:1;font-size:10px}
+.tile-pattern{font-size:14px;line-height:1.28;overflow-wrap:anywhere}
+.tile-jp{white-space:normal;overflow:visible;font-size:11px;line-height:1.35;opacity:.94}
+.tile-top .mot-level{padding:1px 5px;border-radius:6px;background:#ffffff65}
+[data-theme="dark"] .tile-top .mot-level,.map-tile.lv-5 .mot-level{background:#ffffff20}
+.info-box,.dialogue-line{border-radius:15px}
+.input-field{border-radius:14px}
+.seg-bar{padding:5px;border-radius:15px}
+.seg-btn{border-radius:11px}
+.seg-btn.active{color:var(--accent);font-weight:800}
+.walking-stage{border-radius:24px;box-shadow:var(--shadow-md)}
+.walking-big-btn,.mic-btn{background:#5145db;color:white;box-shadow:0 5px 0 #382ca6}
+.mic-btn.recording{background:#dc2626;box-shadow:none}
+.timer-track,.bar-track{border-radius:20px}
+.toast{border-radius:16px}
+@media(max-width:600px){
+ .app-main{padding:12px 12px calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 24px)}
+ .card{padding:15px;border-radius:19px}
+ .hero-card.mot-hero{grid-template-columns:minmax(0,1fr) 93px;padding:18px 15px;gap:10px}
+ .mot-ring{width:90px;height:90px;padding:6px}
+ .mot-ring-inner strong{font-size:25px}.mot-ring-inner span{font-size:9px}
+ .mot-hero .flex-row{display:grid;grid-template-columns:1fr;gap:8px}
+ .mot-hero .btn{font-size:12px;padding:10px 8px;white-space:normal;line-height:1.35;min-height:42px}
+ .mot-hero-footer{font-size:9px}
+ .mot-today{grid-template-columns:1fr;gap:10px;margin-top:12px}
+ .mot-today .card{padding:14px 16px}
+ .mot-day i{width:34px;height:34px}
+ .mot-map .section-head{flex-wrap:wrap}
+ .mot-map .flex-row select{max-width:100%;width:100%!important}
+ .kpi-row{margin-top:12px}
+}
+@media(max-width:345px){.mot-day i{width:27px;height:27px}.hero-card.mot-hero{grid-template-columns:1fr}.mot-ring{margin:auto}.nav-item{font-size:9px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -2226,6 +2345,20 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
     const stats = STORE.getDashboardStats(DATA);
     const dueList = STORE.getDuePatterns(DATA.patterns);
     const q = state.homeSearch.trim().toLowerCase();
+    const localDay = (d) => [d.getFullYear(), String(d.getMonth()+1).padStart(2,"0"), String(d.getDate()).padStart(2,"0")].join("-");
+    const now = new Date();
+    const today = STORE.state.daily[localDay(now)] || {};
+    const goal = Math.max(1, Number(STORE.state.settings.dailyGoal) || 15);
+    const minutes = Math.floor((today.studySec || 0) / 60);
+    const goalPct = Math.min(100, Math.round((today.studySec || 0) / (goal * 60) * 100));
+    const mastered = stats.levels[4] + stats.levels[5];
+    const learned = 80 - stats.levels[1];
+    const nextPattern = dueList[0] || DATA.patterns.find(p => STORE.getPatternState(p.id).level === 1) || DATA.patterns.find(p => STORE.getPatternState(p.id).level < 5) || DATA.patterns[0];
+    const week = Array.from({length:7}, (_,i) => {
+      const d = new Date(now); d.setDate(d.getDate() - 6 + i);
+      const rec = STORE.state.daily[localDay(d)] || {};
+      return {label:"日月火水木金土"[d.getDay()], day:d.getDate(), active:!!(rec.xp || rec.studySec || rec.speeches), today:i===6};
+    });
 
     const catsHtml = DATA.categories
       .filter((c) => state.homeCatFilter === "all" || state.homeCatFilter === c.id)
@@ -2244,7 +2377,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
             <button class="map-tile lv-${ps.level}" data-open-pattern="${p.id}">
               <div class="tile-top">
                 <span>${p.id}</span>
-                <span>${isDue ? '<span class="due-dot" title="復習時期"></span> ' : ""}Lv.${ps.level}</span>
+                <span class="mot-level">${isDue ? '<span class="due-dot" title="復習時期"></span> ' : ""}${ps.level === 5 ? "★ " : ""}Lv.${ps.level}</span>
               </div>
               <div class="tile-pattern">${esc(p.pattern)}</div>
               <div class="tile-jp">${esc(p.meaning)}</div>
@@ -2256,10 +2389,10 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
           <div class="cat-block">
             <div class="cat-header">
               <div class="cat-badge">
-                <span class="cat-dot" style="background:${c.color}"></span>
+                <span class="mot-cat-number" style="--cat-color:${c.color}">${String(DATA.categories.indexOf(c)+1).padStart(2,"0")}</span>
                 <span>${esc(c.name)}</span>
               </div>
-              <span class="muted">習得率 ${catStat ? catStat.pct : 0}%</span>
+              <div class="mot-cat-progress">${catStat ? catStat.pct : 0}%<div class="bar-track"><div class="bar-fill" style="width:${catStat ? catStat.pct : 0}%;background:${c.color}"></div></div></div>
             </div>
             <div class="map-grid">${tiles}</div>
           </div>
@@ -2267,24 +2400,32 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
       }).join("");
 
     return `
-      <div class="card hero-card">
+      <div class="card hero-card mot-hero">
         <div>
-          <div class="pill accent">80構文 × 1,600例文・反射スピーキング設計</div>
-          <h1 style="margin:8px 0 4px;font-size:22px;letter-spacing:-0.02em;">日本語の翻訳時間をゼロへ。</h1>
-          <p class="muted" style="margin:0;">構文の「固定」と「入れ替え」を身体に染み込ませ、初めて見る文でも瞬時に英語で話せる力を鍛えます。</p>
+          <div class="mot-eyebrow">YOUR ENGLISH JOURNEY · 80 PATTERNS</div>
+          <h1>${mastered === 80 ? "80構文、自力で話せる！" : learned === 0 ? "英語が、口から出る毎日へ。" : "今日も、英語が話せる自分へ。"}</h1>
+          <p>80の型を身につける、小さな一歩。<br>次は ${esc(nextPattern.pattern)} に挑戦しよう。</p>
           <div class="flex-row mt-12">
-            <button class="btn btn-primary" data-action="quick-review">
-              ${ICONS.train} ${dueList.length ? `今日の復習を開始 (${dueList.length}構文)` : "AIおすすめ瞬間英作文を開始"}
-            </button>
-            <button class="btn btn-secondary" data-action="go-walk">${ICONS.walk} ウォーキング学習</button>
+            <button class="btn btn-primary" data-open-pattern="${nextPattern.id}">${ICONS.play} ${dueList.length ? "復習する" : learned ? "学習を続ける" : "最初の構文を学ぶ"}</button>
+            <button class="btn btn-secondary" data-action="quick-review">${ICONS.train} 瞬間英作文${dueList.length ? ` (${dueList.length}件復習)` : ""}</button>
+            <button class="btn btn-secondary" data-action="go-walk">${ICONS.walk} ウォーキング</button>
           </div>
         </div>
-        <div style="text-align:center;min-width:110px;">
-          <div style="font-size:32px;font-weight:800;color:var(--accent);line-height:1;">${stats.overallPct}%</div>
-          <div class="muted mt-8">総合習得率</div>
+        <div><div class="mot-ring" style="--pct:${stats.overallPct}" role="img" aria-label="総合習得率 ${stats.overallPct}%"><div class="mot-ring-inner"><strong>${stats.overallPct}%</strong><span>総合習得率</span></div></div><div class="mot-hero-footer">${learned} / 80 構文学習済み</div></div>
+      </div>
+      <div class="mot-today">
+        <div class="card">
+          <div class="mot-kicker">DAILY MISSION</div><h2 class="mot-heading">今日の学習目標</h2>
+          <div class="flex-between"><div class="mot-goal-number"><span id="motMinutes">${minutes}</span><small> / ${goal} 分</small></div><span class="pill ${goalPct >= 100 ? "success" : "accent"}" id="motGoalLabel">${goalPct >= 100 ? "達成！" : goalPct + "%"}</span></div>
+          <div class="mot-progress" role="progressbar" aria-label="今日の学習時間" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${goalPct}"><span id="motGoalBar" style="width:${goalPct}%"></span></div>
+          <div class="mot-mini" id="motGoalMessage">${goalPct >= 100 ? "目標クリア！今日も一歩前進。" : "あと" + Math.max(1, Math.ceil((goal * 60 - (today.studySec || 0)) / 60)) + "分。少しずつ積み重ねよう。"}</div>
+        </div>
+        <div class="card">
+          <div class="mot-kicker">KEEP IT GOING</div><h2 class="mot-heading">7日間の学習記録 <span class="pill accent">${stats.streakDays}日連続</span></h2>
+          <div class="mot-week">${week.map(d => `<div class="mot-day ${d.active ? "done" : ""} ${d.today ? "today" : ""}" aria-label="${d.day}日 ${d.active ? "学習済み" : "未学習"}"><span>${d.label}</span><i>${d.active ? "✓" : d.day}</i></div>`).join("")}</div>
+          <div class="mot-mini">1日ずつ、自分のペースで。</div>
         </div>
       </div>
-
       <div class="kpi-row">
         <div class="kpi-box"><div class="kpi-val">${stats.levels[4] + stats.levels[5]}<span class="muted">/80</span></div><div class="kpi-lbl">自力・反射レベル</div></div>
         <div class="kpi-box"><div class="kpi-val">${stats.instantAcc}%</div><div class="kpi-lbl">瞬間英作文 正答率</div></div>
@@ -2292,10 +2433,10 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
         <div class="kpi-box"><div class="kpi-val">${stats.totalSpeeches}</div><div class="kpi-lbl">累計発話回数</div></div>
       </div>
 
-      <div class="card mt-16">
+      <div class="card mot-map">
         <div class="section-head">
-          <h2 class="section-title">80構文マスタリーマップ</h2>
-          <span class="muted">タップして習得・ドリルへ</span>
+          <div><div class="mot-kicker">YOUR ROADMAP</div><h2 class="section-title">80構文 習得ロードマップ</h2></div>
+          <span class="pill success">${mastered} / 80 自力以上</span>
         </div>
 
         <div class="legend-row">
@@ -3668,6 +3809,26 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
     state.sessionTickId = setInterval(() => {
       if (document.visibilityState === "visible") {
         STORE.addStudySeconds(15);
+        if (state.view === "home") {
+          const d = new Date();
+          const key = [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+          const rec = STORE.state.daily[key] || {};
+          const seconds = rec.studySec || 0;
+          const goal = Math.max(1, Number(STORE.state.settings.dailyGoal) || 15);
+          const pct = Math.min(100, Math.round(seconds / (goal * 60) * 100));
+          const mins = document.getElementById("motMinutes"), label = document.getElementById("motGoalLabel"), bar = document.getElementById("motGoalBar"), msg = document.getElementById("motGoalMessage");
+          if (mins && label && bar && msg) {
+            mins.textContent = Math.floor(seconds/60);
+            label.textContent = pct >= 100 ? "達成！" : pct + "%";
+            label.className = "pill " + (pct >= 100 ? "success" : "accent");
+            bar.style.width = pct + "%";
+            bar.parentElement.setAttribute("aria-valuenow", String(pct));
+            msg.textContent = pct >= 100 ? "目標クリア！今日も一歩前進。" : "あと" + Math.max(1, Math.ceil((goal*60-seconds)/60)) + "分。少しずつ積み重ねよう。";
+          }
+          const day = document.querySelector(".mot-day.today");
+          if (day) {day.classList.add("done");day.querySelector("i").textContent = "✓";day.setAttribute("aria-label",d.getDate()+"日 学習済み");}
+          applySettingsToEngine();
+        }
       }
     }, 15000);
 
