@@ -974,6 +974,18 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 @media(max-width:345px){.mot-day i{width:27px;height:27px}.hero-card.mot-hero{grid-template-columns:1fr}.mot-ring{margin:auto}.nav-item{font-size:9px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 
+ 
+.growth-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.growth-step{display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-align:left;background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:12px;min-width:0}
+.growth-step.current{border:2px solid var(--stage-color);padding:11px;box-shadow:0 3px 0 var(--border)}
+.growth-step-index{background:var(--stage-color);color:white;border-radius:11px;padding:5px 10px;font-size:13px;font-weight:850}
+.growth-step-name{font-size:14px;font-weight:850;line-height:1.3}
+.growth-step-count{font-weight:850;font-size:21px;letter-spacing:-.03em;margin-top:3px}
+.growth-step-track{height:7px;width:100%;border-radius:20px;background:var(--border);overflow:hidden}
+.growth-step-track>span{display:block;height:100%;background:var(--stage-color);border-radius:20px}
+.growth-group-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:9px 0 12px}
+.mot-map{scroll-margin-top:calc(var(--header-h) + 12px)}
+@media(max-width:600px){.growth-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.growth-step-name{font-size:13px}.growth-step{padding:11px}.growth-step.current{padding:10px}}
 </style>
 </head>
 <body>
@@ -2181,6 +2193,20 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
   "use strict";
 
   const DATA = window.ENGLISH80_DATA;
+  const GROWTH_STAGES = [{"id":"stage1","name":"まずは伝える","age":"6歳まで相当","color":"#087b59","desc":"自己紹介・希望・簡単な質問","ids":["P01","P11","P43","P46","P21","P51","P52","P53","P13","P17","P06","P04","P31","P37","P41","P65","P67","P54","P45","P12"]},{"id":"stage2","name":"会話を広げる","age":"8歳まで相当","color":"#2563eb","desc":"予定・気持ち・質問・提案","ids":["P05","P09","P10","P14","P15","P16","P22","P24","P26","P28","P30","P33","P34","P35","P38","P44","P47","P48","P55","P56","P62","P66"]},{"id":"stage3","name":"自在に表現する","age":"12歳まで相当","color":"#7c3aed","desc":"経験・習慣・丁寧な表現・理由","ids":["P02","P03","P07","P08","P18","P19","P20","P25","P27","P32","P36","P40","P42","P49","P59","P60","P61","P63","P64","P68","P69","P70","P71","P76"]},{"id":"stage4","name":"深く語り合う","age":"ティーン相当","color":"#b45309","desc":"意見・仮定・条件・話題転換","ids":["P23","P29","P39","P50","P57","P58","P72","P73","P74","P75","P77","P78","P79","P80"]}];
+  const GROWTH_ORDER = GROWTH_STAGES.flatMap(g => g.ids).map(id => DATA.patterns.find(p => p.id === id));
+  function stageFor(pid) { return GROWTH_STAGES.find(g => g.ids.includes(pid)); }
+  function stageProgress(g) { return g.ids.filter(id => STORE.getPatternState(id).level >= 4).length; }
+  function activeStage() { return GROWTH_STAGES.find(g => stageProgress(g) < g.ids.length) || GROWTH_STAGES[3]; }
+  function stagePool(filter, pid) {
+    if (pid) return DATA.patterns.filter(p => p.id === pid);
+    const stage = GROWTH_STAGES.find(g => g.id === filter);
+    return stage ? GROWTH_ORDER.filter(p => stage.ids.includes(p.id)) : DATA.patterns.filter(p => filter === "all" || !filter || p.catId === filter);
+  }
+  function pickTraining() {
+    const pool = stagePool(state.trainCat, state.trainPid);
+    return STORE.pickAdaptiveExample(pool.length ? pool : DATA.patterns, "all", null);
+  }
   const AUDIO = window.English80Audio;
   const STORE = window.English80Store;
   const AICHAT = window.English80AIChat;
@@ -2234,6 +2260,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
   const state = {
     view: "home", // home | study | train | chat | walk | dash
     homeCatFilter: "all",
+    homeGroup: "growth",
     homeSearch: "",
     studyPid: "P01",
     studyScene: "all",
@@ -2353,23 +2380,27 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
     const goalPct = Math.min(100, Math.round((today.studySec || 0) / (goal * 60) * 100));
     const mastered = stats.levels[4] + stats.levels[5];
     const learned = 80 - stats.levels[1];
-    const nextPattern = dueList[0] || DATA.patterns.find(p => STORE.getPatternState(p.id).level === 1) || DATA.patterns.find(p => STORE.getPatternState(p.id).level < 5) || DATA.patterns[0];
+    const currentStage = activeStage();
+    const currentPool = GROWTH_ORDER.filter(p => currentStage.ids.includes(p.id));
+    const nextPattern = currentPool.find(p => STORE.getPatternState(p.id).level === 1) || currentPool.find(p => STORE.getPatternState(p.id).level < 4) || dueList[0] || GROWTH_ORDER.find(p => STORE.getPatternState(p.id).level < 5) || GROWTH_ORDER[0];
+    const nextIsDue = dueList.some(p => p.id === nextPattern.id);
+    const groups = state.homeGroup === "growth" ? GROWTH_STAGES : DATA.categories;
     const week = Array.from({length:7}, (_,i) => {
       const d = new Date(now); d.setDate(d.getDate() - 6 + i);
       const rec = STORE.state.daily[localDay(d)] || {};
       return {label:"日月火水木金土"[d.getDay()], day:d.getDate(), active:!!(rec.xp || rec.studySec || rec.speeches), today:i===6};
     });
 
-    const catsHtml = DATA.categories
+    const catsHtml = groups
       .filter((c) => state.homeCatFilter === "all" || state.homeCatFilter === c.id)
       .map((c) => {
-        const pats = DATA.patterns.filter((p) => {
-          if (p.catId !== c.id) return false;
+        const full = c.ids ? c.ids.map(id => DATA.patterns.find(p => p.id === id)) : DATA.patterns.filter(p => p.catId === c.id);
+        const pats = full.filter((p) => {
           if (!q) return true;
           return p.pattern.toLowerCase().includes(q) || p.meaning.includes(q) || p.id.toLowerCase().includes(q);
         });
         if (!pats.length) return "";
-        const catStat = stats.catStats.find((x) => x.id === c.id);
+        const catStat = c.ids ? {pct: Math.round(full.reduce((n,p) => n + (STORE.getPatternState(p.id).level - 1)/4,0)/full.length*100)} : stats.catStats.find((x) => x.id === c.id);
         const tiles = pats.map((p) => {
           const ps = STORE.getPatternState(p.id);
           const isDue = ps.nextReviewAt > 0 && ps.nextReviewAt <= Date.now();
@@ -2389,11 +2420,12 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
           <div class="cat-block">
             <div class="cat-header">
               <div class="cat-badge">
-                <span class="mot-cat-number" style="--cat-color:${c.color}">${String(DATA.categories.indexOf(c)+1).padStart(2,"0")}</span>
-                <span>${esc(c.name)}</span>
+                <span class="mot-cat-number" style="--cat-color:${c.color}">${String(groups.indexOf(c)+1).padStart(2,"0")}</span>
+                <div><span>${esc(c.name)}</span>${c.ids ? `<div class="muted" style="font-weight:500">${c.age} · ${c.ids.length}構文</div>` : ""}</div>
               </div>
               <div class="mot-cat-progress">${catStat ? catStat.pct : 0}%<div class="bar-track"><div class="bar-fill" style="width:${catStat ? catStat.pct : 0}%;background:${c.color}"></div></div></div>
             </div>
+            ${c.ids ? `<div class="growth-group-actions"><span class="muted">${esc(c.desc)} · ${stageProgress(c)}/${c.ids.length} 自力以上</span><button class="btn btn-secondary btn-sm" data-action="practice-stage" data-stage="${c.id}">このステージを練習</button></div>` : ""}
             <div class="map-grid">${tiles}</div>
           </div>
         `;
@@ -2404,10 +2436,10 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
         <div>
           <div class="mot-eyebrow">YOUR ENGLISH JOURNEY · 80 PATTERNS</div>
           <h1>${mastered === 80 ? "80構文、自力で話せる！" : learned === 0 ? "英語が、口から出る毎日へ。" : "今日も、英語が話せる自分へ。"}</h1>
-          <p>80の型を身につける、小さな一歩。<br>次は ${esc(nextPattern.pattern)} に挑戦しよう。</p>
+          <p>80の型を身につける、小さな一歩。<br>STAGE ${GROWTH_STAGES.indexOf(stageFor(nextPattern.id))+1} · 次は ${esc(nextPattern.pattern)} に挑戦しよう。</p>
           <div class="flex-row mt-12">
-            <button class="btn btn-primary" data-open-pattern="${nextPattern.id}">${ICONS.play} ${dueList.length ? "復習する" : learned ? "学習を続ける" : "最初の構文を学ぶ"}</button>
-            <button class="btn btn-secondary" data-action="quick-review">${ICONS.train} 瞬間英作文${dueList.length ? ` (${dueList.length}件復習)` : ""}</button>
+            <button class="btn btn-primary" data-open-pattern="${nextPattern.id}">${ICONS.play} ${nextIsDue ? "復習する" : learned ? "学習を続ける" : "最初の構文を学ぶ"}</button>
+            <button class="btn btn-secondary" data-action="quick-review">${ICONS.train} ステージ別瞬間英作文</button>
             <button class="btn btn-secondary" data-action="go-walk">${ICONS.walk} ウォーキング</button>
           </div>
         </div>
@@ -2433,12 +2465,22 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
         <div class="kpi-box"><div class="kpi-val">${stats.totalSpeeches}</div><div class="kpi-lbl">累計発話回数</div></div>
       </div>
 
+      <div class="card growth-overview mt-16">
+        <div class="section-head"><div><div class="mot-kicker">GROW UP IN ENGLISH</div><h2 class="section-title">4つの成長ステージ</h2></div><span class="pill accent">${mastered===80?"ALL CLEAR":"STAGE "+(GROWTH_STAGES.indexOf(currentStage)+1)}</span></div>
+        <div class="growth-steps">
+          ${GROWTH_STAGES.map((g,i) => {const n=stageProgress(g);return `<button class="growth-step ${g===currentStage?"current":""}" style="--stage-color:${g.color}" data-action="show-stage" data-stage="${g.id}">
+            <span class="growth-step-index">${n===g.ids.length?"✓":"0"+(i+1)}</span><span class="growth-step-name">${g.name}</span><span class="muted">${g.age}</span><span class="growth-step-count">${n} / ${g.ids.length}</span><span class="growth-step-track"><span style="width:${n/g.ids.length*100}%"></span></span>
+          </button>`}).join("")}
+        </div>
+        <div class="mot-mini">年齢は難易度の目安です。<a href="https://www.takahashishoten.co.jp/book/11340.html/" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">塚本亮氏の書籍</a>の4段階構成を参考に、既存80構文を独自に再分類しました。書籍の収録順や実際の母語習得年齢を再現したものではありません。</div>
+      </div>
       <div class="card mot-map">
         <div class="section-head">
           <div><div class="mot-kicker">YOUR ROADMAP</div><h2 class="section-title">80構文 習得ロードマップ</h2></div>
           <span class="pill success">${mastered} / 80 自力以上</span>
         </div>
 
+        <div class="seg-bar"><button class="seg-btn ${state.homeGroup==="growth"?"active":""}" data-action="growth-view">成長ステージ順</button><button class="seg-btn ${state.homeGroup==="category"?"active":""}" data-action="category-view">テーマ別</button></div>
         <div class="legend-row">
           <span class="legend-item"><span class="legend-dot" style="background:var(--lv1)"></span>Lv.1 未学習</span>
           <span class="legend-item"><span class="legend-dot" style="background:var(--lv2)"></span>Lv.2 理解</span>
@@ -2450,8 +2492,8 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
         <div class="flex-row">
           <input type="search" id="homeSearchInput" class="input-field" style="flex:1;min-width:180px;" placeholder="構文・日本語で検索（例: wondering, 予定）" value="${esc(state.homeSearch)}">
           <select id="homeCatSelect" class="input-field" style="width:auto;min-width:170px;">
-            <option value="all">全8カテゴリー (80構文)</option>
-            ${DATA.categories.map((c) => `<option value="${c.id}" ${state.homeCatFilter === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}
+            <option value="all">${state.homeGroup==="growth"?"全4ステージ":"全8カテゴリー"} (80構文)</option>
+            ${groups.map((c) => `<option value="${c.id}" ${state.homeCatFilter === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}
           </select>
         </div>
 
@@ -2465,9 +2507,11 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
     const p = DATA.patterns.find((x) => x.id === state.studyPid) || DATA.patterns[0];
     const cat = DATA.categories.find((c) => c.id === p.catId);
     const ps = STORE.getPatternState(p.id);
-    const idx = DATA.patterns.findIndex((x) => x.id === p.id);
-    const prevP = DATA.patterns[(idx - 1 + DATA.patterns.length) % DATA.patterns.length];
-    const nextP = DATA.patterns[(idx + 1) % DATA.patterns.length];
+    const ordered = state.homeGroup === "growth" ? GROWTH_ORDER : DATA.patterns;
+    const idx = ordered.findIndex(x => x.id === p.id);
+    const prevP = ordered[(idx - 1 + ordered.length) % ordered.length];
+    const nextP = ordered[(idx + 1) % ordered.length];
+    const growth = stageFor(p.id);
 
     const scenes = Array.from(new Set(p.examples.map((e) => e.scene)));
     const filteredExs = state.studyScene === "all"
@@ -2489,6 +2533,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
           <span class="pill accent">${LEVEL_NAMES[ps.level]}</span>
         </div>
 
+        <div class="mt-12 muted">STAGE ${GROWTH_STAGES.indexOf(growth)+1} · ${growth.name} · ${growth.ids.indexOf(p.id)+1}/${growth.ids.length}構文</div>
         <h1 class="en-sentence-lg mt-12" style="margin-bottom:4px;">${esc(p.pattern)}</h1>
         <div style="font-size:17px;font-weight:700;color:var(--text-2);">${esc(p.meaning)}</div>
 
@@ -2588,6 +2633,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
       <div class="flex-between" style="margin-bottom:12px;">
         <select id="trainCatSelect" class="input-field" style="min-height:38px;padding:6px 10px;width:auto;font-size:13px;">
           <option value="all">出題範囲：全80構文（AI最適化）</option>
+          <optgroup label="成長ステージ">${GROWTH_STAGES.map(g => `<option value="${g.id}" ${state.trainCat===g.id?"selected":""}>STAGE ${GROWTH_STAGES.indexOf(g)+1} · ${g.name}</option>`).join("")}</optgroup>
           ${DATA.categories.map((c) => `<option value="${c.id}" ${state.trainCat === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}
         </select>
         <div class="flex-row">
@@ -2604,7 +2650,8 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
 
   // ---- MODE B: PATTERN DRILL ----
   function renderDrillMode() {
-    const p = DATA.patterns.find((x) => x.id === (state.trainPid || state.studyPid)) || DATA.patterns[0];
+    const drillPool = stagePool(state.trainCat);
+    const p = drillPool.find(x => x.id === (state.trainPid || state.studyPid)) || drillPool[0] || DATA.patterns[0];
     const tabs = [
       ["swap", "入れ替え"],
       ["subject", "主語変化"],
@@ -2639,7 +2686,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
             <div class="muted mt-8">${esc(p.meaning)}</div>
           </div>
           <select id="drillPatternSelect" class="input-field" style="width:auto;max-width:210px;min-height:36px;padding:5px 8px;font-size:13px;">
-            ${DATA.patterns.map((x) => `<option value="${x.id}" ${x.id === p.id ? "selected" : ""}>${x.id} ${esc(x.pattern)}</option>`).join("")}
+            ${drillPool.map((x) => `<option value="${x.id}" ${x.id === p.id ? "selected" : ""}>${x.id} ${esc(x.pattern)}</option>`).join("")}
           </select>
         </div>
 
@@ -2680,7 +2727,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
   // ---- MODE C: INSTANT COMPOSITION ----
   function loadNextInstant(autoStartTimer) {
     if (state.instantTimerId) { clearInterval(state.instantTimerId); state.instantTimerId = null; }
-    state.instantItem = STORE.pickAdaptiveExample(DATA.patterns, state.trainCat, state.trainPid || null);
+    state.instantItem = pickTraining();
     state.instantInput = "";
     state.instantResult = null;
     state.instantStartMs = Date.now();
@@ -2822,7 +2869,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
 
   // ---- MODE D: LISTENING ----
   function loadNextListening() {
-    state.listenItem = STORE.pickAdaptiveExample(DATA.patterns, state.trainCat, state.trainPid || null);
+    state.listenItem = pickTraining();
     state.listenInput = "";
     state.listenResult = null;
   }
@@ -2874,7 +2921,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
 
   // ---- MODE E: SHADOWING ----
   function loadNextShadowing() {
-    state.shadowItem = STORE.pickAdaptiveExample(DATA.patterns, state.trainCat, state.trainPid || null);
+    state.shadowItem = pickTraining();
     state.shadowResult = null;
   }
 
@@ -3430,6 +3477,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
       if (trainMode) {
         cleanupActiveTasks();
         state.trainMode = trainMode;
+        state.instantItem = null; state.listenItem = null; state.shadowItem = null;
         if (trainMode === "instant" && !state.instantItem) loadNextInstant(false);
         if (trainMode === "listening" && !state.listenItem) loadNextListening();
         if (trainMode === "shadowing" && !state.shadowItem) loadNextShadowing();
@@ -3484,9 +3532,18 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
 
       if (action === "back-home") {
         navigate("home");
-      } else if (action === "quick-review") {
+      } else if (action === "growth-view" || action === "category-view" || action === "show-stage") {
+        state.homeGroup = action === "category-view" ? "category" : "growth";
+        state.homeCatFilter = action === "show-stage" ? target.getAttribute("data-stage") : "all";
+        if (action === "show-stage") state.homeSearch = "";
+        render();
+        if (action === "show-stage") document.querySelector(".mot-map")?.scrollIntoView({behavior:"auto",block:"start"});
+      } else if (action === "practice-stage" || action === "quick-review") {
         state.trainMode = "instant";
+        state.trainCat = action === "practice-stage" ? target.getAttribute("data-stage") : activeStage().id;
         state.trainPid = "";
+        state.listenItem = null;
+        state.shadowItem = null;
         loadNextInstant(false);
         navigate("train");
       } else if (action === "go-walk") {
@@ -3500,6 +3557,8 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
       } else if (action === "start-drill-for") {
         state.trainMode = "drill";
         state.trainPid = target.getAttribute("data-pid");
+        state.trainCat = "all";
+        state.instantItem = null; state.listenItem = null; state.shadowItem = null;
         state.drillIdx = 0;
         state.drillTab = "swap";
         state.drillResult = null;
@@ -3507,6 +3566,8 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
       } else if (action === "start-instant-for") {
         state.trainMode = "instant";
         state.trainPid = target.getAttribute("data-pid");
+        state.trainCat = "all";
+        state.listenItem = null; state.shadowItem = null;
         loadNextInstant(false);
         navigate("train");
       } else if (action === "play-dialogue") {
@@ -3750,6 +3811,11 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
       } else if (e.target.id === "trainCatSelect") {
         state.trainCat = e.target.value;
         state.trainPid = "";
+        state.drillIdx = 0;
+        state.drillResult = null;
+        state.instantItem = null;
+        state.listenItem = null;
+        state.shadowItem = null;
         if (state.trainMode === "instant") loadNextInstant(false);
         if (state.trainMode === "listening") loadNextListening();
         if (state.trainMode === "shadowing") loadNextShadowing();
@@ -3761,6 +3827,7 @@ window.ENGLISH80_DATA = {"categories":[{"id":"cat1","name":"基本的な自己�
         showToast(`再生速度を ${STORE.state.settings.rate}x に設定しました`);
       } else if (e.target.id === "drillPatternSelect") {
         state.trainPid = e.target.value;
+        state.instantItem = null; state.listenItem = null; state.shadowItem = null;
         state.drillIdx = 0;
         state.drillResult = null;
         render();
